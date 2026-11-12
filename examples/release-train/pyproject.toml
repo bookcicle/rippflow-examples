@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rippflow-release-train"
+version = "0.1.0"
+description = "Environment-aware (local + cloud) multi-repo release train workflow for Rippflow with optional AI changelog drafting, checksum verification, and human sign-off callbacks"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+local-ai = [
+    "google-antigravity>=0.1.20",
+]
+dev = [
+    "pytest>=8.0",
+    "pyyaml>=6.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

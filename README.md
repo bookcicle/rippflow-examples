@@ -1,37 +1,66 @@
 # Rippflow Examples
 
-Open-source, local-first [Rippflow](https://rippflow.com) workflows showcasing sharded DAG orchestration, fast stateless handler slices (`python-light` / `python-standard`), durable multi-hour `async_tool` HTTPS HMAC callbacks (`workerCapacityReleased: true`), bounded rework loops, and human-in-the-loop gates.
+> [!TIP]
+> **Use this with Gemini Antigravity, Codex, or Claude Code!**
+> 
+> Rippflow natively supports **agent skills** and **local MCP** (Model Context Protocol). Connect your AI coding assistant with a single command to scaffold, validate, run, and inspect workflows directly from your agent chat:
+> 
+> ```bash
+> # Automatically configure agent skills and local MCP across all installed clients
+> rippflow mcp setup --client all
+> ```
+> *Supports Google Gemini Antigravity, OpenAI Codex, and Anthropic Claude Code.*
+
+Open-source, local- and cloud-ready [Rippflow](https://rippflow.com) workflows showcasing sharded DAG orchestration, fast stateless handler slices (`python-light` / `python-standard`), environment-aware execution (`--rippflow-env local` vs `--rippflow-env cloud`), durable multi-hour `async_tool` callbacks (`workerCapacityReleased: true`), bounded rework loops, and human-in-the-loop gates.
 
 ---
 
 ## Included Examples
 
-| Example | Path | Description |
-| :--- | :--- | :--- |
-| **Multi-Repo AI Feature & Dual-Identity PR Review Pipeline** | [`examples/pr-pipeline`](./examples/pr-pipeline) | Accepts a natural-language feature request + target repositories, authors PRs in isolated git worktrees under a dedicated bot GitHub identity, runs local test suites, conducts incremental `codex exec resume` code review under a separate reviewer identity, loops up to 15 turns, and escalates unresolved shards via macOS/Linux/Windows desktop notifications + authenticated Rippflow callbacks. |
+Explore all runnable workflow examples in [`examples/`](https://github.com/bookcicle/rippflow-examples/tree/main/examples):
+
+| Example | Path | Runtime Tiers | Description |
+| :--- | :--- | :--- | :--- |
+| **Multi-Repo AI Feature & Dual-Identity PR Review Pipeline** | [`examples/pr-pipeline`](./examples/pr-pipeline) | `local` | Accepts a natural-language feature request + target repositories, authors PRs in isolated git worktrees under a dedicated bot GitHub identity, runs local test suites, conducts incremental `codex exec resume` code review under a separate reviewer identity, loops up to 15 turns, and escalates unresolved shards via macOS/Linux/Windows desktop notifications + authenticated Rippflow callbacks. |
+| **Multi-Repo Release & Sync Train** | [`examples/release-train`](./examples/release-train) | `local` & `cloud` | Coordinates multi-repo drift detection, version & pinned-SHA bumps (`PINNED_SOURCE_SHAS.json`), changelog drafting (Gemini/Codex in `local`, automatically flagged off to zero-dependency deterministic Conventional Commits in `cloud`), parallel build + SHA-256 checksum & benchmark verification, a `24h` human release sign-off gate (OS banner + Slack/email webhooks), and ordered tag/publish + `RELEASE_NOTES.md` sync. |
 
 ---
 
-## Quickstart (`examples/pr-pipeline`)
+## Quickstart
+
+### 1. Multi-Repo Release & Sync Train (`local` + `cloud`, Zero AI Dependencies Required)
 
 ```bash
-cd examples/pr-pipeline
+cd examples/release-train
 
-# 1. Create virtualenv & install dependencies
 python3 -m venv .venv
 .venv/bin/pip install --upgrade pip
 .venv/bin/pip install -e ".[dev]"
 
-# 2. Configure your local workspace & GitHub identities (gitignored)
+# Validate both local and cloud handler profiles
+rippflow validate workflow.yaml --handlers handlers.json --rippflow-env local
+rippflow validate workflow.yaml --handlers handlers.json --rippflow-env cloud
+
+# Run with cloud-tier rules (Codex/Gemini strictly flagged off)
+rippflow run workflow.yaml --handlers handlers.json --rippflow-env cloud \
+  --shards service-core,service-starter,service-docs \
+  --input examples/release_input.example.json
+```
+
+### 2. Multi-Repo AI Feature & PR Review Pipeline (`examples/pr-pipeline`)
+
+```bash
+cd examples/pr-pipeline
+
+python3 -m venv .venv
+.venv/bin/pip install --upgrade pip
+.venv/bin/pip install -e ".[dev]"
+
 cp .env.example .env
 # Edit .env to set WORKSPACE_DIR, AUTHOR_GH_USER, AUTHOR_GIT_EMAIL, REVIEWER_GH_USER
 
-# 3. Validate workflow & start persistent local HTTPS ingress + callback server
 rippflow validate workflow.yaml --handlers handlers.json
 rippflow deploy --local workflow.yaml --shards service-core,service-cli
-
-# 4. Open Rippflow Studio with live 1s Analytics polling & clickable server logs
-rippflow studio --command "rippflow visualize .outputs --split"
 ```
 
 ---

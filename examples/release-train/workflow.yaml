@@ -1,0 +1,134 @@
+name: multi-repo-release-train
+version: "1.0.0"
+
+default_group: python-light
+
+defaults:
+  phaseTimeout: 30s
+
+lanes:
+  inline:
+    mode: sync_lambda
+    target: lambda://local-inline
+  workers:
+    mode: async_sqs
+    target: local://workers
+
+controls:
+  policyVersion: 1
+  limits:
+    maxIterations: 64
+    maxToolCalls: 128
+    maxHandlerInvocations: 512
+    maxConcurrentOperations: 8
+    maxDuration: 24h
+    maxRetries: 1
+    maxRecoveryAttempts: 1
+  gates:
+    - id: release-signoff
+      enforcementPoint: before_external_side_effect
+      action: publish_release
+      target: release_registry
+      timeout: 24h
+      onTimeout: deny
+
+phases:
+  detect_drift:
+    requires: []
+    service: detect_drift
+    lane: inline
+    scope: root
+    group: python-standard
+    timeout: 60s
+    inputs:
+      role: drift_scanner
+
+  bind_shard:
+    requires:
+      - detect_drift
+    service: bind_shard
+    lane: inline
+    scope: per_shard
+    timeout: 30s
+
+  bump_and_changelog:
+    type: async_tool
+    tool: version-bump-and-changelog
+    service: bump_and_changelog
+    lane: workers
+    scope: per_shard
+    requires:
+      - bind_shard
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 30m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: release-bump-worker
+      idempotentDispatch: true
+
+  verify_build_and_checksums:
+    type: async_tool
+    tool: release-verification-runner
+    service: verify_build_and_checksums
+    lane: workers
+    scope: per_shard
+    requires:
+      - bump_and_changelog
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 30m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: release-verify-worker
+      idempotentDispatch: true
+
+  release_signoff_gate:
+    type: async_tool
+    tool: human-release-signoff
+    service: release_signoff_gate
+    lane: workers
+    scope: fan_in_all
+    requires:
+      - verify_build_and_checksums
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 24h
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: release-signoff-notifier
+      idempotentDispatch: true
+
+  publish_and_sync_docs:
+    requires:
+      - release_signoff_gate
+    service: publish_and_sync_docs
+    lane: inline
+    scope: root
+    group: python-standard
+    timeout: 60s
+    terminal: true

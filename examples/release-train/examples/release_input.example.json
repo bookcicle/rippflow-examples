@@ -1,0 +1,37 @@
+{
+  "releaseVersion": "0.2.0",
+  "workspaceDir": "/path/to/your/workspace",
+  "executionMode": "dry_run",
+  "autoApproveGate": false,
+  "publishOrder": [
+    "service-core",
+    "service-starter",
+    "service-cli",
+    "service-docs"
+  ],
+  "repos": [
+    {
+      "name": "service-core",
+      "baseBranch": "main",
+      "versionFile": "Cargo.toml"
+    },
+    {
+      "name": "service-starter",
+      "baseBranch": "main",
+      "pinnedShaFile": "PINNED_SOURCE_SHAS.json",
+      "dependsOn": ["service-core"]
+    },
+    {
+      "name": "service-cli",
+      "baseBranch": "main",
+      "versionFile": "Cargo.toml",
+      "dependsOn": ["service-core"]
+    },
+    {
+      "name": "service-docs",
+      "baseBranch": "main",
+      "docsSyncTarget": "RELEASE_NOTES.md",
+      "dependsOn": ["service-core", "service-starter", "service-cli"]
+    }
+  ]
+}

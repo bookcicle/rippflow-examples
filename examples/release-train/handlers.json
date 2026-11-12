@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "handlers": {
+    "detect_drift": {
+      "command": ["python3", "scripts/dispatch.py", "detect_drift"],
+      "timeoutSeconds": 60,
+      "environments": {
+        "local": {
+          "env": { "AI_CHANGELOG_DEFAULT": "enabled" }
+        },
+        "cloud": {
+          "env": { "AI_CHANGELOG_DEFAULT": "disabled" }
+        }
+      }
+    },
+    "bind_shard": {
+      "command": ["python3", "scripts/dispatch.py", "bind_shard"],
+      "timeoutSeconds": 30
+    },
+    "bump_and_changelog": {
+      "command": ["python3", "scripts/dispatch.py", "bump_and_changelog"],
+      "timeoutSeconds": 30,
+      "environments": {
+        "local": {
+          "command": ["python3", "scripts/dispatch.py", "bump_and_changelog", "--tier=local"],
+          "env": { "AI_CHANGELOG_DEFAULT": "enabled" }
+        },
+        "cloud": {
+          "command": ["python3", "scripts/dispatch.py", "bump_and_changelog", "--tier=cloud"],
+          "env": { "AI_CHANGELOG_DEFAULT": "disabled" }
+        }
+      }
+    },
+    "verify_build_and_checksums": {
+      "command": ["python3", "scripts/dispatch.py", "verify_build_and_checksums"],
+      "timeoutSeconds": 30,
+      "environments": {
+        "local": {
+          "command": ["python3", "scripts/dispatch.py", "verify_build_and_checksums", "--tier=local"]
+        },
+        "cloud": {
+          "command": ["python3", "scripts/dispatch.py", "verify_build_and_checksums", "--tier=cloud"]
+        }
+      }
+    },
+    "release_signoff_gate": {
+      "command": ["python3", "scripts/dispatch.py", "release_signoff_gate"],
+      "timeoutSeconds": 30,
+      "environments": {
+        "local": {
+          "command": ["python3", "scripts/dispatch.py", "release_signoff_gate", "--tier=local"]
+        },
+        "cloud": {
+          "command": ["python3", "scripts/dispatch.py", "release_signoff_gate", "--tier=cloud"]
+        }
+      }
+    },
+    "publish_and_sync_docs": {
+      "command": ["python3", "scripts/dispatch.py", "publish_and_sync_docs"],
+      "timeoutSeconds": 60
+    }
+  }
+}

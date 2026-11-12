@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""Approve, reject, or inspect paused `release_signoff_gate` runs via Rippflow's authenticated callback."""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+import sys
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+VENV_PYTHON = (
+    REPO_ROOT / ".venv" / "Scripts" / "python.exe"
+    if os.name == "nt"
+    else REPO_ROOT / ".venv" / "bin" / "python"
+)
+
+if VENV_PYTHON.is_file() and Path(sys.executable).resolve() != VENV_PYTHON.resolve():
+    os.execv(str(VENV_PYTHON), [str(VENV_PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]])
+
+SRC_DIR = REPO_ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from release_train.cli_entry import resolve_release_gate_cli  # noqa: E402
+
+
+if __name__ == "__main__":
+    raise SystemExit(resolve_release_gate_cli(sys.argv[1:], workflow_dir=REPO_ROOT))
