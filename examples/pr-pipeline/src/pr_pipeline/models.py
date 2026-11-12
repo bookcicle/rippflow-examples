@@ -56,6 +56,37 @@ def slugify(text: str, max_len: int = 40) -> str:
     return (slug[:max_len].strip("-") or "feature")
 
 
+def extract_prompt_title(prompt_text: str, prompt_file: Path | None = None, max_len: int = 72) -> str:
+    """Extracts a clean human-readable title from a full Markdown/text Codex prompt file."""
+    for raw_line in prompt_text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("```") or line.startswith("---"):
+            continue
+        cleaned = re.sub(r"^#+\s*", "", line).strip()
+        if cleaned:
+            return cleaned[:max_len].strip()
+    if prompt_file is not None:
+        return prompt_file.stem[:max_len]
+    return "implement requested feature"
+
+
+def resolve_prompt_file_path(raw_path: str, *, search_roots: list[Path]) -> Path:
+    """Resolves `promptFile` against explicit path, `~`, or candidate workspace/workflow directories."""
+    cand = Path(raw_path).expanduser()
+    if cand.is_absolute():
+        if not cand.is_file():
+            raise FileNotFoundError(f"promptFile does not exist: {cand}")
+        return cand.resolve()
+
+    for root in search_roots:
+        resolved = (root / cand).resolve()
+        if resolved.is_file():
+            return resolved
+    raise FileNotFoundError(
+        f"promptFile '{raw_path}' not found (searched: {', '.join(str(r) for r in search_roots)})"
+    )
+
+
 @dataclass
 class RepoSpec:
     name: str
@@ -65,6 +96,7 @@ class RepoSpec:
     test_command: list[str] | None = None
     github_repo: str | None = None
     companion_repos: list[str] = field(default_factory=list)
+    prompt_file: str | None = None
 
 
 @dataclass
@@ -72,6 +104,9 @@ class PipelineConfig:
     feature_request: str
     workspace_dir: str
     repos: dict[str, RepoSpec]
+    prompt_file: str | None = None
+    feature_title: str = ""
+    author_provider: str = "antigravity"  # "antigravity" | "codex"
     author_gh_user: str = "bot-author"
     reviewer_gh_user: str = "human-reviewer"
     author_git_email: str | None = None
@@ -85,13 +120,17 @@ class PipelineConfig:
     dry_run_scenarios: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     @classmethod
-    def from_raw(cls, raw: dict[str, Any], *, default_workspace: Path) -> "PipelineConfig":
-        load_dotenv_files(default_workspace, Path.cwd())
-        feature_request = str(raw.get("featureRequest") or raw.get("feature_request") or "").strip()
-        if not feature_request:
-            raise ValueError("input payload must provide non-empty 'featureRequest'")
+    def from_raw(
+        cls,
+        raw: dict[str, Any],
+        *,
+        default_workspace: Path,
+        workflow_dir: Path | None = None,
+    ) -> "PipelineConfig":
+        wf_root = (workflow_dir or Path.cwd()).resolve()
+        load_dotenv_files(wf_root, default_workspace, Path.cwd())
 
-        ws = str(
+        ws_path = (
             Path(
                 raw.get("workspaceDir")
                 or raw.get("workspace_dir")
@@ -101,6 +140,40 @@ class PipelineConfig:
             .expanduser()
             .resolve()
         )
+        ws = str(ws_path)
+        search_roots = [wf_root, ws_path, Path.cwd().resolve()]
+
+        raw_prompt_file = (
+            raw.get("promptFile")
+            or raw.get("prompt_file")
+            or raw.get("codexPromptFile")
+            or raw.get("codex_prompt_file")
+            or raw.get("featureRequestFile")
+            or raw.get("feature_request_file")
+        )
+        resolved_prompt_path: Path | None = None
+        prompt_file_str: str | None = None
+        if raw_prompt_file:
+            resolved_prompt_path = resolve_prompt_file_path(str(raw_prompt_file).strip(), search_roots=search_roots)
+            prompt_file_str = str(resolved_prompt_path)
+            file_content = resolved_prompt_path.read_text(encoding="utf-8").strip()
+            if not file_content:
+                raise ValueError(f"promptFile is empty: {resolved_prompt_path}")
+        else:
+            file_content = ""
+
+        inline_request = str(raw.get("featureRequest") or raw.get("feature_request") or "").strip()
+        if file_content and inline_request:
+            feature_request = f"{file_content}\n\n## Additional Context\n{inline_request}"
+        else:
+            feature_request = file_content or inline_request
+
+        if not feature_request:
+            raise ValueError("input payload must provide 'promptFile' (path to prompt file) or non-empty 'featureRequest'")
+
+        explicit_title = str(raw.get("featureTitle") or raw.get("feature_title") or "").strip()
+        feature_title = explicit_title or extract_prompt_title(feature_request, resolved_prompt_path)
+
         default_turns = int(os.environ.get("MAX_TURNS") or DEFAULT_MAX_TURNS)
         max_turns = int(raw.get("maxTurns", raw.get("max_turns", default_turns)))
         if max_turns < 1 or max_turns > 50:
@@ -120,6 +193,12 @@ class PipelineConfig:
                     if isinstance(tcmd, str):
                         tcmd = ["sh", "-lc", tcmd]
                     companions = entry.get("companionRepos") or entry.get("companion_repos") or []
+                    repo_pf = entry.get("promptFile") or entry.get("prompt_file")
+                    resolved_repo_pf = (
+                        str(resolve_prompt_file_path(str(repo_pf).strip(), search_roots=[Path(rpath), *search_roots]))
+                        if repo_pf
+                        else None
+                    )
                     repos[name] = RepoSpec(
                         name=name,
                         path=rpath,
@@ -128,6 +207,7 @@ class PipelineConfig:
                         test_command=list(tcmd) if tcmd else None,
                         github_repo=entry.get("githubRepo") or entry.get("github_repo"),
                         companion_repos=[str(c) for c in companions],
+                        prompt_file=resolved_repo_pf,
                     )
         elif isinstance(raw_repos, dict):
             for name, entry in raw_repos.items():
@@ -136,6 +216,12 @@ class PipelineConfig:
                 if isinstance(tcmd, str):
                     tcmd = ["sh", "-lc", tcmd]
                 companions = entry.get("companionRepos") or entry.get("companion_repos") or []
+                repo_pf = entry.get("promptFile") or entry.get("prompt_file")
+                resolved_repo_pf = (
+                    str(resolve_prompt_file_path(str(repo_pf).strip(), search_roots=[Path(rpath), *search_roots]))
+                    if repo_pf
+                    else None
+                )
                 repos[name] = RepoSpec(
                     name=name,
                     path=rpath,
@@ -144,12 +230,25 @@ class PipelineConfig:
                     test_command=list(tcmd) if tcmd else None,
                     github_repo=entry.get("githubRepo") or entry.get("github_repo"),
                     companion_repos=[str(c) for c in companions],
+                    prompt_file=resolved_repo_pf,
                 )
+
+        author_provider = str(
+            raw.get("authorProvider")
+            or raw.get("author_provider")
+            or os.environ.get("AUTHOR_PROVIDER")
+            or "antigravity"
+        ).strip().lower()
+        if author_provider not in {"antigravity", "gemini", "codex"}:
+            raise ValueError(f"Unsupported authorProvider '{author_provider}' (expected 'antigravity' or 'codex')")
 
         return cls(
             feature_request=feature_request,
             workspace_dir=ws,
             repos=repos,
+            prompt_file=prompt_file_str,
+            feature_title=feature_title,
+            author_provider="codex" if author_provider == "codex" else "antigravity",
             author_gh_user=str(raw.get("authorGhUser") or os.environ.get("AUTHOR_GH_USER") or "bot-author"),
             reviewer_gh_user=str(raw.get("reviewerGhUser") or os.environ.get("REVIEWER_GH_USER") or "human-reviewer"),
             author_git_email=raw.get("authorGitEmail") or os.environ.get("AUTHOR_GIT_EMAIL"),
@@ -191,6 +290,7 @@ class ShardState:
     last_review_verdict: str | None = None
     last_review_summary: str = ""
     pending_review_comments: list[dict[str, Any]] = field(default_factory=list)
+    author_codex_session_id: str | None = None
     codex_session_id: str | None = None
     last_reviewed_commit: str | None = None
     review_ledger: list[dict[str, Any]] = field(default_factory=list)

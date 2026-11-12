@@ -1,6 +1,6 @@
 # Rippflow Multi-Repo AI Feature & Dual-Identity PR Review Pipeline
 
-A local-first [Rippflow](https://rippflow.com) workflow that takes a natural-language feature request and a list of repositories, authors pull requests in isolated git worktrees, runs each repository's local test suite, conducts automated code review under a **separate GitHub identity**, iterates up to **15 turns**, and escalates unresolved shards to a human reviewer via **multi-OS desktop notifications** + **Rippflow authenticated HTTPS async callbacks**.
+A local-first [Rippflow](https://rippflow.com) workflow that takes a **path to a full Codex/Markdown prompt file** (`promptFile`, or per-repo `repos[].promptFile`, with backward-compatible inline `featureRequest` support) and a list of repositories, authors pull requests in isolated git worktrees (`authorProvider: "codex"` or `"antigravity"`), runs each repository's local test suite, conducts automated code review under a **separate GitHub identity**, iterates up to **15 turns**, and escalates unresolved shards to a human reviewer via **multi-OS desktop notifications** + **Rippflow authenticated HTTPS async callbacks**.
 
 ---
 
@@ -84,10 +84,18 @@ rippflow controls validate workflow.yaml --json
 
 ### 4. Run Locally (`rippflow run`) or as a Persistent Local Service (`rippflow deploy --local`)
 
-With `.env` configured, workflow input payloads only need `featureRequest` and `repos`:
+With `.env` configured, pass a path to your full Markdown/text Codex prompt file (`promptFile`, absolute or relative to your workspace/workflow directory):
 
 ```bash
-cp examples/input.example.json input.local.json
+# Submit a full Codex prompt file directly to your running :8443 service:
+curl -sk -X POST https://localhost:8443/v1/workflows/multi-repo-feature-pr-pipeline/run \
+  -H "Authorization: Bearer $RIPPFLOW_LOCAL_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "promptFile": "/path/to/prompts/my-feature-spec.md",
+    "authorProvider": "codex",
+    "repos": ["service-core", "service-cli"]
+  }'
 
 # Persistent HTTPS endpoint + async callback server (supports 2h+ durable runs):
 rippflow deploy --local workflow.yaml --shards service-core,service-cli

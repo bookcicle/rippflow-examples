@@ -198,7 +198,7 @@ def _ensure_shard_hydrated(store: RunStore, cfg: PipelineConfig, request_id: str
     spec = RepoSpec(name=shard, path=repo_path)
     cfg.repos[shard] = spec
     store.save_config(cfg)
-    branch = f"{cfg.branch_prefix}/{slugify(cfg.feature_request, 28)}-{request_id.split('-')[0]}"
+    branch = f"{cfg.branch_prefix}/{slugify(cfg.feature_title or cfg.feature_request, 28)}-{request_id.split('-')[0]}"
     wt_path = store.worktrees_dir / shard
     _create_isolated_worktree(spec, wt_path, branch, cfg.execution_mode)
     store.save_shard(
@@ -349,7 +349,11 @@ def handle_prepare_workspace(ctx: dict[str, Any], repo_root: Path) -> dict[str, 
         raise ValueError("Workflow input payload must be a JSON object")
 
     load_dotenv_files(repo_root, repo_root.parent, repo_root.parent.parent)
-    cfg = PipelineConfig.from_raw(raw_input, default_workspace=_resolve_default_workspace(repo_root))
+    cfg = PipelineConfig.from_raw(
+        raw_input,
+        default_workspace=_resolve_default_workspace(repo_root),
+        workflow_dir=repo_root,
+    )
     if cfg.author_gh_user == cfg.reviewer_gh_user and cfg.execution_mode == "live":
         raise ValueError(
             f"authorGhUser and reviewerGhUser must be distinct GitHub accounts (both set to '{cfg.author_gh_user}')"
@@ -362,9 +366,15 @@ def handle_prepare_workspace(ctx: dict[str, Any], repo_root: Path) -> dict[str, 
 
     store = RunStore(repo_root, request_id)
     store.save_config(cfg)
+    if cfg.prompt_file and Path(cfg.prompt_file).is_file():
+        # Snapshot the exact prompt file into the run artifact dir for full auditability
+        (store.run_dir / "prompt.md").write_text(
+            Path(cfg.prompt_file).read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
 
     short_req = request_id.split("-")[0]
-    feat_slug = slugify(cfg.feature_request, max_len=28)
+    feat_slug = slugify(cfg.feature_title or cfg.feature_request, max_len=28)
 
     prepared: list[str] = []
     for name, spec in cfg.repos.items():

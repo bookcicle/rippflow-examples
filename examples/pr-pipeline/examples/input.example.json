@@ -1,9 +1,7 @@
 {
-  "featureRequest": "Add structured request-timeout diagnostics and retry-after headers to the HTTP client.",
-  "workspaceDir": "/path/to/your/workspace",
-  "authorGhUser": "your-author-bot-account",
-  "reviewerGhUser": "your-reviewer-account",
-  "authorModel": "gemini-3.8-flash",
+  "promptFile": "examples/sample_codex_prompt.md",
+  "authorProvider": "codex",
+  "authorModel": "gpt-6.1-sol",
   "reviewerModel": "gpt-6.1-sol",
   "maxTurns": 15,
   "branchPrefix": "ai/feature",

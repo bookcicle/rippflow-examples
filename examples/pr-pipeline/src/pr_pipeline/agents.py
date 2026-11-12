@@ -222,17 +222,25 @@ def _extract_codex_thread_id(jsonl_stdout: str) -> str | None:
     return None
 
 
+def _effective_shard_prompt(cfg: PipelineConfig, shard: str) -> str:
+    spec = cfg.repos.get(shard)
+    if spec and spec.prompt_file and Path(spec.prompt_file).is_file():
+        return Path(spec.prompt_file).read_text(encoding="utf-8").strip()
+    return cfg.feature_request
+
+
 def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> str:
+    spec_text = _effective_shard_prompt(cfg, state.shard)
     if turn == 1 and not state.pending_review_comments and state.last_test_passed is not False:
         return (
             f"You are working in repository `{state.shard}` at `{state.worktree_path}` on branch `{state.branch_name}` "
             f"(based on `{state.base_branch}`).\n\n"
-            f"## Feature Request\n{cfg.feature_request}\n\n"
+            f"## Full Prompt Specification\n{spec_text}\n\n"
             "## Instructions\n"
             "1. First inspect `git log -n 3 --oneline` and `git diff origin/main...HEAD --stat` — if this branch already has "
             "an in-progress implementation, refine/complete what is missing rather than starting from scratch.\n"
             "2. Work efficiently: read only the specific line ranges needed (batching reads where possible).\n"
-            "3. Implement the requested feature and its unit tests cleanly.\n"
+            "3. Implement the requested specification and its unit tests cleanly.\n"
             "4. Do NOT launch background/async `cargo` commands (`WaitMsBeforeAsync` must be large enough or skip running `cargo` "
             "entirely) — the dedicated `local_test_suite` phase immediately runs the full test suite next and feeds back any "
             "compiler/test errors automatically!\n"
@@ -243,7 +251,7 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
 
     feedback_sections: list[str] = [
         f"Turn {turn} of {cfg.max_turns} rework on repository `{state.shard}` (branch `{state.branch_name}`).",
-        f"Original Feature Request:\n{cfg.feature_request}",
+        f"Original Prompt Specification:\n{spec_text}",
     ]
     if len(state.review_ledger) > 1:
         earlier_ledger = _format_prior_review_ledger(state.review_ledger[:-1], max_turns_shown=4)
@@ -271,6 +279,84 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
         "and commit your updates to the current branch."
     )
     return "\n\n".join(feedback_sections)
+
+
+def _invoke_codex_author_agent(
+    *,
+    prompt: str,
+    worktree: Path,
+    model_name: str,
+    agent_env: dict[str, str],
+    session_id: str | None = None,
+) -> tuple[str, str | None]:
+    """Executes `codex exec` (or `codex exec resume`) directly inside the isolated worktree."""
+    with tempfile.TemporaryDirectory(prefix="rippflow-codex-author-") as tmp:
+        out_path = Path(tmp) / "author_summary.txt"
+        proc: subprocess.CompletedProcess[str] | None = None
+        if session_id:
+            resume_cmd = [
+                "codex",
+                "exec",
+                "resume",
+                "--skip-git-repo-check",
+                "--full-auto",
+                "-m",
+                model_name,
+                "-o",
+                str(out_path),
+                "--json",
+                session_id,
+                prompt,
+            ]
+            proc = subprocess.run(
+                resume_cmd,
+                cwd=str(worktree),
+                env=agent_env,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=720,
+                check=False,
+            )
+            if proc.returncode != 0:
+                proc = None
+                session_id = None
+
+        if proc is None:
+            fresh_cmd = [
+                "codex",
+                "exec",
+                "--skip-git-repo-check",
+                "-C",
+                str(worktree),
+                "--full-auto",
+                "-m",
+                model_name,
+                "-o",
+                str(out_path),
+                "--json",
+                prompt,
+            ]
+            proc = subprocess.run(
+                fresh_cmd,
+                cwd=str(worktree),
+                env=agent_env,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=720,
+                check=False,
+            )
+            if proc.returncode != 0:
+                raise RuntimeError(
+                    f"codex exec author failed ({proc.returncode}): {(proc.stderr or proc.stdout)[-2000:]}"
+                )
+
+        detected = _extract_codex_thread_id(proc.stdout)
+        if detected:
+            session_id = detected
+        summary = out_path.read_text(encoding="utf-8").strip() if out_path.is_file() else (proc.stdout or "")[-1000:]
+        return summary, session_id
 
 
 async def _invoke_antigravity_agent(
@@ -441,10 +527,14 @@ def _ensure_committed_and_pr_opened(
                 state.pr_url = str(items[0]["url"])
                 return
 
-        pr_title = f"feat({state.shard}): {cfg.feature_request[:72]}"
+        title_line = (cfg.feature_title or cfg.feature_request.splitlines()[0]).strip()[:72]
+        pr_title = f"feat({state.shard}): {title_line}"
+        source_line = f"**Prompt File:** `{Path(cfg.prompt_file).name}`\n\n" if cfg.prompt_file else ""
+        spec_preview = _effective_shard_prompt(cfg, state.shard)[:2000]
         pr_body = (
             f"## Automated Feature PR (`{cfg.author_gh_user}`)\n\n"
-            f"**Feature Request:** {cfg.feature_request}\n\n"
+            f"{source_line}"
+            f"### Prompt Specification\n{spec_preview}\n\n"
             f"### Turn 1 Summary\n{summary_note[:3000]}"
         )
         created = subprocess.run(
@@ -570,17 +660,28 @@ def run_author_turn(
             return {"turn": turn, "authorIdentity": cfg.author_gh_user, "summary": summary}
 
     prompt = _build_author_prompt(cfg, state, turn)
-    conv_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"rippflow-pr-pipeline/{request_id}/{state.shard}"))
-    summary = asyncio.run(
-        _invoke_antigravity_agent(
+    if cfg.author_provider == "codex":
+        summary, new_session = _invoke_codex_author_agent(
             prompt=prompt,
             worktree=wt,
-            session_dir=session_dir / state.shard,
-            conversation_id=conv_id,
             model_name=cfg.author_model,
             agent_env=author_env,
+            session_id=state.author_codex_session_id,
         )
-    )
+        if new_session:
+            state.author_codex_session_id = new_session
+    else:
+        conv_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"rippflow-pr-pipeline/{request_id}/{state.shard}"))
+        summary = asyncio.run(
+            _invoke_antigravity_agent(
+                prompt=prompt,
+                worktree=wt,
+                session_dir=session_dir / state.shard,
+                conversation_id=conv_id,
+                model_name=cfg.author_model,
+                agent_env=author_env,
+            )
+        )
     _ensure_committed_and_pr_opened(
         cfg=cfg,
         state=state,
@@ -657,11 +758,12 @@ def run_codex_review_turn(
         if inc_proc.returncode == 0:
             incremental_diff = inc_proc.stdout.strip()
 
+    spec_text = _effective_shard_prompt(cfg, state.shard)
     ledger_text = _format_prior_review_ledger(state.review_ledger, max_turns_shown=6)
     prompt_parts: list[str] = [
         f"Review pull request changes on branch `{state.branch_name}` against `{state.base_branch}` "
         f"for repository `{state.shard}` (Turn {turn} of {cfg.max_turns}, HEAD `{head_oid[:7]}`).",
-        f"Feature Request:\n{cfg.feature_request}",
+        f"Prompt Specification:\n{spec_text}",
     ]
     if ledger_text:
         prompt_parts.append(

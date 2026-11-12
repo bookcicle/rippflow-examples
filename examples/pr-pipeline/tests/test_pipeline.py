@@ -228,10 +228,19 @@ class TestLiveRippflowEngineExecution:
 
         input_path = tmp_path / "input.json"
         report_path = tmp_path / "report.json"
+        prompt_spec_path = tmp_path / "full_codex_prompt.md"
+        prompt_spec_path.write_text(
+            "# Add compute_feature_value() returning 42 with unit tests\n\n"
+            "## Full Codex Prompt Specification\n"
+            "1. Create `feature_impl.py` with `compute_feature_value() -> int` returning `42`.\n"
+            "2. Add `tests/test_feature_impl.py` asserting `compute_feature_value() == 42`.\n",
+            encoding="utf-8",
+        )
         input_path.write_text(
             json.dumps(
                 {
-                    "featureRequest": "Add compute_feature_value() returning 42 with unit tests",
+                    "promptFile": str(prompt_spec_path),
+                    "authorProvider": "codex",
                     "workspaceDir": str(ws),
                     "authorGhUser": "bot-author-account",
                     "reviewerGhUser": "lead-reviewer-account",
@@ -277,6 +286,7 @@ class TestLiveRippflowEngineExecution:
         assert report["status"] == "completed"
 
         req_id = report["requestId"]
+        assert (REPO_ROOT / ".runs" / req_id / "prompt.md").is_file()
         summary_file = REPO_ROOT / ".runs" / req_id / "summary.json"
         summary = json.loads(summary_file.read_text(encoding="utf-8"))
         by_repo = {r["repo"]: r for r in summary["repositories"]}
@@ -472,3 +482,80 @@ class TestDotenvAndNestedExamplesLayout:
         assert cfg.max_turns == 9
         assert cfg.branch_prefix == "ai/from-env"
         assert cfg.repos["svc-a"].path == str((workspace / "svc-a").resolve())
+
+    def test_prompt_file_and_per_repo_prompt_override_and_codex_author_provider(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from pr_pipeline.agents import _build_author_prompt
+        from pr_pipeline.models import ShardState
+
+        monkeypatch.delenv("AUTHOR_PROVIDER", raising=False)
+        workspace = tmp_path / "ws"
+        workspace.mkdir()
+
+        root_prompt = tmp_path / "codex_feature_spec.md"
+        root_prompt.write_text(
+            "# Implement Zero-Copy Frame Decoder\n\n"
+            "## Detailed Codex Specification\n"
+            "- Add `FrameDecoder::decode_slice(&[u8])` with zero heap allocations.\n"
+            "- Preserve backwards compatibility with `v1` header frames.\n",
+            encoding="utf-8",
+        )
+        cli_prompt = tmp_path / "codex_cli_spec.md"
+        cli_prompt.write_text(
+            "# Wire `--zero-copy` Flag Into CLI\n\n"
+            "- Expose `--zero-copy` on `rippflow run`.\n",
+            encoding="utf-8",
+        )
+
+        cfg = PipelineConfig.from_raw(
+            {
+                "promptFile": str(root_prompt),
+                "authorProvider": "codex",
+                "authorModel": "gpt-6.1-sol",
+                "repos": [
+                    {"name": "svc-core"},
+                    {"name": "svc-cli", "promptFile": str(cli_prompt)},
+                ],
+            },
+            default_workspace=workspace,
+            workflow_dir=REPO_ROOT,
+        )
+
+        assert cfg.prompt_file == str(root_prompt.resolve())
+        assert cfg.feature_title == "Implement Zero-Copy Frame Decoder"
+        assert cfg.author_provider == "codex"
+        assert "FrameDecoder::decode_slice" in cfg.feature_request
+        assert cfg.repos["svc-cli"].prompt_file == str(cli_prompt.resolve())
+
+        core_prompt = _build_author_prompt(
+            cfg,
+            ShardState(
+                shard="svc-core",
+                repo_path=str(workspace / "svc-core"),
+                worktree_path=str(workspace / "wt-core"),
+                branch_name="ai/feature/implement-zero-copy-1234",
+                base_branch="main",
+            ),
+            turn=1,
+        )
+        cli_built_prompt = _build_author_prompt(
+            cfg,
+            ShardState(
+                shard="svc-cli",
+                repo_path=str(workspace / "svc-cli"),
+                worktree_path=str(workspace / "wt-cli"),
+                branch_name="ai/feature/implement-zero-copy-1234",
+                base_branch="main",
+            ),
+            turn=1,
+        )
+        assert "FrameDecoder::decode_slice" in core_prompt
+        assert "Expose `--zero-copy` on `rippflow run`" in cli_built_prompt
+
+        with pytest.raises(FileNotFoundError):
+            PipelineConfig.from_raw(
+                {"promptFile": str(tmp_path / "does_not_exist.md"), "repos": ["svc-core"]},
+                default_workspace=workspace,
+                workflow_dir=REPO_ROOT,
+            )
