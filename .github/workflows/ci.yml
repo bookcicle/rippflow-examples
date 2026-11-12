@@ -1,4 +1,4 @@
-name: Cross-Platform Pipeline & Notification CI
+name: Rippflow Examples CI
 
 on:
   push:
@@ -6,12 +6,16 @@ on:
   pull_request:
 
 jobs:
-  pytest:
+  pr-pipeline:
+    name: "examples/pr-pipeline (${{ matrix.os }})"
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: examples/pr-pipeline
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

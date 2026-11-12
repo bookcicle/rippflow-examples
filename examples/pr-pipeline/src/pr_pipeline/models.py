@@ -14,6 +14,43 @@ from typing import Any
 DEFAULT_MAX_TURNS = 15
 
 
+def load_dotenv_files(*candidate_dirs: Path) -> dict[str, str]:
+    """Loads `.env` key-value pairs from candidate directories without clobbering existing `os.environ`."""
+    loaded: dict[str, str] = {}
+    for directory in candidate_dirs:
+        env_path = directory / ".env"
+        if not env_path.is_file():
+            continue
+        for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith("export "):
+                line = line[7:].strip()
+            if "=" not in line:
+                continue
+            key, val = line.split("=", 1)
+            key = key.strip()
+            val = val.strip()
+            if len(val) >= 2 and val[0] == val[-1] and val[0] in ("'", '"'):
+                val = val[1:-1]
+            if key:
+                loaded[key] = val
+                os.environ.setdefault(key, val)
+    return loaded
+
+
+def _resolve_default_workspace(workflow_dir: Path) -> Path:
+    """Finds the workspace directory containing sibling git repositories (handling nested `examples/<name>` layout)."""
+    env_ws = os.environ.get("WORKSPACE_DIR")
+    if env_ws:
+        return Path(env_ws).expanduser().resolve()
+    # If nested inside `<workspace>/rippflow-examples/examples/<workflow>`, climb to `<workspace>`.
+    if workflow_dir.parent.name == "examples" and (workflow_dir.parent.parent / ".git").exists():
+        return workflow_dir.parent.parent.parent.resolve()
+    return workflow_dir.parent.resolve()
+
+
 def slugify(text: str, max_len: int = 40) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
     return (slug[:max_len].strip("-") or "feature")
@@ -49,12 +86,23 @@ class PipelineConfig:
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any], *, default_workspace: Path) -> "PipelineConfig":
+        load_dotenv_files(default_workspace, Path.cwd())
         feature_request = str(raw.get("featureRequest") or raw.get("feature_request") or "").strip()
         if not feature_request:
             raise ValueError("input payload must provide non-empty 'featureRequest'")
 
-        ws = str(raw.get("workspaceDir") or raw.get("workspace_dir") or default_workspace)
-        max_turns = int(raw.get("maxTurns", raw.get("max_turns", DEFAULT_MAX_TURNS)))
+        ws = str(
+            Path(
+                raw.get("workspaceDir")
+                or raw.get("workspace_dir")
+                or os.environ.get("WORKSPACE_DIR")
+                or default_workspace
+            )
+            .expanduser()
+            .resolve()
+        )
+        default_turns = int(os.environ.get("MAX_TURNS") or DEFAULT_MAX_TURNS)
+        max_turns = int(raw.get("maxTurns", raw.get("max_turns", default_turns)))
         if max_turns < 1 or max_turns > 50:
             raise ValueError(f"maxTurns must be between 1 and 50 (got {max_turns})")
 
@@ -109,9 +157,13 @@ class PipelineConfig:
             author_model=str(raw.get("authorModel") or os.environ.get("AUTHOR_MODEL") or "gemini-3.8-flash"),
             reviewer_model=str(raw.get("reviewerModel") or os.environ.get("REVIEWER_MODEL") or "gpt-6.1-sol"),
             max_turns=max_turns,
-            branch_prefix=str(raw.get("branchPrefix") or "ai/feature"),
+            branch_prefix=str(raw.get("branchPrefix") or os.environ.get("BRANCH_PREFIX") or "ai/feature"),
             execution_mode=str(raw.get("executionMode") or os.environ.get("PIPELINE_EXECUTION_MODE") or "live"),
-            enable_os_notifications=bool(raw.get("enableOsNotifications", True)),
+            enable_os_notifications=(
+                bool(raw["enableOsNotifications"])
+                if "enableOsNotifications" in raw
+                else os.environ.get("ENABLE_OS_NOTIFICATIONS", "true").strip().lower() not in ("0", "false", "no")
+            ),
             dry_run_scenarios=dict(raw.get("dryRunScenarios") or {}),
         )
 

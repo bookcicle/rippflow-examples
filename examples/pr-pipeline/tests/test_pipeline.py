@@ -16,7 +16,7 @@ from pr_pipeline.callback_client import (
     token_fingerprint,
     write_pending_escalation_envelope,
 )
-from pr_pipeline.models import PipelineConfig, build_scoped_git_gh_env
+from pr_pipeline.models import PipelineConfig, _resolve_default_workspace, build_scoped_git_gh_env, load_dotenv_files
 from pr_pipeline.notify import NotificationMessage, send_notification
 
 
@@ -424,3 +424,51 @@ class TestLiveRippflowEngineExecution:
             check=True,
         )
         shutil.rmtree(REPO_ROOT / ".runs" / req_id, ignore_errors=True)
+
+
+class TestDotenvAndNestedExamplesLayout:
+    def test_dotenv_populates_identities_and_nested_workspace_resolution(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        for key in (
+            "WORKSPACE_DIR",
+            "AUTHOR_GH_USER",
+            "AUTHOR_GIT_EMAIL",
+            "REVIEWER_GH_USER",
+            "AUTHOR_MODEL",
+            "REVIEWER_MODEL",
+            "MAX_TURNS",
+            "BRANCH_PREFIX",
+        ):
+            monkeypatch.delenv(key, raising=False)
+
+        workspace = tmp_path / "workspace"
+        examples_repo = workspace / "rippflow-examples"
+        (examples_repo / ".git").mkdir(parents=True)
+        wf_dir = examples_repo / "examples" / "pr-pipeline"
+        wf_dir.mkdir(parents=True)
+
+        assert _resolve_default_workspace(wf_dir) == workspace.resolve()
+
+        env_file = wf_dir / ".env"
+        env_file.write_text(
+            f'WORKSPACE_DIR="{workspace}"\n'
+            "AUTHOR_GH_USER=custom-author-bot\n"
+            "AUTHOR_GIT_EMAIL=custom-author-bot@users.noreply.github.com\n"
+            "REVIEWER_GH_USER=custom-reviewer\n"
+            "MAX_TURNS=9\n"
+            "BRANCH_PREFIX=ai/from-env\n",
+            encoding="utf-8",
+        )
+        load_dotenv_files(wf_dir)
+        cfg = PipelineConfig.from_raw(
+            {"featureRequest": "Add metrics", "repos": ["svc-a"]},
+            default_workspace=_resolve_default_workspace(wf_dir),
+        )
+        assert cfg.workspace_dir == str(workspace.resolve())
+        assert cfg.author_gh_user == "custom-author-bot"
+        assert cfg.author_git_email == "custom-author-bot@users.noreply.github.com"
+        assert cfg.reviewer_gh_user == "custom-reviewer"
+        assert cfg.max_turns == 9
+        assert cfg.branch_prefix == "ai/from-env"
+        assert cfg.repos["svc-a"].path == str((workspace / "svc-a").resolve())

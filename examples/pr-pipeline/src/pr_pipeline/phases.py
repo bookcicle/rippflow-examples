@@ -33,8 +33,10 @@ from .models import (
     RepoSpec,
     RunStore,
     ShardState,
+    _resolve_default_workspace,
     detect_default_test_command,
     detect_github_repo_slug,
+    load_dotenv_files,
     resolve_gh_token,
     slugify,
 )
@@ -346,7 +348,8 @@ def handle_prepare_workspace(ctx: dict[str, Any], repo_root: Path) -> dict[str, 
     if not isinstance(raw_input, dict):
         raise ValueError("Workflow input payload must be a JSON object")
 
-    cfg = PipelineConfig.from_raw(raw_input, default_workspace=repo_root.parent)
+    load_dotenv_files(repo_root, repo_root.parent, repo_root.parent.parent)
+    cfg = PipelineConfig.from_raw(raw_input, default_workspace=_resolve_default_workspace(repo_root))
     if cfg.author_gh_user == cfg.reviewer_gh_user and cfg.execution_mode == "live":
         raise ValueError(
             f"authorGhUser and reviewerGhUser must be distinct GitHub accounts (both set to '{cfg.author_gh_user}')"

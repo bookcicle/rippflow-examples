@@ -66,33 +66,34 @@ Verify both GitHub accounts are logged into `gh`:
 gh auth status
 ```
 
-### 2. Validate Workflow & Policy Contracts
+### 2. Configure `.env` (Identities & Workspace Path)
+
+Copy `.env.example` to `.env` (gitignored) so your workspace directory, GitHub accounts, and model names are picked up automatically without hardcoding them in workflow payloads:
+
+```bash
+cp .env.example .env
+# Edit .env with WORKSPACE_DIR, AUTHOR_GH_USER, AUTHOR_GIT_EMAIL, and REVIEWER_GH_USER
+```
+
+### 3. Validate Workflow & Policy Contracts
 
 ```bash
 rippflow validate workflow.yaml --handlers handlers.json --json
 rippflow controls validate workflow.yaml --json
 ```
 
-### 3. Run Locally (`rippflow run`)
+### 4. Run Locally (`rippflow run`) or as a Persistent Local Service (`rippflow deploy --local`)
 
-Copy `examples/input.example.json` to `input.local.json` (gitignored) and run across your target repositories:
+With `.env` configured, workflow input payloads only need `featureRequest` and `repos`:
 
 ```bash
 cp examples/input.example.json input.local.json
-# Edit input.local.json with your workspaceDir, repos, authorGhUser, and reviewerGhUser
 
-rippflow run workflow.yaml \
-  --handlers handlers.json \
-  --shards service-core,service-cli \
-  --input input.local.json \
-  --report run-report.json \
-  --timeout-seconds 900
-```
+# Persistent HTTPS endpoint + async callback server (supports 2h+ durable runs):
+rippflow deploy --local workflow.yaml --shards service-core,service-cli
 
-### 4. Run as a Persistent Local HTTPS Service (`rippflow deploy --local`)
-
-```bash
-rippflow deploy --local workflow.yaml --json
+# Inspect live server & run diagnostics at any time:
+rippflow deploy --server --logs
 ```
 
 When a repository hits the 15-turn limit, you will receive a native OS notification and the shard will pause awaiting callback while releasing worker capacity. Inspect and resolve pending human escalations at any time:
