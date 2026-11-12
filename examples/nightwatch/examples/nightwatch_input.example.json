@@ -1,0 +1,26 @@
+{
+  "executionMode": "dry_run",
+  "hygiene": {
+    "cleanStaleWorktrees": true,
+    "staleWorktreeHours": 24,
+    "deleteCargoTargets": true,
+    "cleanDockerImages": true,
+    "dockerPruneUntil": "72h"
+  },
+  "flakyTestRuns": 2,
+  "maxBenchmarkRegressionPct": 5.0,
+  "repos": [
+    {
+      "name": "service-core",
+      "baseBranch": "main"
+    },
+    {
+      "name": "service-cli",
+      "baseBranch": "main"
+    },
+    {
+      "name": "service-starter",
+      "baseBranch": "main"
+    }
+  ]
+}

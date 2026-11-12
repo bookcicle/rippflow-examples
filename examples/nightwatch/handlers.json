@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "handlers": {
+    "reclaim_disk_and_worktrees": {
+      "command": ["python3", "scripts/dispatch.py", "reclaim_disk_and_worktrees"],
+      "timeoutSeconds": 60,
+      "environments": {
+        "local": {
+          "env": { "AI_UPGRADER_DEFAULT": "enabled" }
+        },
+        "cloud": {
+          "env": { "AI_UPGRADER_DEFAULT": "disabled" }
+        }
+      }
+    },
+    "bind_shard": {
+      "command": ["python3", "scripts/dispatch.py", "bind_shard"],
+      "timeoutSeconds": 30
+    },
+    "audit_deps_and_warnings": {
+      "command": ["python3", "scripts/dispatch.py", "audit_deps_and_warnings"],
+      "timeoutSeconds": 30,
+      "environments": {
+        "local": {
+          "command": ["python3", "scripts/dispatch.py", "audit_deps_and_warnings", "--tier=local"]
+        },
+        "cloud": {
+          "command": ["python3", "scripts/dispatch.py", "audit_deps_and_warnings", "--tier=cloud"]
+        }
+      }
+    },
+    "upgrade_and_fix_breaking_apis": {
+      "command": ["python3", "scripts/dispatch.py", "upgrade_and_fix_breaking_apis"],
+      "timeoutSeconds": 30,
+      "environments": {
+        "local": {
+          "command": ["python3", "scripts/dispatch.py", "upgrade_and_fix_breaking_apis", "--tier=local"],
+          "env": { "AI_UPGRADER_DEFAULT": "enabled" }
+        },
+        "cloud": {
+          "command": ["python3", "scripts/dispatch.py", "upgrade_and_fix_breaking_apis", "--tier=cloud"],
+          "env": { "AI_UPGRADER_DEFAULT": "disabled" }
+        }
+      }
+    },
+    "benchmark_regression_check": {
+      "command": ["python3", "scripts/dispatch.py", "benchmark_regression_check"],
+      "timeoutSeconds": 30,
+      "environments": {
+        "local": {
+          "command": ["python3", "scripts/dispatch.py", "benchmark_regression_check", "--tier=local"]
+        },
+        "cloud": {
+          "command": ["python3", "scripts/dispatch.py", "benchmark_regression_check", "--tier=cloud"]
+        }
+      }
+    },
+    "morning_digest_and_notify": {
+      "command": ["python3", "scripts/dispatch.py", "morning_digest_and_notify"],
+      "timeoutSeconds": 60
+    }
+  }
+}

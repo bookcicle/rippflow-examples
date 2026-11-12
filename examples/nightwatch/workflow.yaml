@@ -1,0 +1,127 @@
+name: rippflow-nightwatch
+version: "1.0.0"
+
+default_group: python-light
+
+defaults:
+  phaseTimeout: 30s
+
+lanes:
+  inline:
+    mode: sync_lambda
+    target: lambda://local-inline
+  workers:
+    mode: async_sqs
+    target: local://workers
+
+controls:
+  policyVersion: 1
+  limits:
+    maxIterations: 64
+    maxToolCalls: 128
+    maxHandlerInvocations: 512
+    maxConcurrentOperations: 8
+    maxDuration: 12h
+    maxRetries: 1
+    maxRecoveryAttempts: 1
+
+phases:
+  reclaim_disk_and_worktrees:
+    requires: []
+    service: reclaim_disk_and_worktrees
+    lane: inline
+    scope: root
+    group: python-standard
+    timeout: 60s
+    inputs:
+      role: disk_and_worktree_hygiene
+
+  bind_shard:
+    requires:
+      - reclaim_disk_and_worktrees
+    service: bind_shard
+    lane: inline
+    scope: per_shard
+    timeout: 30s
+
+  audit_deps_and_warnings:
+    type: async_tool
+    tool: shard-hygiene-auditor
+    service: audit_deps_and_warnings
+    lane: workers
+    scope: per_shard
+    requires:
+      - bind_shard
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 30m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: nightwatch-audit-worker
+      idempotentDispatch: true
+
+  upgrade_and_fix_breaking_apis:
+    type: async_tool
+    tool: isolated-worktree-upgrader
+    service: upgrade_and_fix_breaking_apis
+    lane: workers
+    scope: per_shard
+    requires:
+      - audit_deps_and_warnings
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 60m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: nightwatch-upgrade-worker
+      idempotentDispatch: true
+
+  benchmark_regression_check:
+    type: async_tool
+    tool: benchmark-and-green-gate
+    service: benchmark_regression_check
+    lane: workers
+    scope: per_shard
+    requires:
+      - upgrade_and_fix_breaking_apis
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 30m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: nightwatch-benchmark-worker
+      idempotentDispatch: true
+
+  morning_digest_and_notify:
+    requires:
+      - benchmark_regression_check
+    service: morning_digest_and_notify
+    lane: inline
+    scope: fan_in_all
+    group: python-standard
+    timeout: 60s
+    terminal: true
