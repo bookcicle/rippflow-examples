@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "handlers": {
+    "prepare_workspace": {
+      "command": ["python3", "scripts/dispatch.py", "prepare_workspace"],
+      "timeoutSeconds": 60
+    },
+    "bind_shard": {
+      "command": ["python3", "scripts/dispatch.py", "bind_shard"],
+      "timeoutSeconds": 30
+    },
+    "author_pr": {
+      "command": ["python3", "scripts/dispatch.py", "author_pr"],
+      "timeoutSeconds": 30
+    },
+    "local_test_suite": {
+      "command": ["python3", "scripts/dispatch.py", "local_test_suite"],
+      "timeoutSeconds": 30
+    },
+    "route_test_outcome": {
+      "command": ["python3", "scripts/dispatch.py", "route_test_outcome"],
+      "timeoutSeconds": 30
+    },
+    "codex_review": {
+      "command": ["python3", "scripts/dispatch.py", "codex_review"],
+      "timeoutSeconds": 30
+    },
+    "route_review_outcome": {
+      "command": ["python3", "scripts/dispatch.py", "route_review_outcome"],
+      "timeoutSeconds": 30
+    },
+    "human_gate": {
+      "command": ["python3", "scripts/dispatch.py", "human_gate"],
+      "timeoutSeconds": 30
+    },
+    "publish_summary": {
+      "command": ["python3", "scripts/dispatch.py", "publish_summary"],
+      "timeoutSeconds": 30
+    }
+  }
+}

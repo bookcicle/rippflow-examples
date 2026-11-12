@@ -1,0 +1,25 @@
+# Virtual environments & Python caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Local Rippflow execution state, worktrees, callback tokens & run reports
+.runs/
+.outputs/
+.worktrees/
+run-report*.json
+*.callback.json
+
+# User-specific local configs (keep personal GitHub handles/paths out of git)
+*.local.json
+*.local.yaml
+.env
+.env.*
+
+# OS artifacts
+.DS_Store
+Thumbs.db

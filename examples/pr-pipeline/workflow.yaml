@@ -1,0 +1,184 @@
+name: multi-repo-feature-pr-pipeline
+version: "1.1.0"
+
+default_group: python-light
+
+defaults:
+  phaseTimeout: 30s
+
+lanes:
+  inline:
+    mode: sync_lambda
+    target: lambda://local-inline
+  workers:
+    mode: async_sqs
+    target: local://workers
+
+controls:
+  policyVersion: 1
+  limits:
+    maxIterations: 150
+    maxToolCalls: 256
+    maxHandlerInvocations: 1024
+    maxConcurrentOperations: 8
+    maxDuration: 2h
+    maxRetries: 1
+    maxRecoveryAttempts: 1
+
+phases:
+  prepare_workspace:
+    requires: []
+    service: prepare_workspace
+    lane: inline
+    scope: root
+    group: python-standard
+    timeout: 60s
+    inputs:
+      maxTurns: 15
+
+  bind_shard:
+    requires:
+      - prepare_workspace
+    service: bind_shard
+    lane: inline
+    scope: per_shard
+    timeout: 30s
+
+  author_pr:
+    type: async_tool
+    tool: gemini-author-agent
+    service: author_pr
+    lane: workers
+    scope: per_shard
+    requires:
+      - bind_shard
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 15m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: local-process
+      idempotentDispatch: true
+    inputs:
+      role: author
+
+  local_test_suite:
+    type: async_tool
+    tool: local-test-runner
+    service: local_test_suite
+    lane: workers
+    scope: per_shard
+    requires:
+      - author_pr
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 15m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: local-process
+      idempotentDispatch: true
+
+  route_test_outcome:
+    requires:
+      - local_test_suite
+    service: route_test_outcome
+    lane: inline
+    scope: per_shard
+    timeout: 30s
+    outcomes:
+      completed:
+        advance_barrier: true
+      rework:
+        rerun_phase: author_pr
+        max_loops: 14
+        override_inputs:
+          reworkReason: local_tests_failed
+
+  codex_review:
+    type: async_tool
+    tool: codex-pr-reviewer
+    service: codex_review
+    lane: workers
+    scope: per_shard
+    requires:
+      - route_test_outcome
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 15m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: local-process
+      idempotentDispatch: true
+
+  route_review_outcome:
+    requires:
+      - codex_review
+    service: route_review_outcome
+    lane: inline
+    scope: per_shard
+    timeout: 30s
+    outcomes:
+      completed:
+        advance_barrier: true
+      rework:
+        rerun_phase: author_pr
+        max_loops: 14
+        override_inputs:
+          reworkReason: reviewer_comments_pending
+
+  human_gate:
+    type: async_tool
+    tool: human-review-escalation
+    service: human_gate
+    lane: workers
+    scope: per_shard
+    requires:
+      - route_review_outcome
+    timeout: 30s
+    callback:
+      required: true
+      authenticated: true
+      authMode: scoped_token_hmac
+      timeout: 15m
+    retry:
+      maxAttempts: 1
+      backoff: exponential
+      initialInterval: 5s
+      maxInterval: 30s
+    adapter:
+      kind: aws_lambda
+      target: local-process
+      idempotentDispatch: true
+
+  publish_summary:
+    requires:
+      - human_gate
+    service: publish_summary
+    lane: inline
+    scope: fan_in_all
+    timeout: 30s
+    terminal: true
