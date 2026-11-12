@@ -299,7 +299,10 @@ def _invoke_codex_author_agent(
                 "exec",
                 "resume",
                 "--skip-git-repo-check",
-                "--full-auto",
+                "-c",
+                'approval_policy="never"',
+                "-c",
+                'sandbox_mode="workspace-write"',
                 "-m",
                 model_name,
                 "-o",
@@ -315,7 +318,7 @@ def _invoke_codex_author_agent(
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
                 text=True,
-                timeout=720,
+                timeout=840,
                 check=False,
             )
             if proc.returncode != 0:
@@ -329,7 +332,12 @@ def _invoke_codex_author_agent(
                 "--skip-git-repo-check",
                 "-C",
                 str(worktree),
-                "--full-auto",
+                "--add-dir",
+                str(worktree.parent),
+                "-s",
+                "workspace-write",
+                "-c",
+                'approval_policy="never"',
                 "-m",
                 model_name,
                 "-o",
@@ -344,7 +352,7 @@ def _invoke_codex_author_agent(
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
                 text=True,
-                timeout=720,
+                timeout=840,
                 check=False,
             )
             if proc.returncode != 0:
