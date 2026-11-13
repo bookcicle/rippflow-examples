@@ -156,15 +156,17 @@ def _ensure_macos_wkwebview_helper(cache_dir: Path) -> Path | None:
     if bin_path.is_file() and os.access(bin_path, os.X_OK):
         return bin_path
     src_path.write_text(_SWIFT_WKWEBVIEW_SOURCE, encoding="utf-8")
+    tmp_bin = cache_dir / f".render_html_png.{os.getpid()}"
     proc = subprocess.run(
-        ["swiftc", "-O", str(src_path), "-o", str(bin_path)],
+        ["swiftc", str(src_path), "-o", str(tmp_bin)],
         stdin=subprocess.DEVNULL,
         capture_output=True,
         text=True,
-        timeout=45,
+        timeout=90,
         check=False,
     )
-    if proc.returncode == 0 and bin_path.is_file():
+    if proc.returncode == 0 and tmp_bin.is_file():
+        tmp_bin.replace(bin_path)
         return bin_path
     return None
 
