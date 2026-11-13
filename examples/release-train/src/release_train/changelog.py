@@ -140,7 +140,7 @@ def synthesize_changelog(
     rippflow_env: str,
     ai_enabled: bool,
     provider: str = "auto",
-    gemini_model: str = "gemini-3.8-flash",
+    gemini_model: str = "gemini-4-hydrogen-medium",
     codex_model: str = "gpt-6.1-sol",
 ) -> tuple[str, str]:
     """Returns `(changelog_markdown, generator_used)`.

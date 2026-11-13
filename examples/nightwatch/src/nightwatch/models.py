@@ -103,7 +103,7 @@ class NightwatchConfig:
     execution_mode: str = "dry_run"  # "dry_run" | "live"
     ai_upgrader_enabled: bool = True
     upgrader_provider: str = "auto"  # "auto" | "gemini" | "codex" | "deterministic"
-    gemini_model: str = "gemini-3.8-flash"
+    gemini_model: str = "gemini-4-hydrogen-medium"
     codex_model: str = "gpt-6.1-sol"
     flaky_test_runs: int = 2
     max_benchmark_regression_pct: float = 5.0
@@ -221,7 +221,7 @@ class NightwatchConfig:
             ).strip(),
             ai_upgrader_enabled=ai_enabled,
             upgrader_provider=provider,
-            gemini_model=str(raw.get("geminiModel") or os.environ.get("GEMINI_MODEL") or "gemini-3.8-flash"),
+            gemini_model=str(raw.get("geminiModel") or os.environ.get("GEMINI_MODEL") or "gemini-4-hydrogen-medium"),
             codex_model=str(raw.get("codexModel") or os.environ.get("CODEX_MODEL") or "gpt-6.1-sol"),
             flaky_test_runs=max(1, int(raw.get("flakyTestRuns") or 2)),
             max_benchmark_regression_pct=float(raw.get("maxBenchmarkRegressionPct") or 5.0),

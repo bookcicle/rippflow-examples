@@ -155,7 +155,7 @@ class PipelineConfig:
     reviewer_gh_user: str = "human-reviewer"
     author_git_email: str | None = None
     author_signing_key: str | None = None
-    author_model: str = "gemini-3.8-flash"
+    author_model: str = "gemini-4-hydrogen-medium"
     reviewer_model: str = "gpt-6.1-sol"
     max_turns: int = DEFAULT_MAX_TURNS
     branch_prefix: str = "ai/feature"
@@ -327,7 +327,7 @@ class PipelineConfig:
         elif env_author_model and not (resolved_provider == "codex" and env_author_model.lower().startswith("gemini")):
             resolved_author_model = env_author_model
         else:
-            resolved_author_model = resolved_reviewer_model if resolved_provider == "codex" else (os.environ.get("AUTHOR_MODEL") or "gemini-3.8-flash")
+            resolved_author_model = resolved_reviewer_model if resolved_provider == "codex" else (os.environ.get("AUTHOR_MODEL") or "gemini-4-hydrogen-medium")
 
         raw_reg = raw.get("regressionMode", raw.get("regression_mode"))
         regression_mode = (

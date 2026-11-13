@@ -80,7 +80,7 @@ class ReleaseConfig:
     rippflow_env: str = "local"
     ai_changelog_enabled: bool = True
     changelog_provider: str = "auto"  # "auto" | "gemini" | "codex" | "deterministic"
-    gemini_model: str = "gemini-3.8-flash"
+    gemini_model: str = "gemini-4-hydrogen-medium"
     codex_model: str = "gpt-6.1-sol"
     execution_mode: str = "dry_run"  # "dry_run" (writes staged tags/commits in worktrees) | "live"
     auto_approve_gate: bool = False
@@ -174,7 +174,7 @@ class ReleaseConfig:
             rippflow_env=rt_env,
             ai_changelog_enabled=ai_enabled,
             changelog_provider=provider,
-            gemini_model=str(raw.get("geminiModel") or os.environ.get("GEMINI_MODEL") or "gemini-3.8-flash"),
+            gemini_model=str(raw.get("geminiModel") or os.environ.get("GEMINI_MODEL") or "gemini-4-hydrogen-medium"),
             codex_model=str(raw.get("codexModel") or os.environ.get("CODEX_MODEL") or "gpt-6.1-sol"),
             execution_mode=str(raw.get("executionMode") or os.environ.get("RELEASE_EXECUTION_MODE") or "dry_run"),
             auto_approve_gate=bool(raw.get("autoApproveGate", False)),
