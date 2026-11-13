@@ -87,6 +87,23 @@ def resolve_asset_path(raw_path: str, *, search_roots: list[Path], label: str = 
     )
 
 
+def _auto_detect_mock_html_from_prompt(prompt_text: str, *, search_roots: list[Path]) -> str | None:
+    """Auto-detects an existing `*mock*.html` or `*prototype*.html` path referenced in `promptFile` when `mockHtml` is omitted."""
+    pattern = re.compile(
+        r"(?:`|\"|'|\s|\()((?:/|~/)[^\s`\"')>]*(?:mock|prototype)[^\s`\"')>]*\.html)\b",
+        re.IGNORECASE,
+    )
+    for match in pattern.finditer(prompt_text):
+        raw_cand = match.group(1).strip()
+        try:
+            resolved = resolve_asset_path(raw_cand, search_roots=search_roots, label="mockHtml")
+            if resolved.is_file():
+                return str(resolved)
+        except FileNotFoundError:
+            continue
+    return None
+
+
 def resolve_prompt_file_path(raw_path: str, *, search_roots: list[Path]) -> Path:
     """Resolves `promptFile` against explicit path, `~`, or candidate workspace/workflow directories."""
     resolved = resolve_asset_path(raw_path, search_roots=search_roots, label="promptFile")
@@ -208,6 +225,8 @@ class PipelineConfig:
             for item in raw_mock_shots
             if str(item).strip()
         ]
+        if mock_html_str is None and not mock_screenshots_list and raw.get("autoDetectMock", True) is not False:
+            mock_html_str = _auto_detect_mock_html_from_prompt(feature_request, search_roots=search_roots)
 
         def _parse_repo_entry(name: str, entry: dict[str, Any]) -> RepoSpec:
             rpath = str(Path(entry.get("path") or (Path(ws) / name)).resolve())

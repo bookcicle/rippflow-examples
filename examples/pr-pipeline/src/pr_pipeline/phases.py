@@ -15,6 +15,7 @@ from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -588,11 +589,11 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
                 + combined_out
             )[-8000:]
 
-    # Visual QA screenshot capture step: when `passed` and either `screenshotCommand` is configured
-    # OR `mock_screenshot_paths` exist and the worktree defines a `visual_qa_capture` test/script,
-    # run screenshot capture into `.runs/<id>/visual_qa/<shard>/turn-<turn>/` and pin to the PR!
+    # Visual QA screenshot capture step: ONLY runs when the feature run has UI visual QA configured
+    # (`screenshotCommand` or `mockHtml`/`mockScreenshots`). Non-UI feature runs skip this completely.
     captured_ui_imgs: list[Path] = []
-    if passed:
+    has_visual_qa = bool(spec.screenshot_command or state.mock_screenshot_paths)
+    if passed and has_visual_qa:
         turn_shot_dir = store.run_dir / "visual_qa" / shard / f"turn-{state.turns_used}"
         turn_shot_dir.mkdir(parents=True, exist_ok=True)
         shot_env = env.copy()
@@ -600,21 +601,27 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
 
         shot_cmd = spec.screenshot_command
         if shot_cmd is None and state.mock_screenshot_paths and (wt / "Cargo.toml").is_file():
-            # Auto-detect GPUI offscreen visual QA screenshot test if authored in the crate
-            warp_rs = wt / "src" / "warp_shell.rs"
-            if warp_rs.is_file() and "capture_monitor_visual_qa_screenshots" in warp_rs.read_text(
-                encoding="utf-8", errors="ignore"
-            ):
-                shot_cmd = [
-                    "cargo",
-                    "test",
-                    "--locked",
-                    "capture_monitor_visual_qa_screenshots",
-                    "--",
-                    "--ignored",
-                    "--nocapture",
-                    "--test-threads=1",
-                ]
+            # Auto-detect any GPUI offscreen `capture_*visual_qa_screenshots` test authored in `src/` or `tests/`
+            fn_re = re.compile(r"\bfn\s+(capture_[a-zA-Z0-9_]*visual_qa_screenshots)\s*\(")
+            for scan_root in (wt / "src", wt / "tests"):
+                if not scan_root.is_dir():
+                    continue
+                for rs_file in sorted(scan_root.rglob("*.rs")):
+                    m = fn_re.search(rs_file.read_text(encoding="utf-8", errors="ignore"))
+                    if m:
+                        shot_cmd = [
+                            "cargo",
+                            "test",
+                            "--locked",
+                            m.group(1),
+                            "--",
+                            "--ignored",
+                            "--nocapture",
+                            "--test-threads=1",
+                        ]
+                        break
+                if shot_cmd is not None:
+                    break
 
         if shot_cmd is not None:
             shot_proc = subprocess.run(

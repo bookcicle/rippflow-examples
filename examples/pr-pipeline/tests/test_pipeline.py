@@ -612,3 +612,45 @@ class TestDotenvAndNestedExamplesLayout:
         assert flags == ["-i", str(staged[0]), "-i", str(ui_img)]
         assert "TARGET MOCK" in manifest
         assert "ACTUAL RENDERED UI" in manifest
+
+    def test_non_ui_feature_run_vs_auto_detected_mock_in_prompt_file(
+        self, tmp_path: Path
+    ) -> None:
+        from pr_pipeline.agents import _collect_visual_attachment_args
+        from pr_pipeline.models import ShardState
+
+        # 1. Pure backend/CLI feature run with NO mock: visual QA stays completely inert
+        backend_prompt = tmp_path / "backend_spec.md"
+        backend_prompt.write_text("# Add retry backoff to HTTP client\n\nImplement jittered backoff.\n", encoding="utf-8")
+        cfg_no_mock = PipelineConfig.from_raw(
+            {"promptFile": str(backend_prompt), "repos": ["svc-core"]},
+            default_workspace=tmp_path,
+            workflow_dir=REPO_ROOT,
+        )
+        assert cfg_no_mock.mock_html is None
+        assert cfg_no_mock.mock_screenshots == []
+        state_no_mock = ShardState(
+            shard="svc-core",
+            repo_path=str(tmp_path / "svc-core"),
+            worktree_path=str(tmp_path / "wt-core"),
+            branch_name="ai/feature/retry-backoff-1234",
+            base_branch="main",
+        )
+        flags_empty, manifest_empty = _collect_visual_attachment_args(state_no_mock, include_actual=True)
+        assert flags_empty == []
+        assert manifest_empty == ""
+
+        # 2. UI feature run whose `promptFile` references a local `*mock*.html` file: auto-detected automatically!
+        mock_html = tmp_path / "dashboard_mock.html"
+        mock_html.write_text("<html><body><h1>Mock</h1></body></html>", encoding="utf-8")
+        ui_prompt = tmp_path / "ui_spec.md"
+        ui_prompt.write_text(
+            f"# Implement Dashboard\n\nRead the approved HTML mock first:\n- `{mock_html}`\n",
+            encoding="utf-8",
+        )
+        cfg_with_mock = PipelineConfig.from_raw(
+            {"promptFile": str(ui_prompt), "repos": ["svc-ui"]},
+            default_workspace=tmp_path,
+            workflow_dir=REPO_ROOT,
+        )
+        assert cfg_with_mock.mock_html == str(mock_html.resolve())
