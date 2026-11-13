@@ -104,6 +104,18 @@ def _auto_detect_mock_html_from_prompt(prompt_text: str, *, search_roots: list[P
     return None
 
 
+def _auto_detect_regression_mode(prompt_text: str) -> bool:
+    """Detects bug/regression prompts that should run history-first root-cause forensics -> reproducing test -> patch."""
+    head_sample = "\n".join(prompt_text.splitlines()[:40])
+    return bool(
+        re.search(
+            r"\b(regression|broke|broken|no longer|stopped working|git bisect|look in history|inspect git history)\b",
+            head_sample,
+            re.IGNORECASE,
+        )
+    )
+
+
 def resolve_prompt_file_path(raw_path: str, *, search_roots: list[Path]) -> Path:
     """Resolves `promptFile` against explicit path, `~`, or candidate workspace/workflow directories."""
     resolved = resolve_asset_path(raw_path, search_roots=search_roots, label="promptFile")
@@ -137,6 +149,7 @@ class PipelineConfig:
     mock_html: str | None = None
     mock_screenshots: list[str] = field(default_factory=list)
     feature_title: str = ""
+    regression_mode: bool = False
     author_provider: str = "antigravity"  # "antigravity" | "codex"
     author_gh_user: str = "bot-author"
     reviewer_gh_user: str = "human-reviewer"
@@ -316,6 +329,14 @@ class PipelineConfig:
         else:
             resolved_author_model = resolved_reviewer_model if resolved_provider == "codex" else (os.environ.get("AUTHOR_MODEL") or "gemini-3.8-flash")
 
+        raw_reg = raw.get("regressionMode", raw.get("regression_mode"))
+        regression_mode = (
+            bool(raw_reg)
+            if raw_reg is not None
+            else _auto_detect_regression_mode(f"{feature_title}\n{feature_request}")
+        )
+        default_prefix = "ai/fix" if regression_mode else "ai/feature"
+
         return cls(
             feature_request=feature_request,
             workspace_dir=ws,
@@ -324,6 +345,7 @@ class PipelineConfig:
             mock_html=mock_html_str,
             mock_screenshots=mock_screenshots_list,
             feature_title=feature_title,
+            regression_mode=regression_mode,
             author_provider=resolved_provider,
             author_gh_user=str(raw.get("authorGhUser") or os.environ.get("AUTHOR_GH_USER") or "bot-author"),
             reviewer_gh_user=str(raw.get("reviewerGhUser") or os.environ.get("REVIEWER_GH_USER") or "human-reviewer"),
@@ -332,7 +354,7 @@ class PipelineConfig:
             author_model=str(resolved_author_model),
             reviewer_model=resolved_reviewer_model,
             max_turns=max_turns,
-            branch_prefix=str(raw.get("branchPrefix") or os.environ.get("BRANCH_PREFIX") or "ai/feature"),
+            branch_prefix=str(raw.get("branchPrefix") or (default_prefix if regression_mode else os.environ.get("BRANCH_PREFIX")) or default_prefix),
             execution_mode=str(raw.get("executionMode") or os.environ.get("PIPELINE_EXECUTION_MODE") or "live"),
             enable_os_notifications=(
                 bool(raw["enableOsNotifications"])

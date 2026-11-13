@@ -269,11 +269,24 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
             "ensure the offscreen screenshot test writes crisp PNGs of the rendered UI into `std::env::var(\"RIPPFLOW_UI_SCREENSHOT_DIR\")` "
             "so `local_test_suite` and `codex_review` can visually compare your rendered UI against the mock!"
         )
+    regression_note = ""
+    if cfg.regression_mode:
+        regression_note = (
+            "\n\n## Mandatory Regression Workflow (History -> Reproducing Test -> Patch)\n"
+            "1. **Inspect Git History First**: Before editing any code, inspect recent commits (`git log --oneline -n 25`, "
+            "`git show <sha>`, `git log -S` / `-G`, `git blame`) to pinpoint the exact commit SHA(s) and code changes that "
+            "broke this behavior. Cite the root-cause commit SHA(s) and exact mechanism in your final summary.\n"
+            "2. **Write a Reproducing Test First**: Add deterministic automated regression test(s) covering the broken "
+            "interaction/state path BEFORE patching production logic so the test would fail against the regressed code.\n"
+            "3. **Patch Surgically Without Secondary Regressions**: Fix the root cause cleanly while preserving the feature "
+            "or behavior that the introducing commit added."
+        )
     if turn == 1 and not state.pending_review_comments and state.last_test_passed is not False:
         return (
             f"You are working in repository `{state.shard}` at `{state.worktree_path}` on branch `{state.branch_name}` "
             f"(based on `{state.base_branch}`).\n\n"
             f"## Full Prompt Specification\n{spec_text}"
+            f"{regression_note}"
             f"{visual_note}\n\n"
             "## Instructions\n"
             "1. First inspect `git log -n 3 --oneline` and `git diff origin/main...HEAD --stat` — if this branch already has "
@@ -601,11 +614,13 @@ def _ensure_committed_and_pr_opened(
                 return
 
         title_line = (cfg.feature_title or cfg.feature_request.splitlines()[0]).strip()[:72]
-        pr_title = f"feat({state.shard}): {title_line}"
+        pr_prefix = "fix" if cfg.regression_mode else "feat"
+        pr_heading = "Automated Regression Fix PR" if cfg.regression_mode else "Automated Feature PR"
+        pr_title = f"{pr_prefix}({state.shard}): {title_line}"
         source_line = f"**Prompt File:** `{Path(cfg.prompt_file).name}`\n\n" if cfg.prompt_file else ""
         spec_preview = _effective_shard_prompt(cfg, state.shard)[:2000]
         pr_body = (
-            f"## Automated Feature PR (`{cfg.author_gh_user}`)\n\n"
+            f"## {pr_heading} (`{cfg.author_gh_user}`)\n\n"
             f"{source_line}"
             f"### Prompt Specification\n{spec_preview}\n\n"
             f"### Turn 1 Summary\n{summary_note[:3000]}"
@@ -865,6 +880,15 @@ def run_codex_review_turn(
         f"for repository `{state.shard}` (Turn {turn} of {cfg.max_turns}, HEAD `{head_oid[:7]}`).",
         f"Prompt Specification:\n{spec_text}",
     ]
+    if cfg.regression_mode:
+        prompt_parts.append(
+            "CRITICAL REGRESSION & TDD REVIEW GATE:\n"
+            "- This PR fixes a regression. Verify via `git log` / `git show` if needed that the patch addresses the true "
+            "root-cause commit/mechanism (not a superficial symptom workaround) across ALL affected surfaces.\n"
+            "- Verify the PR includes deterministic automated regression test(s) that directly exercise the broken path "
+            "and would fail if the regression returned.\n"
+            "- Verify the fix does NOT break the feature or behavior added by the commit that originally introduced the regression."
+        )
     if review_img_manifest:
         has_actual = bool(state.actual_screenshot_paths)
         visual_gate_rule = (

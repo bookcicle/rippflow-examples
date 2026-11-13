@@ -654,3 +654,33 @@ class TestDotenvAndNestedExamplesLayout:
             workflow_dir=REPO_ROOT,
         )
         assert cfg_with_mock.mock_html == str(mock_html.resolve())
+        assert cfg_with_mock.regression_mode is False
+
+        # 3. Regression prompt: auto-enables `regression_mode`, `ai/fix` branch prefix, and History -> Test -> Patch gate
+        reg_prompt = tmp_path / "fix_selection.md"
+        reg_prompt.write_text(
+            "# Fix Text Selection Regression\n\nWe somewhere broke select text and can no longer select text in terminals.\n",
+            encoding="utf-8",
+        )
+        cfg_reg = PipelineConfig.from_raw(
+            {"promptFile": str(reg_prompt), "repos": ["svc-cli"]},
+            default_workspace=tmp_path,
+            workflow_dir=REPO_ROOT,
+        )
+        assert cfg_reg.regression_mode is True
+        assert cfg_reg.branch_prefix == "ai/fix"
+        from pr_pipeline.agents import _build_author_prompt
+
+        author_prompt = _build_author_prompt(
+            cfg_reg,
+            ShardState(
+                shard="svc-cli",
+                repo_path=str(tmp_path / "svc-cli"),
+                worktree_path=str(tmp_path / "wt-cli"),
+                branch_name="ai/fix/text-selection",
+                base_branch="main",
+            ),
+            turn=1,
+        )
+        assert "Inspect Git History First" in author_prompt
+        assert "Write a Reproducing Test First" in author_prompt
