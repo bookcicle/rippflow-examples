@@ -332,9 +332,14 @@ def _invoke_codex_author_agent(
     agent_env: dict[str, str],
     session_id: str | None = None,
     image_flags: list[str] | None = None,
+    repo_path: Path | None = None,
 ) -> tuple[str, str | None]:
     """Executes `codex exec` (or `codex exec resume`) directly inside the isolated worktree."""
     img_args = list(image_flags or [])
+    extra_dirs = ["--add-dir", str(worktree.parent)]
+    if repo_path and (repo_path / ".git").exists():
+        extra_dirs.extend(["--add-dir", str(repo_path / ".git")])
+
     with tempfile.TemporaryDirectory(prefix="rippflow-codex-author-") as tmp:
         out_path = Path(tmp) / "author_summary.txt"
         proc: subprocess.CompletedProcess[str] | None = None
@@ -355,13 +360,13 @@ def _invoke_codex_author_agent(
                 str(out_path),
                 "--json",
                 session_id,
-                prompt,
+                "-",
             ]
             proc = subprocess.run(
                 resume_cmd,
                 cwd=str(worktree),
                 env=agent_env,
-                stdin=subprocess.DEVNULL,
+                input=prompt,
                 capture_output=True,
                 text=True,
                 timeout=840,
@@ -378,8 +383,7 @@ def _invoke_codex_author_agent(
                 "--skip-git-repo-check",
                 "-C",
                 str(worktree),
-                "--add-dir",
-                str(worktree.parent),
+                *extra_dirs,
                 "-s",
                 "workspace-write",
                 "-c",
@@ -390,13 +394,13 @@ def _invoke_codex_author_agent(
                 "-o",
                 str(out_path),
                 "--json",
-                prompt,
+                "-",
             ]
             proc = subprocess.run(
                 fresh_cmd,
                 cwd=str(worktree),
                 env=agent_env,
-                stdin=subprocess.DEVNULL,
+                input=prompt,
                 capture_output=True,
                 text=True,
                 timeout=840,
@@ -760,6 +764,7 @@ def run_author_turn(
             agent_env=author_env,
             session_id=state.author_codex_session_id,
             image_flags=author_img_flags,
+            repo_path=Path(state.repo_path) if state.repo_path else None,
         )
         if new_session:
             state.author_codex_session_id = new_session
@@ -928,13 +933,13 @@ def run_codex_review_turn(
                 str(out_path),
                 "--json",
                 session_id,
-                review_prompt,
+                "-",
             ]
             proc = subprocess.run(
                 resume_cmd,
                 cwd=str(wt),
                 env=reviewer_env,
-                stdin=subprocess.DEVNULL,
+                input=review_prompt,
                 capture_output=True,
                 text=True,
                 timeout=540,
@@ -962,13 +967,13 @@ def run_codex_review_turn(
                 "-o",
                 str(out_path),
                 "--json",
-                review_prompt,
+                "-",
             ]
             proc = subprocess.run(
                 fresh_cmd,
                 cwd=str(wt),
                 env=reviewer_env,
-                stdin=subprocess.DEVNULL,
+                input=review_prompt,
                 capture_output=True,
                 text=True,
                 timeout=540,

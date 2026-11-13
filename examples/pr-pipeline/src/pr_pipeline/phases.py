@@ -126,6 +126,13 @@ def _create_isolated_worktree(
                 break
 
         worktree_dest.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            ["git", "-C", str(src), "worktree", "prune"],
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         for attempt in range(3):
             proc = subprocess.run(
                 [
@@ -147,6 +154,35 @@ def _create_isolated_worktree(
             )
             if proc.returncode == 0:
                 break
+            err_msg = f"{proc.stderr}\n{proc.stdout}"
+            if "already used by worktree at" in err_msg or "already checked out at" in err_msg:
+                wt_list = subprocess.run(
+                    ["git", "-C", str(src), "worktree", "list", "--porcelain"],
+                    stdin=subprocess.DEVNULL,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                current_wt = ""
+                for line in (wt_list.stdout or "").splitlines():
+                    if line.startswith("worktree "):
+                        current_wt = line[len("worktree ") :].strip()
+                    elif line.strip() == f"branch refs/heads/{branch_name}" and current_wt:
+                        if "/.runs/" in current_wt and Path(current_wt).resolve() != src.resolve():
+                            subprocess.run(
+                                ["git", "-C", str(src), "worktree", "remove", "--force", current_wt],
+                                stdin=subprocess.DEVNULL,
+                                capture_output=True,
+                                text=True,
+                                check=False,
+                            )
+                            subprocess.run(
+                                ["git", "-C", str(src), "worktree", "prune"],
+                                stdin=subprocess.DEVNULL,
+                                capture_output=True,
+                                text=True,
+                                check=False,
+                            )
             time.sleep(0.25 * (attempt + 1))
         else:
             raise RuntimeError(

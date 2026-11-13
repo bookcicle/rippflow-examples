@@ -286,6 +286,17 @@ class PipelineConfig:
         if author_provider not in {"antigravity", "gemini", "codex"}:
             raise ValueError(f"Unsupported authorProvider '{author_provider}' (expected 'antigravity' or 'codex')")
 
+        resolved_provider = "codex" if author_provider == "codex" else "antigravity"
+        resolved_reviewer_model = str(raw.get("reviewerModel") or os.environ.get("REVIEWER_MODEL") or "gpt-6.1-sol")
+        explicit_author_model = str(raw.get("authorModel") or raw.get("author_model") or "").strip()
+        env_author_model = str(os.environ.get("CODEX_AUTHOR_MODEL" if resolved_provider == "codex" else "AUTHOR_MODEL") or "").strip()
+        if explicit_author_model:
+            resolved_author_model = explicit_author_model
+        elif env_author_model and not (resolved_provider == "codex" and env_author_model.lower().startswith("gemini")):
+            resolved_author_model = env_author_model
+        else:
+            resolved_author_model = resolved_reviewer_model if resolved_provider == "codex" else (os.environ.get("AUTHOR_MODEL") or "gemini-3.8-flash")
+
         return cls(
             feature_request=feature_request,
             workspace_dir=ws,
@@ -294,13 +305,13 @@ class PipelineConfig:
             mock_html=mock_html_str,
             mock_screenshots=mock_screenshots_list,
             feature_title=feature_title,
-            author_provider="codex" if author_provider == "codex" else "antigravity",
+            author_provider=resolved_provider,
             author_gh_user=str(raw.get("authorGhUser") or os.environ.get("AUTHOR_GH_USER") or "bot-author"),
             reviewer_gh_user=str(raw.get("reviewerGhUser") or os.environ.get("REVIEWER_GH_USER") or "human-reviewer"),
             author_git_email=raw.get("authorGitEmail") or os.environ.get("AUTHOR_GIT_EMAIL"),
             author_signing_key=raw.get("authorSigningKey") or os.environ.get("AUTHOR_SIGNING_KEY"),
-            author_model=str(raw.get("authorModel") or os.environ.get("AUTHOR_MODEL") or "gemini-3.8-flash"),
-            reviewer_model=str(raw.get("reviewerModel") or os.environ.get("REVIEWER_MODEL") or "gpt-6.1-sol"),
+            author_model=str(resolved_author_model),
+            reviewer_model=resolved_reviewer_model,
             max_turns=max_turns,
             branch_prefix=str(raw.get("branchPrefix") or os.environ.get("BRANCH_PREFIX") or "ai/feature"),
             execution_mode=str(raw.get("executionMode") or os.environ.get("PIPELINE_EXECUTION_MODE") or "live"),
