@@ -70,21 +70,29 @@ def extract_prompt_title(prompt_text: str, prompt_file: Path | None = None, max_
     return "implement requested feature"
 
 
-def resolve_prompt_file_path(raw_path: str, *, search_roots: list[Path]) -> Path:
-    """Resolves `promptFile` against explicit path, `~`, or candidate workspace/workflow directories."""
+def resolve_asset_path(raw_path: str, *, search_roots: list[Path], label: str = "file") -> Path:
+    """Resolves a file or directory path against explicit path, `~`, or candidate workspace/workflow directories."""
     cand = Path(raw_path).expanduser()
     if cand.is_absolute():
-        if not cand.is_file():
-            raise FileNotFoundError(f"promptFile does not exist: {cand}")
+        if not cand.exists():
+            raise FileNotFoundError(f"{label} does not exist: {cand}")
         return cand.resolve()
 
     for root in search_roots:
         resolved = (root / cand).resolve()
-        if resolved.is_file():
+        if resolved.exists():
             return resolved
     raise FileNotFoundError(
-        f"promptFile '{raw_path}' not found (searched: {', '.join(str(r) for r in search_roots)})"
+        f"{label} '{raw_path}' not found (searched: {', '.join(str(r) for r in search_roots)})"
     )
+
+
+def resolve_prompt_file_path(raw_path: str, *, search_roots: list[Path]) -> Path:
+    """Resolves `promptFile` against explicit path, `~`, or candidate workspace/workflow directories."""
+    resolved = resolve_asset_path(raw_path, search_roots=search_roots, label="promptFile")
+    if not resolved.is_file():
+        raise FileNotFoundError(f"promptFile does not exist: {resolved}")
+    return resolved
 
 
 @dataclass
@@ -93,10 +101,14 @@ class RepoSpec:
     path: str
     base_branch: str = "main"
     resume_branch: str | None = None
+    force_author_turn_one: bool = False
     test_command: list[str] | None = None
+    screenshot_command: list[str] | None = None
     github_repo: str | None = None
     companion_repos: list[str] = field(default_factory=list)
     prompt_file: str | None = None
+    mock_html: str | None = None
+    mock_screenshots: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -105,6 +117,8 @@ class PipelineConfig:
     workspace_dir: str
     repos: dict[str, RepoSpec]
     prompt_file: str | None = None
+    mock_html: str | None = None
+    mock_screenshots: list[str] = field(default_factory=list)
     feature_title: str = ""
     author_provider: str = "antigravity"  # "antigravity" | "codex"
     author_gh_user: str = "bot-author"
@@ -179,6 +193,76 @@ class PipelineConfig:
         if max_turns < 1 or max_turns > 50:
             raise ValueError(f"maxTurns must be between 1 and 50 (got {max_turns})")
 
+        raw_mock_html = raw.get("mockHtml") or raw.get("mock_html") or raw.get("mockFile") or raw.get("mock_file")
+        mock_html_str = (
+            str(resolve_asset_path(str(raw_mock_html).strip(), search_roots=search_roots, label="mockHtml"))
+            if raw_mock_html
+            else None
+        )
+
+        raw_mock_shots = raw.get("mockScreenshots") or raw.get("mock_screenshots") or []
+        if isinstance(raw_mock_shots, str):
+            raw_mock_shots = [raw_mock_shots]
+        mock_screenshots_list = [
+            str(resolve_asset_path(str(item).strip(), search_roots=search_roots, label="mockScreenshots"))
+            for item in raw_mock_shots
+            if str(item).strip()
+        ]
+
+        def _parse_repo_entry(name: str, entry: dict[str, Any]) -> RepoSpec:
+            rpath = str(Path(entry.get("path") or (Path(ws) / name)).resolve())
+            repo_roots = [Path(rpath), *search_roots]
+            tcmd = entry.get("testCommand") or entry.get("test_command")
+            if isinstance(tcmd, str):
+                tcmd = ["sh", "-lc", tcmd]
+            scmd = entry.get("screenshotCommand") or entry.get("screenshot_command")
+            if isinstance(scmd, str):
+                scmd = ["sh", "-lc", scmd]
+            companions = entry.get("companionRepos") or entry.get("companion_repos") or []
+            repo_pf = entry.get("promptFile") or entry.get("prompt_file")
+            resolved_repo_pf = (
+                str(resolve_prompt_file_path(str(repo_pf).strip(), search_roots=repo_roots))
+                if repo_pf
+                else None
+            )
+            repo_mh = entry.get("mockHtml") or entry.get("mock_html")
+            resolved_repo_mh = (
+                str(resolve_asset_path(str(repo_mh).strip(), search_roots=repo_roots, label="mockHtml"))
+                if repo_mh
+                else None
+            )
+            repo_ms = entry.get("mockScreenshots") or entry.get("mock_screenshots") or []
+            if isinstance(repo_ms, str):
+                repo_ms = [repo_ms]
+            resolved_repo_ms = [
+                str(resolve_asset_path(str(x).strip(), search_roots=repo_roots, label="mockScreenshots"))
+                for x in repo_ms
+                if str(x).strip()
+            ]
+            force_author = bool(
+                entry.get(
+                    "forceAuthorTurnOne",
+                    entry.get(
+                        "force_author_turn_one",
+                        raw.get("forceAuthorTurnOne", raw.get("force_author_turn_one", False)),
+                    ),
+                )
+            )
+            return RepoSpec(
+                name=name,
+                path=rpath,
+                base_branch=str(entry.get("baseBranch") or "main"),
+                resume_branch=entry.get("resumeBranch") or entry.get("resume_branch"),
+                force_author_turn_one=force_author,
+                test_command=list(tcmd) if tcmd else None,
+                screenshot_command=list(scmd) if scmd else None,
+                github_repo=entry.get("githubRepo") or entry.get("github_repo"),
+                companion_repos=[str(c) for c in companions],
+                prompt_file=resolved_repo_pf,
+                mock_html=resolved_repo_mh,
+                mock_screenshots=resolved_repo_ms,
+            )
+
         raw_repos = raw.get("repos") or []
         repos: dict[str, RepoSpec] = {}
         if isinstance(raw_repos, list):
@@ -188,50 +272,10 @@ class PipelineConfig:
                     repos[entry] = RepoSpec(name=entry, path=repo_path)
                 elif isinstance(entry, dict):
                     name = str(entry["name"])
-                    rpath = str(Path(entry.get("path") or (Path(ws) / name)).resolve())
-                    tcmd = entry.get("testCommand") or entry.get("test_command")
-                    if isinstance(tcmd, str):
-                        tcmd = ["sh", "-lc", tcmd]
-                    companions = entry.get("companionRepos") or entry.get("companion_repos") or []
-                    repo_pf = entry.get("promptFile") or entry.get("prompt_file")
-                    resolved_repo_pf = (
-                        str(resolve_prompt_file_path(str(repo_pf).strip(), search_roots=[Path(rpath), *search_roots]))
-                        if repo_pf
-                        else None
-                    )
-                    repos[name] = RepoSpec(
-                        name=name,
-                        path=rpath,
-                        base_branch=str(entry.get("baseBranch") or "main"),
-                        resume_branch=entry.get("resumeBranch") or entry.get("resume_branch"),
-                        test_command=list(tcmd) if tcmd else None,
-                        github_repo=entry.get("githubRepo") or entry.get("github_repo"),
-                        companion_repos=[str(c) for c in companions],
-                        prompt_file=resolved_repo_pf,
-                    )
+                    repos[name] = _parse_repo_entry(name, entry)
         elif isinstance(raw_repos, dict):
             for name, entry in raw_repos.items():
-                rpath = str(Path(entry.get("path") or (Path(ws) / name)).resolve())
-                tcmd = entry.get("testCommand") or entry.get("test_command")
-                if isinstance(tcmd, str):
-                    tcmd = ["sh", "-lc", tcmd]
-                companions = entry.get("companionRepos") or entry.get("companion_repos") or []
-                repo_pf = entry.get("promptFile") or entry.get("prompt_file")
-                resolved_repo_pf = (
-                    str(resolve_prompt_file_path(str(repo_pf).strip(), search_roots=[Path(rpath), *search_roots]))
-                    if repo_pf
-                    else None
-                )
-                repos[name] = RepoSpec(
-                    name=name,
-                    path=rpath,
-                    base_branch=str(entry.get("baseBranch") or "main"),
-                    resume_branch=entry.get("resumeBranch") or entry.get("resume_branch"),
-                    test_command=list(tcmd) if tcmd else None,
-                    github_repo=entry.get("githubRepo") or entry.get("github_repo"),
-                    companion_repos=[str(c) for c in companions],
-                    prompt_file=resolved_repo_pf,
-                )
+                repos[name] = _parse_repo_entry(str(name), entry)
 
         author_provider = str(
             raw.get("authorProvider")
@@ -247,6 +291,8 @@ class PipelineConfig:
             workspace_dir=ws,
             repos=repos,
             prompt_file=prompt_file_str,
+            mock_html=mock_html_str,
+            mock_screenshots=mock_screenshots_list,
             feature_title=feature_title,
             author_provider="codex" if author_provider == "codex" else "antigravity",
             author_gh_user=str(raw.get("authorGhUser") or os.environ.get("AUTHOR_GH_USER") or "bot-author"),
@@ -296,6 +342,9 @@ class ShardState:
     review_ledger: list[dict[str, Any]] = field(default_factory=list)
     history: list[dict[str, Any]] = field(default_factory=list)
     human_resolution: dict[str, Any] | None = None
+    mock_screenshot_paths: list[str] = field(default_factory=list)
+    actual_screenshot_paths: list[str] = field(default_factory=list)
+    pinned_pr_image_urls: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

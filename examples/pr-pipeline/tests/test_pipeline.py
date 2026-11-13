@@ -559,3 +559,56 @@ class TestDotenvAndNestedExamplesLayout:
                 default_workspace=workspace,
                 workflow_dir=REPO_ROOT,
             )
+
+    def test_visual_qa_mock_screenshots_and_captured_ui_images_attached_to_review(
+        self, tmp_path: Path
+    ) -> None:
+        from pr_pipeline.agents import _collect_visual_attachment_args
+        from pr_pipeline.models import ShardState
+        from pr_pipeline.visual_qa import prepare_reference_mock_images
+
+        mock_img = tmp_path / "mock_runs.png"
+        mock_img.write_bytes(b"\x89PNG\r\n\x1a\nfake-mock-png")
+        ui_img = tmp_path / "ui_runs.png"
+        ui_img.write_bytes(b"\x89PNG\r\n\x1a\nfake-ui-png")
+
+        cfg = PipelineConfig.from_raw(
+            {
+                "featureRequest": "Align UI with mock",
+                "mockScreenshots": [str(mock_img)],
+                "repos": [
+                    {
+                        "name": "svc-ui",
+                        "forceAuthorTurnOne": True,
+                        "screenshotCommand": "python3 -c 'import os, pathlib; (pathlib.Path(os.environ[\"RIPPFLOW_UI_SCREENSHOT_DIR\"]) / \"ui.png\").write_bytes(b\"png\")'",
+                    }
+                ],
+            },
+            default_workspace=tmp_path,
+            workflow_dir=REPO_ROOT,
+        )
+        assert cfg.mock_screenshots == [str(mock_img.resolve())]
+        assert cfg.repos["svc-ui"].force_author_turn_one is True
+        assert cfg.repos["svc-ui"].screenshot_command is not None
+
+        staged = prepare_reference_mock_images(
+            mock_screenshots=cfg.mock_screenshots,
+            mock_html=None,
+            dest_dir=tmp_path / "visual_qa" / "mock",
+        )
+        assert len(staged) == 1
+        assert staged[0].is_file()
+
+        state = ShardState(
+            shard="svc-ui",
+            repo_path=str(tmp_path / "svc-ui"),
+            worktree_path=str(tmp_path / "wt-ui"),
+            branch_name="ai/feature/align-ui-1234",
+            base_branch="main",
+            mock_screenshot_paths=[str(staged[0])],
+            actual_screenshot_paths=[str(ui_img)],
+        )
+        flags, manifest = _collect_visual_attachment_args(state, include_actual=True)
+        assert flags == ["-i", str(staged[0]), "-i", str(ui_img)]
+        assert "TARGET MOCK" in manifest
+        assert "ACTUAL RENDERED UI" in manifest

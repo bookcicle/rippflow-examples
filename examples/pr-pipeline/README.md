@@ -87,14 +87,20 @@ rippflow controls validate workflow.yaml --json
 With `.env` configured, pass a path to your full Markdown/text Codex prompt file (`promptFile`, absolute or relative to your workspace/workflow directory):
 
 ```bash
-# Submit a full Codex prompt file directly to your running :8443 service:
+# Submit a full Codex prompt file (+ optional HTML mock / UI screenshot verification) to your :8443 service:
 curl -sk -X POST https://localhost:8443/v1/workflows/multi-repo-feature-pr-pipeline/run \
   -H "Authorization: Bearer $RIPPFLOW_LOCAL_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "promptFile": "/path/to/prompts/my-feature-spec.md",
+    "mockHtml": "/path/to/mocks/ui-prototype.html",
     "authorProvider": "codex",
-    "repos": ["service-core", "service-cli"]
+    "repos": [
+      {
+        "name": "service-cli",
+        "screenshotCommand": "cargo test --locked capture_monitor_visual_qa_screenshots -- --ignored --nocapture --test-threads=1"
+      }
+    ]
   }'
 
 # Persistent HTTPS endpoint + async callback server (supports 2h+ durable runs):

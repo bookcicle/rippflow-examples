@@ -34,6 +34,7 @@ from .models import (
     RunStore,
     ShardState,
     _resolve_default_workspace,
+    build_scoped_git_gh_env,
     detect_default_test_command,
     detect_github_repo_slug,
     load_dotenv_files,
@@ -41,6 +42,11 @@ from .models import (
     slugify,
 )
 from .notify import NotificationMessage, send_notification
+from .visual_qa import (
+    collect_image_files,
+    pin_mock_screenshots_to_pr,
+    prepare_reference_mock_images,
+)
 
 
 @contextmanager
@@ -391,6 +397,15 @@ def handle_prepare_workspace(ctx: dict[str, Any], repo_root: Path) -> dict[str, 
                 cfg.execution_mode,
             )
         gh_slug = spec.github_repo or detect_github_repo_slug(Path(spec.path))
+        eff_mock_html = spec.mock_html or cfg.mock_html
+        eff_mock_shots = list(spec.mock_screenshots or cfg.mock_screenshots)
+        mock_imgs: list[Path] = []
+        if eff_mock_html or eff_mock_shots:
+            mock_imgs = prepare_reference_mock_images(
+                mock_screenshots=eff_mock_shots,
+                mock_html=eff_mock_html,
+                dest_dir=store.run_dir / "visual_qa" / name / "mock",
+            )
         shard_state = ShardState(
             shard=name,
             repo_path=spec.path,
@@ -398,6 +413,7 @@ def handle_prepare_workspace(ctx: dict[str, Any], repo_root: Path) -> dict[str, 
             branch_name=branch,
             base_branch=spec.base_branch,
             github_repo=gh_slug,
+            mock_screenshot_paths=[str(p) for p in mock_imgs],
         )
         store.save_shard(shard_state)
         prepared.append(name)
@@ -536,6 +552,92 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
                 + combined_out
             )[-8000:]
 
+    # Visual QA screenshot capture step: when `passed` and either `screenshotCommand` is configured
+    # OR `mock_screenshot_paths` exist and the worktree defines a `visual_qa_capture` test/script,
+    # run screenshot capture into `.runs/<id>/visual_qa/<shard>/turn-<turn>/` and pin to the PR!
+    captured_ui_imgs: list[Path] = []
+    if passed:
+        turn_shot_dir = store.run_dir / "visual_qa" / shard / f"turn-{state.turns_used}"
+        turn_shot_dir.mkdir(parents=True, exist_ok=True)
+        shot_env = env.copy()
+        shot_env["RIPPFLOW_UI_SCREENSHOT_DIR"] = str(turn_shot_dir)
+
+        shot_cmd = spec.screenshot_command
+        if shot_cmd is None and state.mock_screenshot_paths and (wt / "Cargo.toml").is_file():
+            # Auto-detect GPUI offscreen visual QA screenshot test if authored in the crate
+            warp_rs = wt / "src" / "warp_shell.rs"
+            if warp_rs.is_file() and "capture_monitor_visual_qa_screenshots" in warp_rs.read_text(
+                encoding="utf-8", errors="ignore"
+            ):
+                shot_cmd = [
+                    "cargo",
+                    "test",
+                    "--locked",
+                    "capture_monitor_visual_qa_screenshots",
+                    "--",
+                    "--ignored",
+                    "--nocapture",
+                    "--test-threads=1",
+                ]
+
+        if shot_cmd is not None:
+            shot_proc = subprocess.run(
+                shot_cmd,
+                cwd=str(wt),
+                env=shot_env,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=600,
+                check=False,
+            )
+            shot_out = redact_secrets(f"{shot_proc.stdout}\n{shot_proc.stderr}".strip())[-4000:]
+            if shot_proc.returncode != 0:
+                passed = False
+                combined_out = (
+                    f"[Visual QA Screenshot Command Failed (exit {shot_proc.returncode})]\n{shot_out}\n\n{combined_out}"
+                )[-8000:]
+            else:
+                captured_ui_imgs = collect_image_files([turn_shot_dir])
+                if not captured_ui_imgs:
+                    passed = False
+                    combined_out = (
+                        f"[Visual QA Screenshot Command Succeeded (exit 0) but wrote 0 PNGs into "
+                        f"RIPPFLOW_UI_SCREENSHOT_DIR={turn_shot_dir}]\n{shot_out}\n\n{combined_out}"
+                    )[-8000:]
+        else:
+            captured_ui_imgs = collect_image_files([turn_shot_dir])
+
+        if passed and captured_ui_imgs:
+            state.actual_screenshot_paths = [str(p) for p in captured_ui_imgs]
+            if cfg.execution_mode == "live" and (state.pr_url or state.pr_number) and state.github_repo:
+                try:
+                    author_token = resolve_gh_token(cfg.author_gh_user)
+                    author_env = build_scoped_git_gh_env(
+                        gh_user=cfg.author_gh_user,
+                        gh_token=author_token,
+                        git_email=cfg.author_git_email,
+                    )
+                    pinned = pin_mock_screenshots_to_pr(
+                        pr_url_or_number=state.pr_url or str(state.pr_number),
+                        github_repo=state.github_repo,
+                        worktree=wt,
+                        mock_images=[Path(p) for p in state.mock_screenshot_paths if Path(p).is_file()],
+                        actual_images=captured_ui_imgs,
+                        turn=state.turns_used,
+                        author_gh_user=cfg.author_gh_user,
+                        author_git_email=cfg.author_git_email,
+                        author_env=author_env,
+                    )
+                    if pinned:
+                        state.pinned_pr_image_urls = pinned
+                except Exception as pin_exc:
+                    print(
+                        redact_secrets(f"[local_test_suite] Non-fatal PR screenshot pin warning: {pin_exc}"),
+                        file=sys.stderr,
+                        flush=True,
+                    )
+
     state.last_test_passed = passed
     state.last_test_output = combined_out
     state.history.append(
@@ -544,6 +646,7 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
             "phase": "local_test_suite",
             "command": cmd,
             "passed": passed,
+            "capturedScreenshots": len(captured_ui_imgs),
         }
     )
 

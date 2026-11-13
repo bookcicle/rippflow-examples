@@ -24,6 +24,7 @@ from .models import (
     build_scoped_git_gh_env,
     resolve_gh_token,
 )
+from .visual_qa import pin_mock_screenshots_to_pr
 
 
 REVIEW_JSON_SCHEMA: dict[str, Any] = {
@@ -229,13 +230,51 @@ def _effective_shard_prompt(cfg: PipelineConfig, shard: str) -> str:
     return cfg.feature_request
 
 
+def _collect_visual_attachment_args(state: ShardState, *, include_actual: bool = True) -> tuple[list[str], str]:
+    """Builds `-i <image>` CLI flags and an explicit image manifest section for Codex multimodal turns."""
+    image_flags: list[str] = []
+    manifest_lines: list[str] = []
+    idx = 0
+
+    for raw_p in state.mock_screenshot_paths:
+        p = Path(raw_p)
+        if p.is_file():
+            idx += 1
+            image_flags.extend(["-i", str(p)])
+            manifest_lines.append(f"- Image #{idx} (`TARGET MOCK`): `{p.name}` — authoritative target visual design.")
+
+    if include_actual:
+        for raw_p in state.actual_screenshot_paths:
+            p = Path(raw_p)
+            if p.is_file():
+                idx += 1
+                image_flags.extend(["-i", str(p)])
+                manifest_lines.append(
+                    f"- Image #{idx} (`ACTUAL RENDERED UI`): `{p.name}` — actual screenshot captured from the branch."
+                )
+
+    return image_flags, "\n".join(manifest_lines)
+
+
 def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> str:
     spec_text = _effective_shard_prompt(cfg, state.shard)
+    _, img_manifest = _collect_visual_attachment_args(state, include_actual=(turn > 1))
+    visual_note = ""
+    if img_manifest:
+        visual_note = (
+            "\n\n## Attached Visual Reference Screenshots\n"
+            f"{img_manifest}\n"
+            "- Match the attached `TARGET MOCK` visual hierarchy, colors, column layout, and component styling faithfully.\n"
+            "- If `RIPPFLOW_UI_SCREENSHOT_DIR` screenshot capture is requested in the specification (or `screenshotCommand` is configured), "
+            "ensure the offscreen screenshot test writes crisp PNGs of the rendered UI into `std::env::var(\"RIPPFLOW_UI_SCREENSHOT_DIR\")` "
+            "so `local_test_suite` and `codex_review` can visually compare your rendered UI against the mock!"
+        )
     if turn == 1 and not state.pending_review_comments and state.last_test_passed is not False:
         return (
             f"You are working in repository `{state.shard}` at `{state.worktree_path}` on branch `{state.branch_name}` "
             f"(based on `{state.base_branch}`).\n\n"
-            f"## Full Prompt Specification\n{spec_text}\n\n"
+            f"## Full Prompt Specification\n{spec_text}"
+            f"{visual_note}\n\n"
             "## Instructions\n"
             "1. First inspect `git log -n 3 --oneline` and `git diff origin/main...HEAD --stat` — if this branch already has "
             "an in-progress implementation, refine/complete what is missing rather than starting from scratch.\n"
@@ -253,6 +292,10 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
         f"Turn {turn} of {cfg.max_turns} rework on repository `{state.shard}` (branch `{state.branch_name}`).",
         f"Original Prompt Specification:\n{spec_text}",
     ]
+    if img_manifest:
+        feedback_sections.append(
+            "## Attached Visual QA Comparison Images (Mock vs. Actual Rendered UI)\n" + img_manifest
+        )
     if len(state.review_ledger) > 1:
         earlier_ledger = _format_prior_review_ledger(state.review_ledger[:-1], max_turns_shown=4)
         if earlier_ledger:
@@ -261,7 +304,7 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
             )
     if state.last_test_passed is False and state.last_test_output:
         feedback_sections.append(
-            "## Local Test Suite Failure (Must Fix)\n"
+            "## Local Test Suite / Screenshot Failure (Must Fix)\n"
             f"```\n{state.last_test_output[-6000:]}\n```"
         )
     if state.pending_review_comments:
@@ -275,7 +318,7 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
         )
     feedback_sections.append(
         "Apply targeted fixes in this worktree without breaking previously resolved review items "
-        "(the `local_test_suite` phase will re-run tests automatically right after this turn), "
+        "(the `local_test_suite` phase will re-run tests and re-capture UI screenshots automatically right after this turn), "
         "and commit your updates to the current branch."
     )
     return "\n\n".join(feedback_sections)
@@ -288,8 +331,10 @@ def _invoke_codex_author_agent(
     model_name: str,
     agent_env: dict[str, str],
     session_id: str | None = None,
+    image_flags: list[str] | None = None,
 ) -> tuple[str, str | None]:
     """Executes `codex exec` (or `codex exec resume`) directly inside the isolated worktree."""
+    img_args = list(image_flags or [])
     with tempfile.TemporaryDirectory(prefix="rippflow-codex-author-") as tmp:
         out_path = Path(tmp) / "author_summary.txt"
         proc: subprocess.CompletedProcess[str] | None = None
@@ -305,6 +350,7 @@ def _invoke_codex_author_agent(
                 'sandbox_mode="workspace-write"',
                 "-m",
                 model_name,
+                *img_args,
                 "-o",
                 str(out_path),
                 "--json",
@@ -340,6 +386,7 @@ def _invoke_codex_author_agent(
                 'approval_policy="never"',
                 "-m",
                 model_name,
+                *img_args,
                 "-o",
                 str(out_path),
                 "--json",
@@ -533,6 +580,20 @@ def _ensure_committed_and_pr_opened(
             if items:
                 state.pr_number = int(items[0]["number"])
                 state.pr_url = str(items[0]["url"])
+                if state.mock_screenshot_paths and state.github_repo:
+                    pinned = pin_mock_screenshots_to_pr(
+                        pr_url_or_number=state.pr_url,
+                        github_repo=state.github_repo,
+                        worktree=wt,
+                        mock_images=[Path(p) for p in state.mock_screenshot_paths if Path(p).is_file()],
+                        actual_images=[Path(p) for p in state.actual_screenshot_paths if Path(p).is_file()] or None,
+                        turn=turn,
+                        author_gh_user=cfg.author_gh_user,
+                        author_git_email=cfg.author_git_email,
+                        author_env=author_env,
+                    )
+                    if pinned:
+                        state.pinned_pr_image_urls = pinned
                 return
 
         title_line = (cfg.feature_title or cfg.feature_request.splitlines()[0]).strip()[:72]
@@ -584,6 +645,21 @@ def _ensure_committed_and_pr_opened(
             info = json.loads(view.stdout)
             state.pr_number = int(info["number"])
             state.pr_url = str(info["url"])
+
+    if (state.pr_url or state.pr_number) and state.mock_screenshot_paths and state.github_repo:
+        pinned = pin_mock_screenshots_to_pr(
+            pr_url_or_number=state.pr_url or str(state.pr_number),
+            github_repo=state.github_repo,
+            worktree=wt,
+            mock_images=[Path(p) for p in state.mock_screenshot_paths if Path(p).is_file()],
+            actual_images=[Path(p) for p in state.actual_screenshot_paths if Path(p).is_file()] or None,
+            turn=turn,
+            author_gh_user=cfg.author_gh_user,
+            author_git_email=cfg.author_git_email,
+            author_env=author_env,
+        )
+        if pinned:
+            state.pinned_pr_image_urls = pinned
 
 
 def run_author_turn(
@@ -648,7 +724,14 @@ def run_author_turn(
     # (and no pending test failure / review comments on the current HEAD commit yet), verify it directly
     # in `local_test_suite` -> `codex_review` before invoking another LLM author turn!
     spec = cfg.repos.get(state.shard)
-    if turn == 1 and spec and spec.resume_branch and state.last_test_passed is None and not state.pending_review_comments:
+    if (
+        turn == 1
+        and spec
+        and spec.resume_branch
+        and not spec.force_author_turn_one
+        and state.last_test_passed is None
+        and not state.pending_review_comments
+    ):
         ahead_proc = _run_git(
             wt,
             ["rev-list", "--count", f"origin/{state.base_branch}..HEAD"],
@@ -668,6 +751,7 @@ def run_author_turn(
             return {"turn": turn, "authorIdentity": cfg.author_gh_user, "summary": summary}
 
     prompt = _build_author_prompt(cfg, state, turn)
+    author_img_flags, _ = _collect_visual_attachment_args(state, include_actual=(turn > 1))
     if cfg.author_provider == "codex":
         summary, new_session = _invoke_codex_author_agent(
             prompt=prompt,
@@ -675,6 +759,7 @@ def run_author_turn(
             model_name=cfg.author_model,
             agent_env=author_env,
             session_id=state.author_codex_session_id,
+            image_flags=author_img_flags,
         )
         if new_session:
             state.author_codex_session_id = new_session
@@ -768,27 +853,47 @@ def run_codex_review_turn(
 
     spec_text = _effective_shard_prompt(cfg, state.shard)
     ledger_text = _format_prior_review_ledger(state.review_ledger, max_turns_shown=6)
+    review_img_flags, review_img_manifest = _collect_visual_attachment_args(state, include_actual=True)
+
     prompt_parts: list[str] = [
         f"Review pull request changes on branch `{state.branch_name}` against `{state.base_branch}` "
         f"for repository `{state.shard}` (Turn {turn} of {cfg.max_turns}, HEAD `{head_oid[:7]}`).",
         f"Prompt Specification:\n{spec_text}",
     ]
+    if review_img_manifest:
+        has_actual = bool(state.actual_screenshot_paths)
+        visual_gate_rule = (
+            "CRITICAL VISUAL QA GATE:\n"
+            "- Both `TARGET MOCK` reference image(s) AND `ACTUAL RENDERED UI` screenshot(s) from this commit are attached directly to this review turn.\n"
+            "- Inspect every attached `ACTUAL RENDERED UI` screenshot pixel-by-pixel against the corresponding `TARGET MOCK` screenshot!\n"
+            "- If the rendered UI deviates materially from the mock (e.g. stacked full-width cards instead of the 6-column tabular layout, "
+            "unaggregated `39/39` loop attempts instead of unique workflow phases, monochrome `■` text instead of colored progress segments, "
+            "`Wall 0ms` / wrong timestamps, duplicate `Runs` toolbar buttons, missing header tabs on `Resources & Gauges`, or stretched `Logs` buttons), "
+            "you MUST return `verdict: \"comment\"` with concrete file/line findings citing the exact visual discrepancy!\n"
+            "- Only return `verdict: \"approve\"` when BOTH code correctness AND visual design parity against the attached mock screenshots pass!"
+            if has_actual
+            else "VISUAL MOCK ATTACHED:\n"
+            "- `TARGET MOCK` reference screenshot(s) are attached. Verify the UI layout/styling code matches the mock; if UI screenshot capture "
+            "was requested in the specification (`RIPPFLOW_UI_SCREENSHOT_DIR`) and is missing, request it in your review comments."
+        )
+        prompt_parts.append(f"## Attached Visual QA Screenshots\n{review_img_manifest}\n\n{visual_gate_rule}")
+
     if ledger_text:
         prompt_parts.append(
             "## Prior Review Ledger (Your Earlier Requested Edits)\n"
             f"{ledger_text}\n\n"
             "Follow-up Review Protocol:\n"
-            "1. First verify whether each open item from your latest review turn was properly resolved without regressing earlier fixes.\n"
-            "2. Inspect any newly modified code in the incremental diff for bugs, regressions, concurrency hazards, or missing test coverage.\n"
-            "3. Do NOT invent cosmetic nitpicks or shift scope on unchanged code that already passed earlier turns — "
-            "only return `verdict: \"comment\"` if a prior requested edit remains unresolved OR a genuine correctness/security/concurrency bug exists.\n"
-            "4. When all prior requested edits are resolved and no actionable defects remain, return `verdict: \"approve\"` with `comments: []`."
+            "1. First verify whether each open item from your latest review turn (including any visual parity findings) was properly resolved without regressing earlier fixes.\n"
+            "2. Inspect any newly modified code AND newly captured `ACTUAL RENDERED UI` screenshots against the `TARGET MOCK` images.\n"
+            "3. Do NOT invent cosmetic nitpicks beyond the specification/mock — "
+            "only return `verdict: \"comment\"` if a prior requested edit remains unresolved, the rendered UI still fails visual parity with the mock, OR a genuine correctness/security/concurrency bug exists.\n"
+            "4. When all prior requested edits and visual mock parity checks pass, return `verdict: \"approve\"` with `comments: []`."
         )
     else:
         prompt_parts.append(
-            "Inspect the code and tests thoroughly for correctness, concurrency hazards, security issues, "
+            "Inspect the code, unit tests, and attached UI screenshots thoroughly for correctness, visual parity with the mock, concurrency hazards, security issues, "
             "edge cases, and test coverage.\n"
-            "- Return `verdict: \"approve\"` with `comments: []` ONLY if there are zero actionable findings.\n"
+            "- Return `verdict: \"approve\"` with `comments: []` ONLY if there are zero actionable code or visual findings.\n"
             "- Otherwise return `verdict: \"comment\"` with concrete file/line findings."
         )
 
@@ -816,6 +921,7 @@ def run_codex_review_turn(
                 "--skip-git-repo-check",
                 "-m",
                 cfg.reviewer_model,
+                *review_img_flags,
                 "--output-schema",
                 str(schema_path),
                 "-o",
@@ -850,6 +956,7 @@ def run_codex_review_turn(
                 "read-only",
                 "-m",
                 cfg.reviewer_model,
+                *review_img_flags,
                 "--output-schema",
                 str(schema_path),
                 "-o",
@@ -886,8 +993,14 @@ def run_codex_review_turn(
     if state.pr_url or state.pr_number:
         pr_ref = state.pr_url or str(state.pr_number)
         repo_args = ["--repo", state.github_repo] if state.github_repo and not state.pr_url else []
+        visual_badge = ""
+        if state.mock_screenshot_paths or state.actual_screenshot_paths:
+            visual_badge = (
+                f"\n\n> **Visual QA Checked:** `{len(state.mock_screenshot_paths)}` pinned mock image(s) vs. "
+                f"`{len(state.actual_screenshot_paths)}` rendered UI screenshot(s) (see PR description header)."
+            )
         if verdict == "approve":
-            body = f"### Automated Codex Review (`{cfg.reviewer_model}`)\n\n{summary}\n\nNo remaining findings — approving."
+            body = f"### Automated Codex Review (`{cfg.reviewer_model}`)\n\n{summary}{visual_badge}\n\nNo remaining findings — approving."
             rev = subprocess.run(
                 ["gh", "pr", "review", pr_ref, *repo_args, "--approve", "--body", body],
                 cwd=str(wt),
@@ -910,7 +1023,7 @@ def run_codex_review_turn(
                 if turn >= cfg.max_turns
                 else f"*(Turn {turn}/{cfg.max_turns} — returning to `{cfg.author_gh_user}`)*"
             )
-            body = f"### Automated Codex Review (`{cfg.reviewer_model}`) {turn_note}\n\n{summary}\n\n{bullets}"
+            body = f"### Automated Codex Review (`{cfg.reviewer_model}`) {turn_note}\n\n{summary}{visual_badge}\n\n{bullets}"
             rev = subprocess.run(
                 ["gh", "pr", "review", pr_ref, *repo_args, "--comment", "--body", body],
                 cwd=str(wt),
