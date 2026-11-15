@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "handlers": {
+    "simulated.splitter": {
+      "cwd": "../..",
+      "command": ["./target/debug/rust-example-handler"],
+      "timeoutSeconds": 30
+    },
+    "simulated.ocr_extract": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "simulated.balance_auditor": {
+      "cwd": "../..",
+      "command": ["node", "examples/node/handler.mjs"],
+      "timeoutSeconds": 30
+    },
+    "simulated.underwriter_summary": {
+      "cwd": "../..",
+      "command": ["java", "-cp", "examples/java", "RippflowHandler"],
+      "timeoutSeconds": 30
+    }
+  }
+}

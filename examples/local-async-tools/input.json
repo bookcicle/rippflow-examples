@@ -1,0 +1,3 @@
+{
+  "task": "Deterministic callback and parallel join fixture; no model/provider/network side effects beyond loopback."
+}

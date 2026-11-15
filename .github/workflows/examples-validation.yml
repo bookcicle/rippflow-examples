@@ -1,0 +1,96 @@
+name: Examples Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Build and test Rust handlers
+        run: |
+          cargo build --locked --bins
+          cargo test --locked --workspace
+
+      - name: Compile Java handler and run polyglot handler smoke suite
+        run: |
+          javac examples/java/RippflowHandler.java
+          python3 - <<'PY'
+          import json, subprocess
+
+          handlers = [
+              ["./target/debug/rust-example-handler"],
+              ["python3", "examples/python/handler.py"],
+              ["node", "examples/node/handler.mjs"],
+              ["java", "-cp", "examples/java", "RippflowHandler"],
+          ]
+          for cmd in handlers:
+              r0 = subprocess.run(cmd, input=json.dumps({"requestId": "ci", "phase": "audit-item", "shard": "recoverable-item.bin", "loopCount": 0}), text=True, capture_output=True, check=True)
+              assert json.loads(r0.stdout)["outcome"] == "rework", (cmd, r0.stdout)
+              r1 = subprocess.run(cmd, input=json.dumps({"requestId": "ci", "phase": "audit-item", "shard": "recoverable-item.bin", "loopCount": 1}), text=True, capture_output=True, check=True)
+              assert json.loads(r1.stdout)["outcome"] == "completed", (cmd, r1.stdout)
+              rf = subprocess.run(cmd, input=json.dumps({"requestId": "ci", "phase": "process-item", "shard": "fatal-crash.bin", "loopCount": 0}), text=True, capture_output=True)
+              assert rf.returncode != 0, (cmd, rf.returncode)
+          print("All 4 polyglot handlers passed recoverable + fatal smoke checks")
+          PY
+          rm -f examples/java/*.class
+
+      - name: Validate JSON/YAML syntax and paired workflow equivalence
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, yaml
+
+          for p in sorted(pathlib.Path("examples").rglob("*.json")):
+              json.loads(p.read_text())
+          for p in sorted(pathlib.Path("examples").rglob("*.yaml")):
+              yaml.safe_load(p.read_text())
+
+          pairs = [
+              ("examples/polyglot/polyglot.workflow.json", "examples/polyglot/polyglot.workflow.yaml"),
+              ("examples/media/media.workflow.json", "examples/media/media.workflow.yaml"),
+              ("examples/resume/resume.workflow.json", "examples/resume/resume.workflow.yaml"),
+              ("examples/failure/failure.workflow.json", "examples/failure/failure.workflow.yaml"),
+              ("examples/fintech-reconciliation/workflow.json", "examples/fintech-reconciliation/workflow.yaml"),
+              ("examples/hello/workflow.json", "examples/hello/workflow.yaml"),
+              ("examples/scoped-iam/workflow.json", "examples/scoped-iam/workflow.yaml"),
+              ("examples/async-research-agent/workflow.json", "examples/async-research-agent/workflow.yaml"),
+          ]
+          for jp, yp in pairs:
+              j = json.loads(pathlib.Path(jp).read_text())
+              y = yaml.safe_load(pathlib.Path(yp).read_text())
+              assert j == y, f"Mismatch between {jp} and {yp}"
+          print(f"Verified {len(pairs)} JSON/YAML workflow pairs")
+          PY
+
+      - name: Run async-callback unit tests
+        run: python3 -m unittest discover -s examples/async-callback -p 'test_*.py'
+
+      - name: Verify public repository hygiene
+        run: |
+          if grep -rnE '343016231641|rippflow-tasks-test|rippflow-local|git clone https://github\.com/bookcicle/rippflow-(core|runner|cli|starter|controller|orchestrator|docs)|mcp servers --json|operations list|--group-id' README.md examples handlers; then
+            echo "Forbidden internal/invalid reference found in public repository"
+            exit 1
+          fi

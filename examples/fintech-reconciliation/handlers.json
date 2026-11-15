@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "handlers": {
+    "csv.parser": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "pdf.ocr_extract": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "auditor.reconcile_math": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "underwriter.summarize": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    }
+  }
+}

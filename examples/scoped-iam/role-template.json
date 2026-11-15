@@ -1,0 +1,113 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Optional workload resources for the Rippflow scoped-handler IAM example. Does not install Rippflow.",
+  "Parameters": {
+    "RunnerRoleArn": {
+      "Type": "String",
+      "Description": "Existing managed runner execution-role ARN for this installation."
+    },
+    "InstallationId": {
+      "Type": "String",
+      "MinLength": 1
+    },
+    "TableName": {
+      "Type": "String",
+      "Default": "app-orders",
+      "AllowedPattern": "app-[A-Za-z0-9_.-]+"
+    }
+  },
+  "Resources": {
+    "Orders": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": {
+          "Ref": "TableName"
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "orderId",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "orderId",
+            "KeyType": "HASH"
+          }
+        ]
+      }
+    },
+    "ReaderRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Ref": "RunnerRoleArn"
+                }
+              },
+              "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "aws:RequestTag/rippflow:installationId": {
+                    "Ref": "InstallationId"
+                  }
+                },
+                "ForAllValues:StringEquals": {
+                  "aws:TagKeys": [
+                    "rippflow:installationId",
+                    "rippflow:deploymentId",
+                    "rippflow:phaseKey"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "ReadExampleOrder",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "dynamodb:GetItem",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "Orders",
+                      "Arn"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "RoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ReaderRole",
+          "Arn"
+        ]
+      }
+    },
+    "TableName": {
+      "Value": {
+        "Ref": "Orders"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "apiVersion": "rippflow.dev/v1",
+  "name": "local-async-tools",
+  "workflow": "workflow.json",
+  "handlers": "handlers.json",
+  "catalog": "installed-groups.json",
+  "artifacts": {
+    "build": "handlers/launcher.py",
+    "review_a": "handlers/launcher.py",
+    "review_b": "handlers/launcher.py",
+    "finish": "handlers/finish.py"
+  }
+}

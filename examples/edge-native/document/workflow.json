@@ -1,0 +1,48 @@
+{
+  "name": "edge-document",
+  "version": "1.0.0",
+  "phases": {
+    "ingest": {
+      "service": "document",
+      "terminal": false,
+      "requires": [],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    },
+    "validate": {
+      "service": "document",
+      "terminal": false,
+      "requires": [
+        "ingest"
+      ],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    },
+    "transform": {
+      "service": "document",
+      "terminal": false,
+      "requires": [
+        "validate"
+      ],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    },
+    "artifact": {
+      "service": "document",
+      "terminal": true,
+      "requires": [
+        "transform"
+      ],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    }
+  }
+}

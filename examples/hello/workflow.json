@@ -1,0 +1,22 @@
+{
+  "name": "hello-docs",
+  "version": "1.0.0",
+  "default_group": "python-standard",
+  "phases": {
+    "start": {
+      "requires": [],
+      "service": "hello",
+      "scope": "root",
+      "mode": "sync_lambda"
+    },
+    "finish": {
+      "requires": [
+        "start"
+      ],
+      "service": "hello",
+      "scope": "fan_in_all",
+      "terminal": true,
+      "mode": "sync_lambda"
+    }
+  }
+}

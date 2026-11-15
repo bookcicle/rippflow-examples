@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "handlers": {
+    "fault": {
+      "command": [
+        "./handler"
+      ],
+      "timeoutSeconds": 2
+    }
+  }
+}

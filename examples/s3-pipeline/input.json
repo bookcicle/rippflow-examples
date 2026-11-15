@@ -1,0 +1,5 @@
+{
+  "bucket": "app-orders",
+  "rawPrefix": "raw",
+  "processedPrefix": "processed"
+}

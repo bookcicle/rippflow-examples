@@ -1,0 +1,26 @@
+{
+  "name": "edge-sensor",
+  "version": "1.0.0",
+  "phases": {
+    "sensor": {
+      "service": "sensor",
+      "terminal": false,
+      "requires": [],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    },
+    "alert": {
+      "service": "sensor",
+      "terminal": true,
+      "requires": [
+        "sensor"
+      ],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    }
+  }
+}

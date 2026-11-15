@@ -1,0 +1,49 @@
+{
+  "name": "edge-vision",
+  "version": "1.0.0",
+  "phases": {
+    "capture": {
+      "service": "vision",
+      "terminal": false,
+      "requires": [],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    },
+    "brightness": {
+      "service": "vision",
+      "terminal": false,
+      "requires": [
+        "capture"
+      ],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    },
+    "objects": {
+      "service": "vision",
+      "terminal": false,
+      "requires": [
+        "capture"
+      ],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    },
+    "decision": {
+      "service": "vision",
+      "terminal": true,
+      "requires": [
+        "brightness",
+        "objects"
+      ],
+      "sla": {
+        "timeoutSecs": 5,
+        "maxAttempts": 2
+      }
+    }
+  }
+}

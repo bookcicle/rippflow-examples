@@ -1,0 +1,5 @@
+{
+  "feature": "Add scoped callback replay protection and round-indexed review artifacts",
+  "targetApprovalRound": 2,
+  "forceExhaustion": false
+}

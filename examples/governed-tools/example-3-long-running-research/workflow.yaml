@@ -1,0 +1,57 @@
+name: long-running-governed-research-workflow
+version: 1
+
+controls:
+  policyVersion: 1
+  limits:
+    maxIterations: 6
+    maxToolCalls: 12
+    maxConcurrentOperations: 2
+    maxDuration: 2h
+  budgets:
+    - name: research-budget
+      resource: model_cost
+      unit: usd
+      limit: "2.00"
+      enforcement: hard
+
+phases:
+  search-corpus-loop:
+    type: mcp_tool
+    order: 1
+    tool: research-corpus-search
+    toolVersion: 1.0.0
+    serverRef: research-mcp
+    timeout: 20s
+    controls:
+      budget: research-budget
+
+  async-deep-synthesis:
+    type: async_tool
+    order: 2
+    requires:
+      - search-corpus-loop
+    tool: research-agent
+    timeout: 30m
+    callback:
+      required: true
+      authenticated: true
+    adapter:
+      kind: aws_lambda
+      target: arn:aws:lambda:us-east-1:111122223333:function:customer-research-agent
+      supportsStatusLookup: true
+    controls:
+      budget: research-budget
+
+  publish-dossier:
+    type: mcp_tool
+    order: 3
+    requires:
+      - async-deep-synthesis
+    tool: research-dossier-publish
+    toolVersion: 1.0.0
+    serverRef: research-mcp
+    timeout: 30s
+    controls:
+      budget: research-budget
+    terminal: true

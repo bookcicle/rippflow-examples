@@ -1,0 +1,18 @@
+{
+  "apiVersion": "rippflow.dev/v1",
+  "catalogVersion": "local-example-1",
+  "installationId": "local-example",
+  "environment": "local",
+  "engineApiVersion": "rippflow.dev/v1",
+  "groups": {
+    "python-light": {
+      "runtime": "python",
+      "runtimeVersion": "3.13",
+      "enabled": true,
+      "memoryMb": 512,
+      "timeoutSeconds": 30,
+      "queueUrl": "https://sqs.us-east-1.amazonaws.com/111122223333/local-multi-model-review",
+      "functionArn": "arn:aws:lambda:us-east-1:111122223333:function:local-multi-model-review"
+    }
+  }
+}

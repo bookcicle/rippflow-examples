@@ -24,3 +24,9 @@ run-report*.json
 # OS artifacts
 .DS_Store
 Thumbs.db
+
+# Consolidated public example build/run outputs
+target/
+*.class
+*-report.json
+examples/**/handler

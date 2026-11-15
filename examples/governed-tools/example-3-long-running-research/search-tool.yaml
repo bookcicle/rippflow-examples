@@ -1,0 +1,38 @@
+apiVersion: rippflow.dev/v1
+kind: Tool
+
+metadata:
+  name: research-corpus-search
+  version: 1.0.0
+
+spec:
+  type: mcp
+  serverRef: research-mcp
+  toolName: search_corpus
+
+  inputSchema:
+    type: object
+    required:
+      - query
+      - iteration
+    properties:
+      query:
+        type: string
+      iteration:
+        type: integer
+
+  idempotency:
+    mode: required
+    key: workflow-operation-id
+
+  authorization:
+    scopes:
+      - research.corpus.read
+
+  controls:
+    approval: none
+    budget: research-budget
+    maxCostPerCall: 0.02
+    maxConcurrent: 5
+
+  timeout: 20s

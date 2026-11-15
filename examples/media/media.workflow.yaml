@@ -1,0 +1,31 @@
+name: media-segment-transcoder
+version: 1.0.0
+default_group: python-standard
+phases:
+  transcode-segment:
+    requires: []
+    service: ffmpeg.transcode_h264
+    scope: per_shard
+    inputs:
+      preset: fast
+      crf: 21
+  loudness-qa:
+    requires:
+      - transcode-segment
+    service: audio.check_lufs
+    scope: per_shard
+    outcomes:
+      completed:
+        advance_barrier: true
+      rework:
+        rerun_phase: transcode-segment
+        max_loops: 1
+        override_inputs:
+          normalize_audio: true
+  stitch-hls-master:
+    requires:
+      - loudness-qa
+    service: hls.build_master_playlist
+    scope: fan_in_all
+    mode: sync_lambda
+    terminal: true

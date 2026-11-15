@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "handlers": {
+    "resume-analysis": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "resume-scope": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "resume-compensation": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "resume-role-modeling": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "resume-editor": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "resume-talking-points": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "resume-issue-review": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "finalize": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    }
+  }
+}

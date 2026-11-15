@@ -1,0 +1,76 @@
+{
+  "name": "async-research-document-analysis",
+  "version": "1.0.0",
+  "controls": {
+    "policyVersion": 1,
+    "limits": {
+      "maxIterations": 6,
+      "maxToolCalls": 12,
+      "maxConcurrentOperations": 2,
+      "maxDuration": "2h"
+    },
+    "budgets": [
+      {
+        "id": "research-budget",
+        "resource": "model_cost",
+        "unit": "usd",
+        "limit": "5.00",
+        "violation": "pause"
+      },
+      {
+        "id": "synthesis-budget",
+        "resource": "model_cost",
+        "unit": "usd",
+        "limit": "2.00",
+        "violation": "terminate"
+      }
+    ],
+    "gates": [
+      {
+        "id": "publish-brief-approval",
+        "action": "publish_executive_brief",
+        "target": "executive-distribution",
+        "timeout": "4h",
+        "onTimeout": "pause"
+      }
+    ]
+  },
+  "phases": [
+    {
+      "id": "ingest-corpus",
+      "handler": "tenant_research_corpus_ingest",
+      "next": "deep-research"
+    },
+    {
+      "id": "deep-research",
+      "type": "async_tool",
+      "tool": "research-agent",
+      "timeout": "30m",
+      "callback": {
+        "required": true,
+        "authenticated": true
+      },
+      "retry": {
+        "maxAttempts": 3,
+        "backoff": "exponential"
+      },
+      "adapter": {
+        "kind": "aws_lambda",
+        "target": "arn:aws:lambda:us-east-1:111122223333:function:customer-research-agent",
+        "supportsStatusLookup": true
+      },
+      "controls": {
+        "budget": "research-budget"
+      },
+      "next": "publish-brief"
+    },
+    {
+      "id": "publish-brief",
+      "handler": "tenant_research_publish_brief",
+      "controls": {
+        "budget": "synthesis-budget"
+      },
+      "terminal": true
+    }
+  ]
+}
