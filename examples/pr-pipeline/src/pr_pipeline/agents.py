@@ -1,4 +1,4 @@
-"""Author (`google-antigravity` / Gemini Flash) and Reviewer (`codex` / GPT-6.1-sol) drivers.
+"""Author and Reviewer agent drivers (`agy` CLI / Antigravity SDK and `codex` CLI).
 
 Enforces strict per-phase GitHub identity separation:
 - Author phase runs ONLY with `authorGhUser` (`GH_TOKEN` + git author/committer env).
@@ -10,11 +10,13 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import tempfile
+import time
 from typing import Any
 import uuid
 
@@ -231,7 +233,7 @@ def _effective_shard_prompt(cfg: PipelineConfig, shard: str) -> str:
 
 
 def _collect_visual_attachment_args(state: ShardState, *, include_actual: bool = True) -> tuple[list[str], str]:
-    """Builds `-i <image>` CLI flags and an explicit image manifest section for Codex multimodal turns."""
+    """Builds `-i <image>` CLI flags and an explicit image manifest section for multimodal turns."""
     image_flags: list[str] = []
     manifest_lines: list[str] = []
     idx = 0
@@ -240,17 +242,21 @@ def _collect_visual_attachment_args(state: ShardState, *, include_actual: bool =
         p = Path(raw_p)
         if p.is_file():
             idx += 1
+            resolved = p.resolve()
             image_flags.extend(["-i", str(p)])
-            manifest_lines.append(f"- Image #{idx} (`TARGET MOCK`): `{p.name}` — authoritative target visual design.")
+            manifest_lines.append(
+                f"- Image #{idx} (`TARGET MOCK`): `{p.name}` (`{resolved}`) — authoritative target visual design."
+            )
 
     if include_actual:
         for raw_p in state.actual_screenshot_paths:
             p = Path(raw_p)
             if p.is_file():
                 idx += 1
+                resolved = p.resolve()
                 image_flags.extend(["-i", str(p)])
                 manifest_lines.append(
-                    f"- Image #{idx} (`ACTUAL RENDERED UI`): `{p.name}` — actual screenshot captured from the branch."
+                    f"- Image #{idx} (`ACTUAL RENDERED UI`): `{p.name}` (`{resolved}`) — actual screenshot captured from the branch."
                 )
 
     return image_flags, "\n".join(manifest_lines)
@@ -264,10 +270,11 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
         visual_note = (
             "\n\n## Attached Visual Reference Screenshots\n"
             f"{img_manifest}\n"
+            "- If your harness uses file tools (e.g. `agy` CLI), call `read_file` (or `view_file`) on each image path above to inspect the visual mock and captured screenshots directly.\n"
             "- Match the attached `TARGET MOCK` visual hierarchy, colors, column layout, and component styling faithfully.\n"
             "- If `RIPPFLOW_UI_SCREENSHOT_DIR` screenshot capture is requested in the specification (or `screenshotCommand` is configured), "
             "ensure the offscreen screenshot test writes crisp PNGs of the rendered UI into `std::env::var(\"RIPPFLOW_UI_SCREENSHOT_DIR\")` "
-            "so `local_test_suite` and `codex_review` can visually compare your rendered UI against the mock!"
+            "so `local_test_suite` and the reviewer can visually compare your rendered UI against the mock!"
         )
     regression_note = ""
     if cfg.regression_mode:
@@ -307,7 +314,9 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
     ]
     if img_manifest:
         feedback_sections.append(
-            "## Attached Visual QA Comparison Images (Mock vs. Actual Rendered UI)\n" + img_manifest
+            "## Attached Visual QA Comparison Images (Mock vs. Actual Rendered UI)\n"
+            f"{img_manifest}\n"
+            "- Call `read_file` (or `view_file`) on each attached image path above to compare the target mock against the rendered UI."
         )
     if len(state.review_ledger) > 1:
         earlier_ledger = _format_prior_review_ledger(state.review_ledger[:-1], max_turns_shown=4)
@@ -532,6 +541,201 @@ async def _invoke_antigravity_agent(
         raise
 
 
+def _resolve_agy_bin() -> str:
+    cand = shutil.which("agy") or str(Path.home() / ".local" / "bin" / "agy")
+    if Path(cand).is_file() and os.access(cand, os.X_OK):
+        return cand
+    raise RuntimeError(f"`agy` CLI binary not found or not executable (checked PATH and {Path.home() / '.local' / 'bin' / 'agy'})")
+
+
+def _extract_agy_json_output(stdout: str) -> dict[str, Any]:
+    for raw_line in reversed(stdout.splitlines()):
+        line = raw_line.strip()
+        if not line.startswith("{"):
+            continue
+        try:
+            parsed = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(parsed, dict) and (
+            "status" in parsed or "response" in parsed or "conversation_id" in parsed or "structured_output" in parsed
+        ):
+            return parsed
+    raise RuntimeError(f"agy CLI did not emit valid JSON output: {stdout[-2000:]}")
+
+
+def _parse_review_json_fallback(text: str) -> dict[str, Any]:
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        stripped = re.sub(r"^```(?:json)?\s*", "", stripped)
+        stripped = re.sub(r"\s*```$", "", stripped)
+    return json.loads(stripped)
+
+
+def _invoke_agy_cli_agent(
+    *,
+    prompt: str,
+    worktree: Path,
+    model_name: str,
+    agent_env: dict[str, str],
+    read_only: bool,
+    session_id: str | None = None,
+    json_schema: dict[str, Any] | None = None,
+    image_paths: list[str] | None = None,
+    repo_path: Path | None = None,
+    extra_add_dirs: list[str] | None = None,
+    timeout_sec: int = 840,
+) -> tuple[str, dict[str, Any] | None, str | None]:
+    """Executes non-interactive `agy` CLI (`--print=... --output-format json`) using the user's signed-in session."""
+    agy_bin = _resolve_agy_bin()
+    with tempfile.TemporaryDirectory(prefix="rippflow-agy-") as tmp:
+        tmp_dir = Path(tmp)
+        add_dirs: list[str] = []
+        for cand_dir in [
+            str(tmp_dir),
+            str(worktree.parent),
+            *(
+                [str(repo_path / ".git")]
+                if (not read_only and repo_path and (repo_path / ".git").exists())
+                else []
+            ),
+            *(extra_add_dirs or []),
+        ]:
+            if cand_dir and cand_dir not in add_dirs:
+                add_dirs.append(cand_dir)
+
+        for raw_img in image_paths or []:
+            img_p = Path(raw_img)
+            if img_p.is_file():
+                parent_dir = str(img_p.resolve().parent)
+                if parent_dir not in add_dirs:
+                    add_dirs.append(parent_dir)
+
+        schema_path: Path | None = None
+        if json_schema is not None:
+            schema_path = tmp_dir / "output_schema.json"
+            schema_path.write_text(json.dumps(json_schema, indent=2), encoding="utf-8")
+
+        if len(prompt.encode("utf-8")) > 60_000:
+            prompt_file = tmp_dir / "prompt_instructions.md"
+            prompt_file.write_text(prompt, encoding="utf-8")
+            effective_prompt = (
+                f"Read the complete instructions from `{prompt_file}` using `read_file` (or `view_file`) "
+                "and execute them completely."
+            )
+        else:
+            effective_prompt = prompt
+
+        def _build_cmd(resume_conv_id: str | None) -> list[str]:
+            cmd = [
+                agy_bin,
+                "--model",
+                model_name,
+                "--dangerously-skip-permissions",
+                "--disable-slash-commands",
+                "--output-format",
+                "json",
+            ]
+            if read_only:
+                cmd.append("--sandbox")
+            for extra_dir in add_dirs:
+                cmd.extend(["--add-dir", extra_dir])
+            if schema_path is not None:
+                cmd.extend(["--json-schema", str(schema_path)])
+            if resume_conv_id:
+                cmd.extend(["--conversation", resume_conv_id])
+            cmd.append(f"--print={effective_prompt}")
+            return cmd
+
+        initial_head = ""
+        if not read_only:
+            initial_head = subprocess.run(
+                ["git", "-C", str(worktree), "rev-parse", "--verify", "HEAD"],
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                check=False,
+            ).stdout.strip()
+        active_session = session_id
+        last_error: str | None = None
+        for attempt in range(4):
+            try:
+                proc = subprocess.run(
+                    _build_cmd(active_session),
+                    cwd=str(worktree),
+                    env=agent_env,
+                    stdin=subprocess.DEVNULL,
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout_sec,
+                    check=False,
+                )
+            except subprocess.TimeoutExpired:
+                if not read_only:
+                    dirty = subprocess.run(
+                        ["git", "-C", str(worktree), "status", "--porcelain"],
+                        stdin=subprocess.DEVNULL,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    ).stdout.strip()
+                    curr_head = subprocess.run(
+                        ["git", "-C", str(worktree), "rev-parse", "--verify", "HEAD"],
+                        stdin=subprocess.DEVNULL,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    ).stdout.strip()
+                    if dirty or (initial_head and curr_head and curr_head != initial_head):
+                        return (
+                            f"agy CLI hit {timeout_sec}s limit after producing worktree changes; proceeding to local_test_suite.",
+                            None,
+                            active_session,
+                        )
+                raise
+            combined = f"{proc.stderr}\n{proc.stdout}".strip()
+            parsed: dict[str, Any] | None = None
+            if proc.stdout.strip():
+                try:
+                    parsed = _extract_agy_json_output(proc.stdout)
+                except RuntimeError:
+                    parsed = None
+
+            if (
+                proc.returncode == 0
+                and parsed is not None
+                and str(parsed.get("status") or "").upper() != "ERROR"
+            ):
+                new_conv_id = str(parsed.get("conversation_id") or active_session or "").strip() or None
+                response_text = str(parsed.get("response") or "").strip()
+                structured = parsed.get("structured_output")
+                structured_dict = structured if isinstance(structured, dict) else None
+                return response_text, structured_dict, new_conv_id
+
+            err_detail = str(parsed.get("error") or "") if parsed else ""
+            err_txt = f"{err_detail}\n{combined}".strip()
+            is_rate_limit = any(
+                marker in err_txt.upper()
+                for marker in ("429", "RESOURCE_EXHAUSTED", "503", "RATE LIMIT", "UNAVAILABLE")
+            )
+            if is_rate_limit and attempt < 3:
+                m = re.search(r"retry in ([0-9]+(?:\.[0-9]+)?)s", err_txt, re.IGNORECASE)
+                wait_secs = min(90.0, (float(m.group(1)) + 3.0) if m else (20.0 * (attempt + 1)))
+                time.sleep(wait_secs)
+                continue
+
+            if active_session is not None:
+                # Fall back to a fresh conversation once if `--conversation` cannot be resumed.
+                active_session = None
+                last_error = err_txt[-2000:]
+                continue
+
+            last_error = err_txt[-2000:]
+            break
+
+        raise RuntimeError(f"agy CLI failed (model={model_name}): {last_error or 'unknown error'}")
+
+
 def _ensure_committed_and_pr_opened(
     *,
     cfg: PipelineConfig,
@@ -736,6 +940,8 @@ def run_author_turn(
         gh_token=author_token,
         git_email=cfg.author_git_email,
     )
+    if (wt / "Cargo.toml").is_file():
+        author_env["CARGO_TARGET_DIR"] = str(wt.parent / f".cargo-target-{state.shard}")
     _configure_worktree_author_git(wt, cfg, author_env)
     _hydrate_pr_review_context_if_needed(cfg=cfg, state=state, wt=wt, gh_env=author_env)
 
@@ -771,6 +977,7 @@ def run_author_turn(
 
     prompt = _build_author_prompt(cfg, state, turn)
     author_img_flags, _ = _collect_visual_attachment_args(state, include_actual=(turn > 1))
+    repo_path_obj = Path(state.repo_path) if state.repo_path else None
     if cfg.author_provider == "codex":
         summary, new_session = _invoke_codex_author_agent(
             prompt=prompt,
@@ -779,11 +986,17 @@ def run_author_turn(
             agent_env=author_env,
             session_id=state.author_codex_session_id,
             image_flags=author_img_flags,
-            repo_path=Path(state.repo_path) if state.repo_path else None,
+            repo_path=repo_path_obj,
         )
         if new_session:
             state.author_codex_session_id = new_session
-    else:
+    elif (
+        os.environ.get("ANTIGRAVITY_USE_SDK") == "1"
+        and any(
+            author_env.get(k) or os.environ.get(k)
+            for k in ("GEMINI_API_KEY", "GOOGLE_GEMINI_API_KEY", "GOOGLE_API_KEY")
+        )
+    ):
         conv_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"rippflow-pr-pipeline/{request_id}/{state.shard}"))
         summary = asyncio.run(
             _invoke_antigravity_agent(
@@ -795,6 +1008,23 @@ def run_author_turn(
                 agent_env=author_env,
             )
         )
+    else:
+        author_image_paths = [
+            *state.mock_screenshot_paths,
+            *(state.actual_screenshot_paths if turn > 1 else []),
+        ]
+        summary, _, new_conv_id = _invoke_agy_cli_agent(
+            prompt=prompt,
+            worktree=wt,
+            model_name=cfg.author_model,
+            agent_env=author_env,
+            read_only=False,
+            session_id=state.author_agy_conversation_id,
+            image_paths=author_image_paths,
+            repo_path=repo_path_obj,
+        )
+        if new_conv_id:
+            state.author_agy_conversation_id = new_conv_id
     _ensure_committed_and_pr_opened(
         cfg=cfg,
         state=state,
@@ -855,16 +1085,31 @@ def run_codex_review_turn(
     head_proc = _run_git(wt, ["rev-parse", "HEAD"], env=reviewer_env, check=False)
     head_oid = head_proc.stdout.strip() if head_proc.returncode == 0 else ""
 
-    diff_proc = _run_git(wt, ["diff", f"origin/{state.base_branch}...HEAD"], env=reviewer_env, check=False)
+    diff_proc = _run_git(wt, ["diff", "-U12", f"origin/{state.base_branch}...HEAD"], env=reviewer_env, check=False)
     diff_text = diff_proc.stdout.strip()
     if not diff_text:
-        diff_text = _run_git(wt, ["diff", f"{state.base_branch}...HEAD"], env=reviewer_env, check=False).stdout.strip()
+        diff_text = _run_git(wt, ["diff", "-U12", f"{state.base_branch}...HEAD"], env=reviewer_env, check=False).stdout.strip()
+
+    log_proc = _run_git(
+        wt,
+        ["log", "--stat", "-n", "10", f"origin/{state.base_branch}..HEAD"],
+        env=reviewer_env,
+        check=False,
+    )
+    commit_log_stat = log_proc.stdout.strip()
+    if not commit_log_stat:
+        commit_log_stat = _run_git(
+            wt,
+            ["log", "--stat", "-n", "10", f"{state.base_branch}..HEAD"],
+            env=reviewer_env,
+            check=False,
+        ).stdout.strip()
 
     incremental_diff = ""
     if state.last_reviewed_commit and state.last_reviewed_commit != head_oid:
         inc_proc = _run_git(
             wt,
-            ["diff", f"{state.last_reviewed_commit}..HEAD"],
+            ["diff", "-U12", f"{state.last_reviewed_commit}..HEAD"],
             env=reviewer_env,
             check=False,
         )
@@ -894,15 +1139,14 @@ def run_codex_review_turn(
         visual_gate_rule = (
             "CRITICAL VISUAL QA GATE:\n"
             "- Both `TARGET MOCK` reference image(s) AND `ACTUAL RENDERED UI` screenshot(s) from this commit are attached directly to this review turn.\n"
+            "- If your harness uses `read_file` (or `view_file`) (e.g. `agy` CLI), call `read_file` (or `view_file`) on EVERY `TARGET MOCK` and `ACTUAL RENDERED UI` path listed above to inspect them visually.\n"
             "- Inspect every attached `ACTUAL RENDERED UI` screenshot pixel-by-pixel against the corresponding `TARGET MOCK` screenshot!\n"
-            "- If the rendered UI deviates materially from the mock (e.g. stacked full-width cards instead of the 6-column tabular layout, "
-            "unaggregated `39/39` loop attempts instead of unique workflow phases, monochrome `■` text instead of colored progress segments, "
-            "`Wall 0ms` / wrong timestamps, duplicate `Runs` toolbar buttons, missing header tabs on `Resources & Gauges`, or stretched `Logs` buttons), "
+            "- If the rendered UI deviates materially from the mock, "
             "you MUST return `verdict: \"comment\"` with concrete file/line findings citing the exact visual discrepancy!\n"
             "- Only return `verdict: \"approve\"` when BOTH code correctness AND visual design parity against the attached mock screenshots pass!"
             if has_actual
             else "VISUAL MOCK ATTACHED:\n"
-            "- `TARGET MOCK` reference screenshot(s) are attached. Verify the UI layout/styling code matches the mock; if UI screenshot capture "
+            "- `TARGET MOCK` reference screenshot(s) are attached. If your harness uses `read_file` (or `view_file`), call `read_file` (or `view_file`) on each `TARGET MOCK` path listed above. Verify the UI layout/styling code matches the mock; if UI screenshot capture "
             "was requested in the specification (`RIPPFLOW_UI_SCREENSHOT_DIR`) and is missing, request it in your review comments."
         )
         prompt_parts.append(f"## Attached Visual QA Screenshots\n{review_img_manifest}\n\n{visual_gate_rule}")
@@ -934,84 +1178,142 @@ def run_codex_review_turn(
     prompt_parts.append(f"## Full Branch Diff Preview (`{state.base_branch}...HEAD`)\n```diff\n{diff_text[:20000]}\n```")
     review_prompt = "\n\n".join(prompt_parts)
 
-    session_id = state.codex_session_id
-    with tempfile.TemporaryDirectory(prefix="rippflow-codex-review-") as tmp:
-        tmp_dir = Path(tmp)
-        schema_path = tmp_dir / "review_schema.json"
-        out_path = tmp_dir / "review_output.json"
-        schema_path.write_text(json.dumps(REVIEW_JSON_SCHEMA, indent=2), encoding="utf-8")
-
-        proc: subprocess.CompletedProcess[str] | None = None
-        if session_id:
-            resume_cmd = [
-                "codex",
-                "exec",
-                "resume",
-                "--skip-git-repo-check",
-                "-m",
-                cfg.reviewer_model,
-                *review_img_flags,
-                "--output-schema",
-                str(schema_path),
-                "-o",
-                str(out_path),
-                "--json",
-                session_id,
-                "-",
-            ]
-            proc = subprocess.run(
-                resume_cmd,
-                cwd=str(wt),
-                env=reviewer_env,
-                input=review_prompt,
-                capture_output=True,
-                text=True,
-                timeout=540,
-                check=False,
-            )
-            if proc.returncode != 0 or not out_path.is_file():
-                # Gracefully fall back to a fresh session (which still receives the full durable `review_ledger`)
-                proc = None
-                session_id = None
-
-        if proc is None:
-            fresh_cmd = [
-                "codex",
-                "exec",
-                "--skip-git-repo-check",
-                "-C",
-                str(wt),
-                "-s",
-                "read-only",
-                "-m",
-                cfg.reviewer_model,
-                *review_img_flags,
-                "--output-schema",
-                str(schema_path),
-                "-o",
-                str(out_path),
-                "--json",
-                "-",
-            ]
-            proc = subprocess.run(
-                fresh_cmd,
-                cwd=str(wt),
-                env=reviewer_env,
-                input=review_prompt,
-                capture_output=True,
-                text=True,
-                timeout=540,
-                check=False,
-            )
-            if proc.returncode != 0 or not out_path.is_file():
-                raise RuntimeError(
-                    f"codex exec review failed ({proc.returncode}): {(proc.stderr or proc.stdout)[-2000:]}"
+    session_id = state.reviewer_agy_conversation_id if cfg.reviewer_provider == "antigravity" else state.codex_session_id
+    if cfg.reviewer_provider == "antigravity":
+        review_imgs = [*state.mock_screenshot_paths, *state.actual_screenshot_paths]
+        with tempfile.TemporaryDirectory(prefix="rippflow-agy-review-") as review_tmp:
+            review_tmp_dir = Path(review_tmp)
+            full_diff_path = review_tmp_dir / "pr_full_diff.patch"
+            full_diff_sections: list[str] = []
+            if commit_log_stat:
+                full_diff_sections.append(
+                    f"### Commit Log & Diffstat (`{state.base_branch}..HEAD`)\n{commit_log_stat}\n"
                 )
+            full_diff_sections.append(
+                f"### Complete Untruncated Branch Diff (`{state.base_branch}...HEAD`)\n"
+                + (diff_text if diff_text else "(no diff)")
+            )
+            full_diff_path.write_text("\n".join(full_diff_sections), encoding="utf-8")
 
-        detected_thread = _extract_codex_thread_id(proc.stdout)
-        if detected_thread:
-            session_id = detected_thread
-        review_data = json.loads(out_path.read_text(encoding="utf-8"))
+            inc_diff_path: Path | None = None
+            if incremental_diff:
+                inc_diff_path = review_tmp_dir / "pr_incremental_diff.patch"
+                inc_diff_path.write_text(incremental_diff, encoding="utf-8")
+
+            readonly_guard = (
+                "IMPORTANT — STRICT READ-ONLY REVIEWER CONSTRAINTS & FAST DIFF PROTOCOL:\n"
+                "- You are running as a READ-ONLY code and Visual QA reviewer.\n"
+                "- Do NOT edit, create, delete, stage, or commit any files in the workspace.\n"
+                "- Do NOT run `gh` or `cargo` commands — the pipeline already ran tests/screenshots and posts your JSON verdict.\n"
+                f"- COMPLETE UNTRUNCATED PR DIFF FILE: `{full_diff_path}` (with 12 lines of context and exact line numbers)."
+                + (f"\n- INCREMENTAL DIFF SINCE LAST REVIEW: `{inc_diff_path}`." if inc_diff_path else "")
+                + "\n- STEP 1: On your FIRST turn, call `read_file` in parallel on the diff file(s) above AND on EVERY `TARGET MOCK` and `ACTUAL RENDERED UI` PNG path listed below.\n"
+                "- STEP 2: Do NOT page sequentially across unrelated 500-line sections of large files like `src/warp_shell.rs`. Only call `read_file` on a narrow, targeted line range if verifying a specific symbol touched by the diff strictly requires it.\n"
+                "- STEP 3: As soon as you have verified code correctness and Visual QA screenshot parity, return ONLY valid JSON matching the required schema immediately.\n\n"
+            )
+            agy_review_prompt = readonly_guard + review_prompt
+            resp_text, structured_output, new_conv_id = _invoke_agy_cli_agent(
+                prompt=agy_review_prompt,
+                worktree=wt,
+                model_name=cfg.reviewer_model,
+                agent_env=reviewer_env,
+                read_only=True,
+                session_id=session_id,
+                json_schema=REVIEW_JSON_SCHEMA,
+                image_paths=review_imgs,
+                repo_path=None,
+                extra_add_dirs=[str(review_tmp_dir)],
+                timeout_sec=840,
+            )
+        dirty_check = _run_git(wt, ["status", "--porcelain"], env=reviewer_env, check=False)
+        if dirty_check.returncode == 0 and dirty_check.stdout.strip():
+            _run_git(wt, ["checkout", "--", "."], env=reviewer_env, check=False)
+            _run_git(wt, ["clean", "-fd"], env=reviewer_env, check=False)
+        if isinstance(structured_output, dict) and "verdict" in structured_output:
+            review_data = structured_output
+        else:
+            review_data = _parse_review_json_fallback(resp_text)
+        if new_conv_id:
+            state.reviewer_agy_conversation_id = new_conv_id
+            session_id = new_conv_id
+    else:
+        with tempfile.TemporaryDirectory(prefix="rippflow-codex-review-") as tmp:
+            tmp_dir = Path(tmp)
+            schema_path = tmp_dir / "review_schema.json"
+            out_path = tmp_dir / "review_output.json"
+            schema_path.write_text(json.dumps(REVIEW_JSON_SCHEMA, indent=2), encoding="utf-8")
+
+            proc: subprocess.CompletedProcess[str] | None = None
+            if session_id:
+                resume_cmd = [
+                    "codex",
+                    "exec",
+                    "resume",
+                    "--skip-git-repo-check",
+                    "-m",
+                    cfg.reviewer_model,
+                    *review_img_flags,
+                    "--output-schema",
+                    str(schema_path),
+                    "-o",
+                    str(out_path),
+                    "--json",
+                    session_id,
+                    "-",
+                ]
+                proc = subprocess.run(
+                    resume_cmd,
+                    cwd=str(wt),
+                    env=reviewer_env,
+                    input=review_prompt,
+                    capture_output=True,
+                    text=True,
+                    timeout=540,
+                    check=False,
+                )
+                if proc.returncode != 0 or not out_path.is_file():
+                    # Gracefully fall back to a fresh session (which still receives the full durable `review_ledger`)
+                    proc = None
+                    session_id = None
+
+            if proc is None:
+                fresh_cmd = [
+                    "codex",
+                    "exec",
+                    "--skip-git-repo-check",
+                    "-C",
+                    str(wt),
+                    "-s",
+                    "read-only",
+                    "-m",
+                    cfg.reviewer_model,
+                    *review_img_flags,
+                    "--output-schema",
+                    str(schema_path),
+                    "-o",
+                    str(out_path),
+                    "--json",
+                    "-",
+                ]
+                proc = subprocess.run(
+                    fresh_cmd,
+                    cwd=str(wt),
+                    env=reviewer_env,
+                    input=review_prompt,
+                    capture_output=True,
+                    text=True,
+                    timeout=540,
+                    check=False,
+                )
+                if proc.returncode != 0 or not out_path.is_file():
+                    raise RuntimeError(
+                        f"codex exec review failed ({proc.returncode}): {(proc.stderr or proc.stdout)[-2000:]}"
+                    )
+
+            detected_thread = _extract_codex_thread_id(proc.stdout)
+            if detected_thread:
+                session_id = detected_thread
+            review_data = json.loads(out_path.read_text(encoding="utf-8"))
 
     comments = list(review_data.get("comments") or [])
     verdict = "approve" if (review_data.get("verdict") == "approve" and not comments) else "comment"
@@ -1022,6 +1324,7 @@ def run_codex_review_turn(
     if state.pr_url or state.pr_number:
         pr_ref = state.pr_url or str(state.pr_number)
         repo_args = ["--repo", state.github_repo] if state.github_repo and not state.pr_url else []
+        reviewer_heading = "Automated Review" if cfg.reviewer_provider == "antigravity" else "Automated Codex Review"
         visual_badge = ""
         if state.mock_screenshot_paths or state.actual_screenshot_paths:
             visual_badge = (
@@ -1029,7 +1332,7 @@ def run_codex_review_turn(
                 f"`{len(state.actual_screenshot_paths)}` rendered UI screenshot(s) (see PR description header)."
             )
         if verdict == "approve":
-            body = f"### Automated Codex Review (`{cfg.reviewer_model}`)\n\n{summary}{visual_badge}\n\nNo remaining findings — approving."
+            body = f"### {reviewer_heading} (`{cfg.reviewer_model}`)\n\n{summary}{visual_badge}\n\nNo remaining findings — approving."
             rev = subprocess.run(
                 ["gh", "pr", "review", pr_ref, *repo_args, "--approve", "--body", body],
                 cwd=str(wt),
@@ -1052,7 +1355,7 @@ def run_codex_review_turn(
                 if turn >= cfg.max_turns
                 else f"*(Turn {turn}/{cfg.max_turns} — returning to `{cfg.author_gh_user}`)*"
             )
-            body = f"### Automated Codex Review (`{cfg.reviewer_model}`) {turn_note}\n\n{summary}{visual_badge}\n\n{bullets}"
+            body = f"### {reviewer_heading} (`{cfg.reviewer_model}`) {turn_note}\n\n{summary}{visual_badge}\n\n{bullets}"
             rev = subprocess.run(
                 ["gh", "pr", "review", pr_ref, *repo_args, "--comment", "--body", body],
                 cwd=str(wt),

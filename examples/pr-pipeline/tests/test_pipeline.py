@@ -684,3 +684,296 @@ class TestDotenvAndNestedExamplesLayout:
         )
         assert "Inspect Git History First" in author_prompt
         assert "Write a Reproducing Test First" in author_prompt
+
+
+class TestAgyCliAuthorAndReviewer:
+    def test_shorthand_model_normalization_and_reviewer_provider_inference(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("AUTHOR_PROVIDER", raising=False)
+        monkeypatch.delenv("REVIEWER_PROVIDER", raising=False)
+
+        cfg = PipelineConfig.from_raw(
+            {
+                "featureRequest": "Round pane corners",
+                "authorProvider": "agy",
+                "authorModel": "3.8flash",
+                "reviewerModel": "argon",
+                "repos": ["rippflow-cli"],
+            },
+            default_workspace=tmp_path,
+            workflow_dir=REPO_ROOT,
+        )
+        assert cfg.author_provider == "antigravity"
+        assert cfg.author_model == "gemini-3.8-flash-high"
+        assert cfg.reviewer_provider == "antigravity"
+        assert cfg.reviewer_model == "gemini-4-argon-high"
+
+        cfg_codex_rev = PipelineConfig.from_raw(
+            {
+                "featureRequest": "Keep codex default",
+                "reviewerModel": "gpt-6.1-sol",
+                "repos": ["rippflow-cli"],
+            },
+            default_workspace=tmp_path,
+            workflow_dir=REPO_ROOT,
+        )
+        assert cfg_codex_rev.reviewer_provider == "codex"
+        assert cfg_codex_rev.reviewer_model == "gpt-6.1-sol"
+
+    def test_invoke_agy_cli_agent_flags_large_prompt_and_resume_fallback(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from pr_pipeline import agents
+
+        fake_agy = tmp_path / "agy"
+        fake_agy.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        fake_agy.chmod(0o755)
+        monkeypatch.setattr(agents, "_resolve_agy_bin", lambda: str(fake_agy))
+
+        img_dir = tmp_path / "shots"
+        img_dir.mkdir()
+        img_file = img_dir / "target.png"
+        img_file.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+        wt = tmp_path / "wt" / "repo"
+        wt.mkdir(parents=True)
+
+        calls: list[list[str]] = []
+
+        def fake_run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            calls.append(cmd)
+            if "--conversation" in cmd:
+                return subprocess.CompletedProcess(
+                    args=cmd,
+                    returncode=1,
+                    stdout="",
+                    stderr="conversation not found",
+                )
+            return subprocess.CompletedProcess(
+                args=cmd,
+                returncode=0,
+                stdout='Loading...\n{"conversation_id":"conv-new","status":"SUCCESS","response":"ok","structured_output":{"verdict":"approve","summary":"LGTM","comments":[]}}\n',
+                stderr="",
+            )
+
+        monkeypatch.setattr(agents.subprocess, "run", fake_run)
+
+        big_prompt = "X" * 65_000
+        resp, structured, conv_id = agents._invoke_agy_cli_agent(
+            prompt=big_prompt,
+            worktree=wt,
+            model_name="gemini-4-argon-high",
+            agent_env={"PATH": os.environ.get("PATH", "")},
+            read_only=True,
+            session_id="stale-conv",
+            json_schema=agents.REVIEW_JSON_SCHEMA,
+            image_paths=[str(img_file)],
+        )
+        assert len(calls) == 2
+        assert "--conversation" in calls[0]
+        assert "--conversation" not in calls[1]
+        final_cmd = calls[1]
+        assert "--sandbox" in final_cmd
+        assert "--dangerously-skip-permissions" in final_cmd
+        assert "--json-schema" in final_cmd
+        assert str(img_dir.resolve()) in final_cmd
+        assert final_cmd[-1].startswith("--print=Read the complete instructions from `")
+        assert resp == "ok"
+        assert structured == {"verdict": "approve", "summary": "LGTM", "comments": []}
+        assert conv_id == "conv-new"
+
+    def test_run_codex_review_turn_antigravity_readonly_cleans_dirty_worktree(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from pr_pipeline import agents
+        from pr_pipeline.models import RepoSpec, ShardState
+
+        repo_dir = tmp_path / "repo"
+        _init_git_repo(repo_dir)
+        subprocess.run(["git", "-C", str(repo_dir), "branch", "origin/main"], check=True)
+        subprocess.run(["git", "-C", str(repo_dir), "checkout", "-b", "ai/feature/test"], check=True)
+        (repo_dir / "ui.rs").write_text("fn ui() {}\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(repo_dir), "add", "ui.rs"], check=True)
+        subprocess.run(["git", "-C", str(repo_dir), "commit", "-m", "add ui"], check=True)
+
+        # Simulate reviewer leaving an untracked stray file inside worktree; pipeline must clean it up.
+        captured_review_kwargs: dict[str, object] = {}
+
+        def fake_agy_invoke(**kwargs: object) -> tuple[str, dict[str, object] | None, str | None]:
+            assert kwargs["read_only"] is True
+            assert kwargs["model_name"] == "gemini-4-argon-high"
+            assert kwargs["timeout_sec"] == 840
+            extra_dirs = list(kwargs.get("extra_add_dirs") or [])  # type: ignore[arg-type]
+            assert len(extra_dirs) == 1
+            diff_file = Path(extra_dirs[0]) / "pr_full_diff.patch"
+            assert diff_file.is_file()
+            diff_contents = diff_file.read_text(encoding="utf-8")
+            assert "ui.rs" in diff_contents
+            assert "fn ui() {}" in diff_contents
+            captured_review_kwargs.update(kwargs)
+            (repo_dir / "stray_reviewer_file.tmp").write_text("oops", encoding="utf-8")
+            return (
+                '{"verdict":"approve","summary":"Looks good cleanly.","comments":[]}',
+                {"verdict": "approve", "summary": "Looks good cleanly.", "comments": []},
+                "argon-conv-1",
+            )
+
+        monkeypatch.setattr(agents, "resolve_gh_token", lambda user: f"tok-{user}")
+        monkeypatch.setattr(agents, "_hydrate_pr_review_context_if_needed", lambda **kwargs: None)
+        monkeypatch.setattr(agents, "_invoke_agy_cli_agent", fake_agy_invoke)
+
+        gh_calls: list[list[str]] = []
+        real_subproc_run = subprocess.run
+
+        def fake_subproc_run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            if cmd and cmd[0] == "gh":
+                gh_calls.append(cmd)
+                return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
+            return real_subproc_run(cmd, **kwargs)
+
+        monkeypatch.setattr(agents.subprocess, "run", fake_subproc_run)
+
+        cfg = PipelineConfig(
+            feature_request="Round pane corners",
+            workspace_dir=str(tmp_path),
+            repos={"repo": RepoSpec(name="repo", path=str(repo_dir))},
+            author_provider="antigravity",
+            reviewer_provider="antigravity",
+            author_gh_user="abarraford-ai",
+            reviewer_gh_user="abarrafo",
+            author_model="gemini-3.8-flash-high",
+            reviewer_model="gemini-4-argon-high",
+            execution_mode="live",
+        )
+        state = ShardState(
+            shard="repo",
+            repo_path=str(repo_dir),
+            worktree_path=str(repo_dir),
+            branch_name="ai/feature/test",
+            base_branch="main",
+            github_repo="bookcicle/rippflow-cli",
+            pr_number=999,
+            pr_url="https://github.com/bookcicle/rippflow-cli/pull/999",
+            turns_used=1,
+        )
+
+        res = agents.run_codex_review_turn(cfg=cfg, state=state)
+        assert res["verdict"] == "approve"
+        assert res["sessionId"] == "argon-conv-1"
+        assert state.reviewer_agy_conversation_id == "argon-conv-1"
+        assert not (repo_dir / "stray_reviewer_file.tmp").exists()
+        assert len(gh_calls) == 1
+        assert "### Automated Review (`gemini-4-argon-high`)" in gh_calls[0][gh_calls[0].index("--body") + 1]
+
+    def test_author_turn_sets_cargo_target_dir_and_salvages_timeout_edits(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from pr_pipeline import agents
+        from pr_pipeline.models import PipelineConfig, RepoSpec, ShardState
+
+        wt = tmp_path / "worktrees" / "rippflow-cli"
+        _init_git_repo(wt)
+        subprocess.run(["git", "-C", str(wt), "branch", "origin/main"], check=True)
+        subprocess.run(["git", "-C", str(wt), "checkout", "-b", "ai/feature/test"], check=True)
+        (wt / "Cargo.toml").write_text('[package]\nname = "demo"\nversion = "0.1.0"\n', encoding="utf-8")
+        subprocess.run(["git", "-C", str(wt), "add", "Cargo.toml"], check=True)
+        subprocess.run(["git", "-C", str(wt), "commit", "-m", "add Cargo.toml"], check=True)
+
+        captured_envs: list[dict[str, str]] = []
+
+        def fake_agy_invoke(**kwargs: object) -> tuple[str, dict[str, object] | None, str | None]:
+            captured_envs.append(dict(kwargs["agent_env"]))  # type: ignore[arg-type]
+            return "Updated rust crate.", None, "flash-conv-1"
+
+        monkeypatch.setattr(agents, "resolve_gh_token", lambda user: f"tok-{user}")
+        monkeypatch.setattr(agents, "_configure_worktree_author_git", lambda *args, **kwargs: None)
+        monkeypatch.setattr(agents, "_hydrate_pr_review_context_if_needed", lambda **kwargs: None)
+        monkeypatch.setattr(agents, "_ensure_committed_and_pr_opened", lambda **kwargs: None)
+        monkeypatch.setattr(agents, "_invoke_agy_cli_agent", fake_agy_invoke)
+
+        cfg = PipelineConfig(
+            feature_request="Round pane corners",
+            workspace_dir=str(tmp_path),
+            repos={"rippflow-cli": RepoSpec(name="rippflow-cli", path=str(wt))},
+            author_provider="antigravity",
+            reviewer_provider="antigravity",
+            author_gh_user="abarraford-ai",
+            reviewer_gh_user="abarrafo",
+            author_model="3.8flash",
+            reviewer_model="argon",
+            execution_mode="live",
+        )
+        state = ShardState(
+            shard="rippflow-cli",
+            repo_path=str(wt),
+            worktree_path=str(wt),
+            branch_name="ai/feature/test",
+            base_branch="main",
+            github_repo="bookcicle/rippflow-cli",
+            turns_used=0,
+        )
+
+        out = agents.run_author_turn(
+            cfg=cfg,
+            state=state,
+            request_id="req-cargo-test",
+            session_dir=tmp_path / "session",
+        )
+        assert out["turn"] == 1
+        assert state.author_agy_conversation_id == "flash-conv-1"
+        assert captured_envs[0]["CARGO_TARGET_DIR"] == str(wt.parent / ".cargo-target-rippflow-cli")
+
+        # Now verify `_invoke_agy_cli_agent` timeout salvage semantics directly.
+        monkeypatch.undo()
+        monkeypatch.setattr(agents, "_resolve_agy_bin", lambda: "/usr/bin/agy")
+        real_subproc_run = subprocess.run
+        make_edit = {"active": False, "readonly": False}
+
+        def timeout_run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            if cmd and cmd[0] == "/usr/bin/agy":
+                if make_edit["active"] and not make_edit["readonly"]:
+                    (wt / "Cargo.toml").write_text('[package]\nname = "demo-edited"\nversion = "0.1.0"\n', encoding="utf-8")
+                raise subprocess.TimeoutExpired(cmd=cmd, timeout=10)
+            return real_subproc_run(cmd, **kwargs)
+
+        monkeypatch.setattr(agents.subprocess, "run", timeout_run)
+
+        # Clean worktree on timeout still raises.
+        with pytest.raises(subprocess.TimeoutExpired):
+            agents._invoke_agy_cli_agent(
+                prompt="Edit",
+                worktree=wt,
+                model_name="gemini-3.8-flash-high",
+                agent_env={"PATH": os.environ.get("PATH", "")},
+                read_only=False,
+                timeout_sec=10,
+            )
+
+        # Read-only timeout still raises even if file exists.
+        make_edit["readonly"] = True
+        with pytest.raises(subprocess.TimeoutExpired):
+            agents._invoke_agy_cli_agent(
+                prompt="Review",
+                worktree=wt,
+                model_name="gemini-4-argon-high",
+                agent_env={"PATH": os.environ.get("PATH", "")},
+                read_only=True,
+                timeout_sec=10,
+            )
+
+        # Dirty worktree on author timeout salvages edits for local_test_suite.
+        make_edit["readonly"] = False
+        make_edit["active"] = True
+        resp, _, _ = agents._invoke_agy_cli_agent(
+            prompt="Edit",
+            worktree=wt,
+            model_name="gemini-3.8-flash-high",
+            agent_env={"PATH": os.environ.get("PATH", "")},
+            read_only=False,
+            session_id="conv-prev",
+            timeout_sec=10,
+        )
+        assert "proceeding to local_test_suite" in resp
+
+
