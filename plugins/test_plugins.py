@@ -366,10 +366,19 @@ tokio = "1.28"
             pyproject_content = """[project]
 name = "sample-pkg"
 version = "0.2.0"
+description = "A standard PEP 621 sample package"
+dependencies = [
+    "fastapi>=0.100.0",
+    "pydantic>=2.0",
+]
 
-[project.dependencies]
-fastapi = ">=0.100.0"
-pydantic = ">=2.0"
+[project.scripts]
+sample-cli = "sample_pkg.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
 """
             (Path(td) / "pyproject.toml").write_text(pyproject_content, encoding="utf-8")
 
@@ -386,6 +395,9 @@ pydantic = ">=2.0"
             full_delta = "\n".join(e.get("text", "") for e in events if e.get("type") == "delta")
             self.assertIn("sample-pkg", full_delta)
             self.assertIn("fastapi", full_delta)
+            self.assertIn("pydantic", full_delta)
+            self.assertIn("sample-cli", full_delta)
+            self.assertIn("pytest", full_delta)
 
     def test_malformed_input(self):
         code, events, _ = self.run_agent("{broken json")
@@ -415,16 +427,28 @@ class TestInstallScript(unittest.TestCase):
 
     def test_install_copies_and_rewrites_paths(self):
         with tempfile.TemporaryDirectory() as td:
+            td_path = Path(td)
+            fake_home = td_path / "fake_home"
+            fake_home.mkdir()
+
+            # Test using a relative destination path containing special characters like '&'
+            # to verify path canonicalization and safe manifest string serialization.
+            rel_dest_name = "test & plugins"
+            env = os.environ.copy()
+            env["HOME"] = str(fake_home)
+
             res = subprocess.run(
-                ["bash", self.install_sh, td],
+                ["bash", self.install_sh, rel_dest_name],
+                cwd=str(td_path),
+                env=env,
                 capture_output=True,
                 text=True,
                 timeout=10,
             )
             self.assertEqual(res.returncode, 0, f"install.sh failed: {res.stderr}")
 
-            # Check manifests installed
-            dest = Path(td)
+            # Check manifests installed in target dir
+            dest = (td_path / rel_dest_name).resolve()
             ollama_m = dest / "ollama.yaml"
             py_m = dest / "py-repo-analyst.yaml"
             js_m = dest / "js-workspace-helper.json"
@@ -433,7 +457,7 @@ class TestInstallScript(unittest.TestCase):
             self.assertTrue(py_m.is_file(), "Missing installed py-repo-analyst.yaml")
             self.assertTrue(js_m.is_file(), "Missing installed js-workspace-helper.json")
 
-            # Check script files copied
+            # Check script files copied and executable
             py_script = dest / "py-repo-analyst" / "agent.py"
             js_script = dest / "js-workspace-helper" / "agent.mjs"
             self.assertTrue(py_script.is_file(), "Missing installed agent.py")
@@ -451,6 +475,13 @@ class TestInstallScript(unittest.TestCase):
                 js_spec = json.load(f)
             js_args = js_spec.get("invoke", {}).get("args", [])
             self.assertIn(str(js_script), js_args)
+
+            # Verify agents mirror directory in isolated fake_home
+            agents_dir = fake_home / ".rippflow" / "agents"
+            self.assertTrue(agents_dir.is_dir(), "Mirror directory ~/.rippflow/agents was not created")
+            self.assertTrue((agents_dir / "ollama.yaml").is_file(), "Missing mirrored ollama.yaml")
+            self.assertTrue((agents_dir / "py-repo-analyst.yaml").is_file(), "Missing mirrored py-repo-analyst.yaml")
+            self.assertTrue((agents_dir / "js-workspace-helper.json").is_file(), "Missing mirrored js-workspace-helper.json")
 
 
 if __name__ == "__main__":
