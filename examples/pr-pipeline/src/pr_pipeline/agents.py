@@ -270,7 +270,7 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
         visual_note = (
             "\n\n## Attached Visual Reference Screenshots\n"
             f"{img_manifest}\n"
-            "- If your harness uses file tools (e.g. `agy` CLI), call `view_file` on each image path above to inspect the visual mock and captured screenshots directly.\n"
+            "- If your harness uses file tools (e.g. `agy` CLI), call `read_file` (or `view_file`) on each image path above to inspect the visual mock and captured screenshots directly.\n"
             "- Match the attached `TARGET MOCK` visual hierarchy, colors, column layout, and component styling faithfully.\n"
             "- If `RIPPFLOW_UI_SCREENSHOT_DIR` screenshot capture is requested in the specification (or `screenshotCommand` is configured), "
             "ensure the offscreen screenshot test writes crisp PNGs of the rendered UI into `std::env::var(\"RIPPFLOW_UI_SCREENSHOT_DIR\")` "
@@ -316,7 +316,7 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
         feedback_sections.append(
             "## Attached Visual QA Comparison Images (Mock vs. Actual Rendered UI)\n"
             f"{img_manifest}\n"
-            "- Call `view_file` on each attached image path above to compare the target mock against the rendered UI."
+            "- Call `read_file` (or `view_file`) on each attached image path above to compare the target mock against the rendered UI."
         )
     if len(state.review_ledger) > 1:
         earlier_ledger = _format_prior_review_ledger(state.review_ledger[:-1], max_turns_shown=4)
@@ -583,6 +583,7 @@ def _invoke_agy_cli_agent(
     json_schema: dict[str, Any] | None = None,
     image_paths: list[str] | None = None,
     repo_path: Path | None = None,
+    extra_add_dirs: list[str] | None = None,
     timeout_sec: int = 840,
 ) -> tuple[str, dict[str, Any] | None, str | None]:
     """Executes non-interactive `agy` CLI (`--print=... --output-format json`) using the user's signed-in session."""
@@ -598,8 +599,9 @@ def _invoke_agy_cli_agent(
                 if (not read_only and repo_path and (repo_path / ".git").exists())
                 else []
             ),
+            *(extra_add_dirs or []),
         ]:
-            if cand_dir not in add_dirs:
+            if cand_dir and cand_dir not in add_dirs:
                 add_dirs.append(cand_dir)
 
         for raw_img in image_paths or []:
@@ -618,7 +620,7 @@ def _invoke_agy_cli_agent(
             prompt_file = tmp_dir / "prompt_instructions.md"
             prompt_file.write_text(prompt, encoding="utf-8")
             effective_prompt = (
-                f"Read the complete instructions from `{prompt_file}` using `view_file` "
+                f"Read the complete instructions from `{prompt_file}` using `read_file` (or `view_file`) "
                 "and execute them completely."
             )
         else:
@@ -1083,16 +1085,31 @@ def run_codex_review_turn(
     head_proc = _run_git(wt, ["rev-parse", "HEAD"], env=reviewer_env, check=False)
     head_oid = head_proc.stdout.strip() if head_proc.returncode == 0 else ""
 
-    diff_proc = _run_git(wt, ["diff", f"origin/{state.base_branch}...HEAD"], env=reviewer_env, check=False)
+    diff_proc = _run_git(wt, ["diff", "-U12", f"origin/{state.base_branch}...HEAD"], env=reviewer_env, check=False)
     diff_text = diff_proc.stdout.strip()
     if not diff_text:
-        diff_text = _run_git(wt, ["diff", f"{state.base_branch}...HEAD"], env=reviewer_env, check=False).stdout.strip()
+        diff_text = _run_git(wt, ["diff", "-U12", f"{state.base_branch}...HEAD"], env=reviewer_env, check=False).stdout.strip()
+
+    log_proc = _run_git(
+        wt,
+        ["log", "--stat", "-n", "10", f"origin/{state.base_branch}..HEAD"],
+        env=reviewer_env,
+        check=False,
+    )
+    commit_log_stat = log_proc.stdout.strip()
+    if not commit_log_stat:
+        commit_log_stat = _run_git(
+            wt,
+            ["log", "--stat", "-n", "10", f"{state.base_branch}..HEAD"],
+            env=reviewer_env,
+            check=False,
+        ).stdout.strip()
 
     incremental_diff = ""
     if state.last_reviewed_commit and state.last_reviewed_commit != head_oid:
         inc_proc = _run_git(
             wt,
-            ["diff", f"{state.last_reviewed_commit}..HEAD"],
+            ["diff", "-U12", f"{state.last_reviewed_commit}..HEAD"],
             env=reviewer_env,
             check=False,
         )
@@ -1122,14 +1139,14 @@ def run_codex_review_turn(
         visual_gate_rule = (
             "CRITICAL VISUAL QA GATE:\n"
             "- Both `TARGET MOCK` reference image(s) AND `ACTUAL RENDERED UI` screenshot(s) from this commit are attached directly to this review turn.\n"
-            "- If your harness uses `view_file` (e.g. `agy` CLI), call `view_file` on EVERY `TARGET MOCK` and `ACTUAL RENDERED UI` path listed above to inspect them visually.\n"
+            "- If your harness uses `read_file` (or `view_file`) (e.g. `agy` CLI), call `read_file` (or `view_file`) on EVERY `TARGET MOCK` and `ACTUAL RENDERED UI` path listed above to inspect them visually.\n"
             "- Inspect every attached `ACTUAL RENDERED UI` screenshot pixel-by-pixel against the corresponding `TARGET MOCK` screenshot!\n"
             "- If the rendered UI deviates materially from the mock, "
             "you MUST return `verdict: \"comment\"` with concrete file/line findings citing the exact visual discrepancy!\n"
             "- Only return `verdict: \"approve\"` when BOTH code correctness AND visual design parity against the attached mock screenshots pass!"
             if has_actual
             else "VISUAL MOCK ATTACHED:\n"
-            "- `TARGET MOCK` reference screenshot(s) are attached. If your harness uses `view_file`, call `view_file` on each `TARGET MOCK` path listed above. Verify the UI layout/styling code matches the mock; if UI screenshot capture "
+            "- `TARGET MOCK` reference screenshot(s) are attached. If your harness uses `read_file` (or `view_file`), call `read_file` (or `view_file`) on each `TARGET MOCK` path listed above. Verify the UI layout/styling code matches the mock; if UI screenshot capture "
             "was requested in the specification (`RIPPFLOW_UI_SCREENSHOT_DIR`) and is missing, request it in your review comments."
         )
         prompt_parts.append(f"## Attached Visual QA Screenshots\n{review_img_manifest}\n\n{visual_gate_rule}")
@@ -1163,28 +1180,51 @@ def run_codex_review_turn(
 
     session_id = state.reviewer_agy_conversation_id if cfg.reviewer_provider == "antigravity" else state.codex_session_id
     if cfg.reviewer_provider == "antigravity":
-        readonly_guard = (
-            "IMPORTANT — STRICT READ-ONLY REVIEWER CONSTRAINTS:\n"
-            "- You are running as a READ-ONLY code and Visual QA reviewer.\n"
-            "- Do NOT edit, create, delete, stage, or commit any files in the workspace.\n"
-            "- Do NOT run `gh pr` commands yourself — the pipeline posts your structured JSON verdict.\n"
-            "- Inspect files, diffs, tests, and any PNG screenshots via read-only tools (`view_file`, `grep_search`, `list_dir`), "
-            "then return ONLY valid JSON matching the required schema.\n\n"
-        )
-        agy_review_prompt = readonly_guard + review_prompt
         review_imgs = [*state.mock_screenshot_paths, *state.actual_screenshot_paths]
-        resp_text, structured_output, new_conv_id = _invoke_agy_cli_agent(
-            prompt=agy_review_prompt,
-            worktree=wt,
-            model_name=cfg.reviewer_model,
-            agent_env=reviewer_env,
-            read_only=True,
-            session_id=session_id,
-            json_schema=REVIEW_JSON_SCHEMA,
-            image_paths=review_imgs,
-            repo_path=None,
-            timeout_sec=540,
-        )
+        with tempfile.TemporaryDirectory(prefix="rippflow-agy-review-") as review_tmp:
+            review_tmp_dir = Path(review_tmp)
+            full_diff_path = review_tmp_dir / "pr_full_diff.patch"
+            full_diff_sections: list[str] = []
+            if commit_log_stat:
+                full_diff_sections.append(
+                    f"### Commit Log & Diffstat (`{state.base_branch}..HEAD`)\n{commit_log_stat}\n"
+                )
+            full_diff_sections.append(
+                f"### Complete Untruncated Branch Diff (`{state.base_branch}...HEAD`)\n"
+                + (diff_text if diff_text else "(no diff)")
+            )
+            full_diff_path.write_text("\n".join(full_diff_sections), encoding="utf-8")
+
+            inc_diff_path: Path | None = None
+            if incremental_diff:
+                inc_diff_path = review_tmp_dir / "pr_incremental_diff.patch"
+                inc_diff_path.write_text(incremental_diff, encoding="utf-8")
+
+            readonly_guard = (
+                "IMPORTANT — STRICT READ-ONLY REVIEWER CONSTRAINTS & FAST DIFF PROTOCOL:\n"
+                "- You are running as a READ-ONLY code and Visual QA reviewer.\n"
+                "- Do NOT edit, create, delete, stage, or commit any files in the workspace.\n"
+                "- Do NOT run `gh` or `cargo` commands — the pipeline already ran tests/screenshots and posts your JSON verdict.\n"
+                f"- COMPLETE UNTRUNCATED PR DIFF FILE: `{full_diff_path}` (with 12 lines of context and exact line numbers)."
+                + (f"\n- INCREMENTAL DIFF SINCE LAST REVIEW: `{inc_diff_path}`." if inc_diff_path else "")
+                + "\n- STEP 1: On your FIRST turn, call `read_file` in parallel on the diff file(s) above AND on EVERY `TARGET MOCK` and `ACTUAL RENDERED UI` PNG path listed below.\n"
+                "- STEP 2: Do NOT page sequentially across unrelated 500-line sections of large files like `src/warp_shell.rs`. Only call `read_file` on a narrow, targeted line range if verifying a specific symbol touched by the diff strictly requires it.\n"
+                "- STEP 3: As soon as you have verified code correctness and Visual QA screenshot parity, return ONLY valid JSON matching the required schema immediately.\n\n"
+            )
+            agy_review_prompt = readonly_guard + review_prompt
+            resp_text, structured_output, new_conv_id = _invoke_agy_cli_agent(
+                prompt=agy_review_prompt,
+                worktree=wt,
+                model_name=cfg.reviewer_model,
+                agent_env=reviewer_env,
+                read_only=True,
+                session_id=session_id,
+                json_schema=REVIEW_JSON_SCHEMA,
+                image_paths=review_imgs,
+                repo_path=None,
+                extra_add_dirs=[str(review_tmp_dir)],
+                timeout_sec=840,
+            )
         dirty_check = _run_git(wt, ["status", "--porcelain"], env=reviewer_env, check=False)
         if dirty_check.returncode == 0 and dirty_check.stdout.strip():
             _run_git(wt, ["checkout", "--", "."], env=reviewer_env, check=False)

@@ -798,9 +798,20 @@ class TestAgyCliAuthorAndReviewer:
         subprocess.run(["git", "-C", str(repo_dir), "commit", "-m", "add ui"], check=True)
 
         # Simulate reviewer leaving an untracked stray file inside worktree; pipeline must clean it up.
+        captured_review_kwargs: dict[str, object] = {}
+
         def fake_agy_invoke(**kwargs: object) -> tuple[str, dict[str, object] | None, str | None]:
             assert kwargs["read_only"] is True
             assert kwargs["model_name"] == "gemini-4-argon-high"
+            assert kwargs["timeout_sec"] == 840
+            extra_dirs = list(kwargs.get("extra_add_dirs") or [])  # type: ignore[arg-type]
+            assert len(extra_dirs) == 1
+            diff_file = Path(extra_dirs[0]) / "pr_full_diff.patch"
+            assert diff_file.is_file()
+            diff_contents = diff_file.read_text(encoding="utf-8")
+            assert "ui.rs" in diff_contents
+            assert "fn ui() {}" in diff_contents
+            captured_review_kwargs.update(kwargs)
             (repo_dir / "stray_reviewer_file.tmp").write_text("oops", encoding="utf-8")
             return (
                 '{"verdict":"approve","summary":"Looks good cleanly.","comments":[]}',
