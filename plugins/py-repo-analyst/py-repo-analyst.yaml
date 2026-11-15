@@ -1,0 +1,23 @@
+id: py-repo-analyst
+name: Python Repo Analyst
+binary: python3
+transport: stdio
+invoke:
+  args:
+    - agent.py
+parser: json_lines
+doctor:
+  display_name: Python Repo Analyst
+  official_url: https://python.org
+  install_command: brew install python3
+  guidance: Ensure python3 is on PATH to run py-repo-analyst in /ask
+  install_by_os:
+    macos: brew install python3
+    linux: sudo apt install python3
+    windows: winget install Python.Python.3
+  ready_detail: Ready for repository inspection and git workspace analysis
+  missing_detail: Optional — requires python3 on PATH
+models:
+  - llama3.2
+  - qwen2.5-coder
+  - deepseek-r1

@@ -37,3 +37,4 @@ javac examples/java/RippflowHandler.java
 | [`examples/pr-pipeline/`](examples/pr-pipeline/README.md) | Autonomous PR validation and fix pipeline | See directory README |
 | [`examples/nightwatch/`](examples/nightwatch/README.md) | Nightly repository maintenance and audit workflow | See directory README |
 | [`examples/release-train/`](examples/release-train/README.md) | Coordinated multi-repo release train workflow | See directory README |
+| [`plugins/`](plugins/README.md) | Chat agent plugins proving CLI, Python stdio, and Node.js stdio transports | `python3 -m unittest discover -s plugins -p "test_*.py"` |

@@ -1,0 +1,28 @@
+id: ollama
+name: Ollama
+binary: ollama
+transport: cli
+invoke:
+  args:
+    - run
+    - "{prompt}"
+  model_args:
+    - "{model}"
+  model_before_prompt: false
+parser: plain
+doctor:
+  display_name: Ollama CLI
+  official_url: https://ollama.com
+  install_command: brew install ollama
+  guidance: brew install ollama (or visit https://ollama.com/download to install)
+  install_by_os:
+    macos: brew install ollama
+    linux: curl -fsSL https://ollama.com/install.sh | sh
+    windows: winget install Ollama.Ollama
+  ready_detail: Ready for local LLM inference in Rippflow Studio Chat Mode
+  missing_detail: Optional — install Ollama to run local LLMs (e.g. llama3.2, mistral) in /ask
+models:
+  - llama3.2
+  - qwen2.5-coder
+  - deepseek-r1
+  - mistral
