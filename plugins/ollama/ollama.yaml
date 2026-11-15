@@ -8,7 +8,7 @@ invoke:
     - "{prompt}"
   model_args:
     - "{model}"
-  model_before_prompt: true
+  model_before_prompt: false
 parser: plain
 doctor:
   display_name: Ollama CLI
