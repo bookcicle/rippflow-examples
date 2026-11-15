@@ -58,10 +58,10 @@ with open(dst_manifest, 'w', encoding='utf-8') as f:
 
 # 3. Install JavaScript Workspace Helper (Node.js stdio transport)
 echo "-> Installing 'js-workspace-helper' plugin..."
-cp "${SCRIPT_DIR}/js-workspace-helper/agent.mjs" "${TARGET_DIR}/js-workspace-helper/agent.mjs"
-chmod +x "${TARGET_DIR}/js-workspace-helper/agent.mjs"
+cp "${SCRIPT_DIR}/js-workspace-helper/agent.js" "${TARGET_DIR}/js-workspace-helper/agent.js"
+chmod +x "${TARGET_DIR}/js-workspace-helper/agent.js"
 
-JS_SCRIPT_ABS="${TARGET_DIR}/js-workspace-helper/agent.mjs"
+JS_SCRIPT_ABS="${TARGET_DIR}/js-workspace-helper/agent.js"
 python3 -c "
 import json, sys
 src_manifest, dst_manifest, script_abs = sys.argv[1], sys.argv[2], sys.argv[3]

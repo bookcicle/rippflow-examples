@@ -13,9 +13,9 @@
  *   {"type":"error","text":"..."}
  */
 
-import fs from 'fs';
-import path from 'path';
-import readline from 'readline';
+const fs = require('fs');
+const path = require('path');
+const readline = require('readline');
 
 function emit(type, text) {
   process.stdout.write(JSON.stringify({ type, text }) + '\n');

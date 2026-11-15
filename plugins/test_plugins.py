@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Unit tests for Rippflow Example Agent Plugins.
-Validates all manifests and runs agent.py and agent.mjs over stdin/stdout
+Validates all manifests and runs agent.py and agent.js over stdin/stdout
 with rippflow-agent/v1 payloads, asserting valid NDJSON thinking and delta events.
 """
 
@@ -104,7 +104,7 @@ class TestManifestValidation(unittest.TestCase):
         invoke = spec.get("invoke", {})
         self.assertEqual(invoke.get("args"), ["run", "{prompt}"])
         self.assertEqual(invoke.get("model_args"), ["{model}"])
-        self.assertIn(invoke.get("model_before_prompt"), [True, "true"])
+        self.assertIn(invoke.get("model_before_prompt"), [False, "false"])
 
         models = spec.get("models", [])
         expected_models = ["llama3.2", "qwen2.5-coder", "deepseek-r1", "mistral"]
@@ -150,7 +150,7 @@ class TestManifestValidation(unittest.TestCase):
 
         invoke = spec.get("invoke", {})
         args = invoke.get("args", [])
-        self.assertTrue(any("agent.mjs" in str(arg) for arg in args))
+        self.assertTrue(any("agent.js" in str(arg) for arg in args))
 
         doctor = spec.get("doctor", {})
         self.assertTrue(doctor.get("display_name"))
@@ -263,11 +263,11 @@ class TestPyRepoAnalystExecution(unittest.TestCase):
 
 
 class TestJsWorkspaceHelperExecution(unittest.TestCase):
-    """Tests plugins/js-workspace-helper/agent.mjs over stdin/stdout."""
+    """Tests plugins/js-workspace-helper/agent.js over stdin/stdout."""
 
     @classmethod
     def setUpClass(cls):
-        cls.script_path = str(Path(__file__).resolve().parent / "js-workspace-helper" / "agent.mjs")
+        cls.script_path = str(Path(__file__).resolve().parent / "js-workspace-helper" / "agent.js")
         cls.env = os.environ.copy()
         # Enable ES modules flag for older node versions (e.g. node 12)
         cls.env["NODE_OPTIONS"] = "--experimental-modules"
@@ -319,7 +319,7 @@ class TestJsWorkspaceHelperExecution(unittest.TestCase):
                 "cwd": td,
             }
             code, events, stderr = self.run_agent(payload)
-            self.assertEqual(code, 0, f"agent.mjs failed: {stderr}")
+            self.assertEqual(code, 0, f"agent.js failed: {stderr}")
 
             event_types = [e.get("type") for e in events]
             self.assertIn("thinking", event_types)
@@ -353,7 +353,7 @@ tokio = "1.28"
                 "cwd": td,
             }
             code, events, stderr = self.run_agent(payload)
-            self.assertEqual(code, 0, f"agent.mjs failed: {stderr}")
+            self.assertEqual(code, 0, f"agent.js failed: {stderr}")
 
             full_delta = "\n".join(e.get("text", "") for e in events if e.get("type") == "delta")
             self.assertIn("sample-crate", full_delta)
@@ -395,7 +395,7 @@ async = [
                 "cwd": td,
             }
             code, events, stderr = self.run_agent(payload)
-            self.assertEqual(code, 0, f"agent.mjs failed: {stderr}")
+            self.assertEqual(code, 0, f"agent.js failed: {stderr}")
 
             full_delta = "\n".join(e.get("text", "") for e in events if e.get("type") == "delta")
             self.assertIn("sample-pkg", full_delta)
@@ -436,7 +436,7 @@ test = ["coverage[toml]>=6.0,<7.0", "mock>=4.0"]
                 "cwd": td,
             }
             code, events, stderr = self.run_agent(payload)
-            self.assertEqual(code, 0, f"agent.mjs failed: {stderr}")
+            self.assertEqual(code, 0, f"agent.js failed: {stderr}")
 
             full_delta = "\n".join(e.get("text", "") for e in events if e.get("type") == "delta")
             self.assertIn("pkg-a[extra1,extra2]", full_delta)
@@ -507,11 +507,11 @@ class TestInstallScript(unittest.TestCase):
 
             # Check script files copied and executable
             py_script = dest / "py-repo-analyst" / "agent.py"
-            js_script = dest / "js-workspace-helper" / "agent.mjs"
+            js_script = dest / "js-workspace-helper" / "agent.js"
             self.assertTrue(py_script.is_file(), "Missing installed agent.py")
-            self.assertTrue(js_script.is_file(), "Missing installed agent.mjs")
+            self.assertTrue(js_script.is_file(), "Missing installed agent.js")
             self.assertTrue(os.access(py_script, os.X_OK), "agent.py must be executable")
-            self.assertTrue(os.access(js_script, os.X_OK), "agent.mjs must be executable")
+            self.assertTrue(os.access(js_script, os.X_OK), "agent.js must be executable")
 
             # Verify path rewriting in py-repo-analyst.yaml
             py_spec = parse_manifest_file(str(py_m))

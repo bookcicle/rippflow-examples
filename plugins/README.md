@@ -62,7 +62,7 @@ bash plugins/install.sh
 
 ### How `install.sh` Works
 1. Copies `plugins/ollama/ollama.yaml` directly into `~/.rippflow/plugins/ollama.yaml`.
-2. Copies `agent.py` to `~/.rippflow/plugins/py-repo-analyst/agent.py` and `agent.mjs` to `~/.rippflow/plugins/js-workspace-helper/agent.mjs`.
+2. Copies `agent.py` to `~/.rippflow/plugins/py-repo-analyst/agent.py` and `agent.js` to `~/.rippflow/plugins/js-workspace-helper/agent.js`.
 3. Makes both agent scripts executable (`chmod +x`).
 4. Rewrites the relative script paths in `py-repo-analyst.yaml` and `js-workspace-helper.json` into absolute paths so that Rippflow Studio can launch them from any working directory.
 5. Mirrors manifests to `~/.rippflow/agents/` for seamless auto-discovery across both legacy and new plugin paths.

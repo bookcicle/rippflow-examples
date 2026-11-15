@@ -5,7 +5,7 @@
   "transport": "stdio",
   "invoke": {
     "args": [
-      "agent.mjs"
+      "agent.js"
     ]
   },
   "parser": "json_lines",
