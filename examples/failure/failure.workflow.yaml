@@ -1,0 +1,35 @@
+name: deliberate-failure-retry
+version: 2.0.0
+default_group: python-standard
+phases:
+  process-item:
+    requires: []
+    service: simulated.processor
+    scope: per_shard
+    inputs:
+      simulated: true
+      strict: true
+    sla:
+      timeout_secs: 60
+      max_attempts: 2
+  audit-item:
+    requires:
+      - process-item
+    service: simulated.auditor
+    scope: per_shard
+    outcomes:
+      completed:
+        advance_barrier: true
+      rework:
+        rerun_phase: process-item
+        max_loops: 2
+        override_inputs:
+          strict: false
+          fallback_mode: true
+  finalize-batch:
+    requires:
+      - audit-item
+    service: simulated.finalizer
+    scope: fan_in_all
+    mode: sync_lambda
+    terminal: true

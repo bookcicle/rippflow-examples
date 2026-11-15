@@ -1,0 +1,38 @@
+apiVersion: rippflow.dev/v1
+kind: Tool
+
+metadata:
+  name: research-dossier-publish
+  version: 1.0.0
+
+spec:
+  type: mcp
+  serverRef: research-mcp
+  toolName: publish_research_dossier
+
+  inputSchema:
+    type: object
+    required:
+      - title
+      - citationsCount
+    properties:
+      title:
+        type: string
+      citationsCount:
+        type: integer
+
+  idempotency:
+    mode: required
+    key: workflow-operation-id
+
+  authorization:
+    scopes:
+      - research.dossier.publish
+
+  controls:
+    approval: required
+    budget: research-budget
+    maxCostPerCall: 0.05
+    maxConcurrent: 2
+
+  timeout: 30s

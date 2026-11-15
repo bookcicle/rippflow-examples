@@ -1,0 +1,102 @@
+apiVersion: rippflow.dev/v1
+kind: Workflow
+defaultGroup: python-light
+handlers:
+  build:
+    runtime: python
+    runtimeVersion: "3.13"
+  publish_pr:
+    runtime: python
+    runtimeVersion: "3.13"
+  reviewer_a:
+    runtime: python
+    runtimeVersion: "3.13"
+  reviewer_b:
+    runtime: python
+    runtimeVersion: "3.13"
+  decision:
+    runtime: python
+    runtimeVersion: "3.13"
+  human_gate:
+    runtime: python
+    runtimeVersion: "3.13"
+workflow:
+  name: multi-model-review
+  version: "1.0.0"
+  phases:
+    build:
+      service: build
+      type: async_tool
+      tool: code-builder
+      mode: async_sqs
+      scope: root
+      timeout: 15s
+      callback:
+        required: true
+        authenticated: true
+        timeout: 30s
+      adapter:
+        kind: aws_lambda
+        target: local-process
+        idempotentDispatch: true
+    publish_pr:
+      service: publish_pr
+      requires:
+        - build
+      mode: sync_lambda
+      scope: root
+    reviewer_a:
+      service: reviewer_a
+      requires:
+        - publish_pr
+      type: async_tool
+      tool: model-reviewer-alpha
+      mode: async_sqs
+      scope: root
+      timeout: 15s
+      callback:
+        required: true
+        authenticated: true
+        timeout: 30s
+      adapter:
+        kind: aws_lambda
+        target: local-process
+        idempotentDispatch: true
+    reviewer_b:
+      service: reviewer_b
+      requires:
+        - publish_pr
+      type: async_tool
+      tool: model-reviewer-beta
+      mode: async_sqs
+      scope: root
+      timeout: 15s
+      callback:
+        required: true
+        authenticated: true
+        timeout: 30s
+      adapter:
+        kind: aws_lambda
+        target: local-process
+        idempotentDispatch: true
+    decision:
+      service: decision
+      requires:
+        - reviewer_a
+        - reviewer_b
+      mode: sync_lambda
+      scope: root
+      outcomes:
+        approved:
+          next:
+            - human_gate
+        changes_requested:
+          rerun_phase: build
+          max_loops: 9
+    human_gate:
+      service: human_gate
+      requires:
+        - decision
+      mode: sync_lambda
+      scope: root
+      terminal: true

@@ -1,0 +1,40 @@
+apiVersion: rippflow.dev/v1
+kind: Tool
+
+metadata:
+  name: crm-update
+  version: 1.0.0
+
+spec:
+  type: mcp
+
+  serverRef: internal-crm
+
+  toolName: update_customer
+
+  inputSchema:
+    type: object
+    required:
+      - customerId
+      - status
+    properties:
+      customerId:
+        type: string
+      status:
+        type: string
+
+  idempotency:
+    mode: required
+    key: workflow-operation-id
+
+  authorization:
+    scopes:
+      - crm.customer.write
+
+  controls:
+    approval: required
+    budget: crm-operations
+    maxCostPerCall: 0.05
+    maxConcurrent: 10
+
+  timeout: 30s

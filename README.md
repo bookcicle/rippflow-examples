@@ -1,71 +1,39 @@
-# Rippflow Examples
+# Rippflow Public Examples
 
-> [!TIP]
-> **Use this with Gemini Antigravity, Codex, or Claude Code!**
-> 
-> Rippflow natively supports **agent skills** and **local MCP** (Model Context Protocol). Connect your AI coding assistant with a single command to scaffold, validate, run, and inspect workflows directly from your agent chat:
-> 
-> ```bash
-> # Automatically configure agent skills and local MCP across all installed clients
-> rippflow mcp setup --client all
-> ```
-> *Supports Google Gemini Antigravity, OpenAI Codex, and Anthropic Claude Code.*
+Official public example repository for [Rippflow](https://rippflow.bookcicle.com). Every workflow, handler, and governed tool recipe here runs locally with the `rippflow` CLI (`rippflow dev`, `rippflow validate`, `rippflow controls validate`, `rippflow tools validate`, `rippflow tools invoke --dry-run`).
 
-Open-source, local- and cloud-ready [Rippflow](https://rippflow.com) workflows showcasing sharded DAG orchestration, fast stateless handler slices (`python-light` / `python-standard`), environment-aware execution (`--rippflow-env local` vs `--rippflow-env cloud`), durable multi-hour `async_tool` callbacks (`workerCapacityReleased: true`), bounded rework loops, and human-in-the-loop gates.
+## Prerequisites
 
----
+- **`rippflow` CLI** installed and on `PATH`
+- **Python 3** (required by most example handlers)
+- **Rust (`cargo`), Node.js, and JDK 21+** (for the polyglot and native Rust handler examples)
 
-## Included Examples
+Build the simulated Rust handler binary and compile the Java handler once from the repository root:
 
-Explore all runnable workflow examples in [`examples/`](https://github.com/bookcicle/rippflow-examples/tree/main/examples):
-
-| Example | Path | Runtime Tiers | Description |
-| :--- | :--- | :--- | :--- |
-| **Multi-Repo AI Feature & Dual-Identity PR Review Pipeline** | [`examples/pr-pipeline`](./examples/pr-pipeline) | `local` | Accepts a file path to a full Codex/Markdown prompt file (`promptFile`, plus per-repo `repos[].promptFile` or inline `featureRequest`) + target repositories, authors PRs in isolated git worktrees (`authorProvider: "codex"` or `"antigravity"`) under a dedicated bot GitHub identity, runs local test suites, conducts incremental `codex exec resume` code review under a separate reviewer identity, loops up to 15 turns, and escalates unresolved shards via macOS/Linux/Windows desktop notifications + authenticated Rippflow callbacks. |
-| **Multi-Repo Release & Sync Train** | [`examples/release-train`](./examples/release-train) | `local` & `cloud` | Coordinates multi-repo drift detection, version & pinned-SHA bumps (`PINNED_SOURCE_SHAS.json`), changelog drafting (Gemini/Codex in `local`, automatically flagged off to zero-dependency deterministic Conventional Commits in `cloud`), parallel build + SHA-256 checksum & benchmark verification, a `24h` human release sign-off gate (OS banner + Slack/email webhooks), and ordered tag/publish + `RELEASE_NOTES.md` sync. |
-| **Scheduled Overnight Repo Hygiene & Dependency Upgrader (`rippflow-nightwatch`)** | [`examples/nightwatch`](./examples/nightwatch) | `local` & `cloud` | Triggered nightly via cron or `/schedule`: reclaims disk space (prunes stale git worktrees, cleans Rust Cargo `target/` dirs, prunes unused Docker images/builders), audits advisories/outdated packages/warnings/flaky tests across shards, upgrades dependencies in isolated worktrees (optional Gemini/Codex breaking-API fixer in `local`, deterministic in `cloud`), gates on benchmark regressions, and delivers a morning OS notification + Slack/email digest with ready-to-merge green PR links. |
-
----
-
-## Quickstart
-
-### 1. Multi-Repo Release & Sync Train (`local` + `cloud`, Zero AI Dependencies Required)
-
-```bash
-cd examples/release-train
-
-python3 -m venv .venv
-.venv/bin/pip install --upgrade pip
-.venv/bin/pip install -e ".[dev]"
-
-# Validate both local and cloud handler profiles
-rippflow validate workflow.yaml --handlers handlers.json --rippflow-env local
-rippflow validate workflow.yaml --handlers handlers.json --rippflow-env cloud
-
-# Run with cloud-tier rules (Codex/Gemini strictly flagged off)
-rippflow run workflow.yaml --handlers handlers.json --rippflow-env cloud \
-  --shards service-core,service-starter,service-docs \
-  --input examples/release_input.example.json
+```sh
+cargo build --locked --bin rust-example-handler
+javac examples/java/RippflowHandler.java
 ```
 
-### 2. Multi-Repo AI Feature & PR Review Pipeline (`examples/pr-pipeline`)
+## Example Catalog
 
-```bash
-cd examples/pr-pipeline
-
-python3 -m venv .venv
-.venv/bin/pip install --upgrade pip
-.venv/bin/pip install -e ".[dev]"
-
-cp .env.example .env
-# Edit .env to set WORKSPACE_DIR, AUTHOR_GH_USER, AUTHOR_GIT_EMAIL, REVIEWER_GH_USER
-
-rippflow validate workflow.yaml --handlers handlers.json
-rippflow deploy --local workflow.yaml --shards service-core,service-cli
-```
-
----
-
-## License
-
-MIT — see [LICENSE](./LICENSE).
+| Directory | Description | Primary CLI Command |
+|---|---|---|
+| [`examples/polyglot/`](examples/polyglot/README.md) | Four-language workflow (Rust, Python, Node.js, Java) with shard rework | `rippflow dev examples/polyglot/polyglot.workflow.json --handlers examples/polyglot/polyglot.handlers.json --shards stmt-jan.pdf,stmt-feb.pdf` |
+| [`examples/media/`](examples/media/README.md) | Media segment transcoding, loudness QA rework, and HLS fan-in | `rippflow dev examples/media/media.workflow.json --handlers examples/media/media.handlers.json --shards scene-01.mp4,scene-02.mp4` |
+| [`examples/resume/`](examples/resume/README.md) | Eight-phase parallel branching and converging DAG | `rippflow dev examples/resume/resume.workflow.json --handlers examples/resume/resume.handlers.json` |
+| [`examples/failure/`](examples/failure/README.md) | Transient rework recovery (`recoverable-item.bin`) and fail-closed crash (`fatal-crash.bin`) | `rippflow dev examples/failure/failure.workflow.json --handlers examples/failure/failure.handlers.json --shards ok-item.bin,recoverable-item.bin` |
+| [`examples/fintech-reconciliation/`](examples/fintech-reconciliation/README.md) | Statement reconciliation with DPI rework loop | `rippflow dev examples/fintech-reconciliation/workflow.json --handlers examples/fintech-reconciliation/handlers.json --shards stmt-jan.pdf,stmt-feb.pdf` |
+| [`examples/hello/`](examples/hello/README.md) | Minimal single-phase Python starter matching the quickstart docs | `rippflow validate examples/hello/workflow.yaml --handlers examples/hello/handlers.json` |
+| [`examples/governed-tools/`](examples/governed-tools/) | Governed MCP reads, approval-gated CRM writes, and budgeted research | `rippflow tools validate examples/governed-tools/example-1-mcp-read/tool.yaml` |
+| [`examples/async-research-agent/`](examples/async-research-agent/README.md) | Durable `async_tool` callback and control-policy workflow | `rippflow controls validate examples/async-research-agent/workflow.yaml --json` |
+| [`examples/async-callback/`](examples/async-callback/README.md) | Authenticated async callback adapter and HMAC test suite | `python3 -m unittest discover -s examples/async-callback -p 'test_*.py'` |
+| [`examples/scoped-iam/`](examples/scoped-iam/README.md) | Least-privilege STS phase role template and workflow validation | `rippflow validate examples/scoped-iam/workflow.yaml` |
+| [`examples/s3-pipeline/`](examples/s3-pipeline/README.md) | Scoped S3 pull/mutate/push subprocess pipeline | `rippflow validate examples/s3-pipeline/workflow.yaml --handlers examples/s3-pipeline/handlers.json` |
+| [`examples/local-async-tools/`](examples/local-async-tools/README.md) | Project-mode async tool orchestration with `rippflow.yaml` | `rippflow validate --project examples/local-async-tools/rippflow.yaml --json` |
+| [`examples/multi-model-review/`](examples/multi-model-review/README.md) | Project-mode multi-reviewer fan-out and human gate | `rippflow validate --project examples/multi-model-review/rippflow.yaml --json` |
+| [`examples/edge-native/`](examples/edge-native/README.md) | Native Rust edge workflows (sensor, vision, document, recovery) | `cargo build --locked -p rippflow-edge-example-handler` |
+| [`examples/native-handlers/`](examples/native-handlers/Cargo.toml) | Standalone Rust edge example handlers crate | `cargo build --locked --bins` |
+| [`examples/pr-pipeline/`](examples/pr-pipeline/README.md) | Autonomous PR validation and fix pipeline | See directory README |
+| [`examples/nightwatch/`](examples/nightwatch/README.md) | Nightly repository maintenance and audit workflow | See directory README |
+| [`examples/release-train/`](examples/release-train/README.md) | Coordinated multi-repo release train workflow | See directory README |

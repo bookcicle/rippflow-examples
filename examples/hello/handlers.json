@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "handlers": {
+    "hello": { "command": ["python3", "handler.py"], "timeoutSeconds": 30 }
+  }
+}

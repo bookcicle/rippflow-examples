@@ -1,0 +1,64 @@
+{
+  "name": "edge-recovery-acceptance",
+  "version": "1.0.0",
+  "phases": {
+    "admit": {
+      "service": "fault",
+      "requires": [],
+      "terminal": false,
+      "sla": {
+        "timeoutSecs": 2,
+        "maxAttempts": 3
+      },
+      "scope": "per_shard"
+    },
+    "left": {
+      "service": "fault",
+      "requires": [
+        "admit"
+      ],
+      "terminal": false,
+      "sla": {
+        "timeoutSecs": 2,
+        "maxAttempts": 3
+      },
+      "scope": "per_shard"
+    },
+    "right": {
+      "service": "fault",
+      "requires": [
+        "admit"
+      ],
+      "terminal": false,
+      "sla": {
+        "timeoutSecs": 2,
+        "maxAttempts": 3
+      },
+      "scope": "per_shard"
+    },
+    "join": {
+      "service": "fault",
+      "requires": [
+        "left",
+        "right"
+      ],
+      "terminal": false,
+      "sla": {
+        "timeoutSecs": 2,
+        "maxAttempts": 3
+      },
+      "scope": "fan_in_all"
+    },
+    "final": {
+      "service": "fault",
+      "requires": [
+        "join"
+      ],
+      "terminal": true,
+      "sla": {
+        "timeoutSecs": 2,
+        "maxAttempts": 3
+      }
+    }
+  }
+}

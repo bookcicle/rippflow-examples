@@ -1,0 +1,99 @@
+{
+  "apiVersion": "rippflow.dev/v1",
+  "kind": "Workflow",
+  "defaultGroup": "python-light",
+  "handlers": {
+    "build": {
+      "runtime": "python",
+      "runtimeVersion": "3.13"
+    },
+    "review_a": {
+      "runtime": "python",
+      "runtimeVersion": "3.13"
+    },
+    "review_b": {
+      "runtime": "python",
+      "runtimeVersion": "3.13"
+    },
+    "finish": {
+      "runtime": "python",
+      "runtimeVersion": "3.13"
+    }
+  },
+  "workflow": {
+    "name": "local-async-tools",
+    "version": "1.0.0",
+    "phases": {
+      "build": {
+        "service": "build",
+        "type": "async_tool",
+        "tool": "fixture-build",
+        "mode": "async_sqs",
+        "scope": "root",
+        "timeout": "1s",
+        "callback": {
+          "required": true,
+          "authenticated": true,
+          "timeout": "5s"
+        },
+        "adapter": {
+          "kind": "aws_lambda",
+          "target": "local-process",
+          "idempotentDispatch": true
+        }
+      },
+      "review_a": {
+        "service": "review_a",
+        "type": "async_tool",
+        "tool": "fixture-review_a",
+        "mode": "async_sqs",
+        "scope": "root",
+        "timeout": "1s",
+        "callback": {
+          "required": true,
+          "authenticated": true,
+          "timeout": "5s"
+        },
+        "adapter": {
+          "kind": "aws_lambda",
+          "target": "local-process",
+          "idempotentDispatch": true
+        },
+        "requires": [
+          "build"
+        ]
+      },
+      "review_b": {
+        "service": "review_b",
+        "type": "async_tool",
+        "tool": "fixture-review_b",
+        "mode": "async_sqs",
+        "scope": "root",
+        "timeout": "1s",
+        "callback": {
+          "required": true,
+          "authenticated": true,
+          "timeout": "5s"
+        },
+        "adapter": {
+          "kind": "aws_lambda",
+          "target": "local-process",
+          "idempotentDispatch": true
+        },
+        "requires": [
+          "build"
+        ]
+      },
+      "finish": {
+        "service": "finish",
+        "requires": [
+          "review_a",
+          "review_b"
+        ],
+        "scope": "root",
+        "mode": "sync_lambda",
+        "terminal": true
+      }
+    }
+  }
+}

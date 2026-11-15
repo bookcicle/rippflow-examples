@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "handlers": {
+    "build": {
+      "command": [
+        "python3",
+        "handlers/review_agent.py",
+        "launcher"
+      ],
+      "timeoutSeconds": 15
+    },
+    "publish_pr": {
+      "command": [
+        "python3",
+        "handlers/review_agent.py",
+        "sync"
+      ],
+      "timeoutSeconds": 15
+    },
+    "reviewer_a": {
+      "command": [
+        "python3",
+        "handlers/review_agent.py",
+        "launcher"
+      ],
+      "timeoutSeconds": 15
+    },
+    "reviewer_b": {
+      "command": [
+        "python3",
+        "handlers/review_agent.py",
+        "launcher"
+      ],
+      "timeoutSeconds": 15
+    },
+    "decision": {
+      "command": [
+        "python3",
+        "handlers/review_agent.py",
+        "sync"
+      ],
+      "timeoutSeconds": 15
+    },
+    "human_gate": {
+      "command": [
+        "python3",
+        "handlers/review_agent.py",
+        "sync"
+      ],
+      "timeoutSeconds": 15
+    }
+  }
+}

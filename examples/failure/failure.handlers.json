@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "handlers": {
+    "simulated.processor": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "simulated.auditor": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "simulated.finalizer": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    }
+  }
+}

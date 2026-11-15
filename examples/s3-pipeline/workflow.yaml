@@ -1,0 +1,35 @@
+name: s3-order-enrichment-pipeline
+version: 1.0.0
+default_group: python-standard
+phases:
+  pull_from_s3:
+    service: s3.pull
+    scope: per_shard
+    mode: async_sqs
+    role: s3-reader
+    isolationBoundary: hardened_subprocess_with_scoped_session
+    inputs:
+      bucket: app-orders
+      rawPrefix: raw
+  mutate_records:
+    requires:
+      - pull_from_s3
+    service: orders.mutate
+    scope: per_shard
+    mode: async_sqs
+    isolationBoundary: shared_runner_no_aws_credentials
+    inputs:
+      taxRateBps: 825
+      currency: USD
+  push_to_s3:
+    requires:
+      - mutate_records
+    service: s3.push
+    scope: per_shard
+    mode: sync_lambda
+    role: s3-writer
+    isolationBoundary: hardened_subprocess_with_scoped_session
+    inputs:
+      bucket: app-orders
+      processedPrefix: processed
+    terminal: true

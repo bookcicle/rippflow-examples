@@ -1,0 +1,83 @@
+name: resume-analysis
+version: 2.0.0
+default_group: python-standard
+phases:
+  resume-analysis:
+    requires: []
+    service: resume-analysis
+    scope: root
+    mode: sync_lambda
+    inputs:
+      serviceType: resume-analysis
+      workflowType: resume_analysis
+      documentKind: resume
+  resume-scope-runner:
+    requires:
+      - resume-analysis
+    service: resume-scope
+    scope: root
+    inputs:
+      serviceType: resume-analysis
+      workflowType: resume_analysis
+      documentKind: resume
+  resume-compensation-runner:
+    requires:
+      - resume-scope-runner
+    service: resume-compensation
+    scope: root
+    inputs:
+      from: resume-scope-runner
+      serviceType: resume-analysis
+      workflowType: resume_analysis
+      documentKind: resume
+  resume-role-modeling-runner:
+    requires:
+      - resume-compensation-runner
+    service: resume-role-modeling
+    scope: root
+    inputs:
+      from: resume-compensation-runner
+      serviceType: resume-analysis
+      workflowType: resume_analysis
+      documentKind: resume
+  resume-editor-runner:
+    requires:
+      - resume-role-modeling-runner
+    service: resume-editor
+    scope: root
+    inputs:
+      from: resume-role-modeling-runner
+      serviceType: resume-analysis
+      workflowType: resume_analysis
+      documentKind: resume
+  resume-talking-points-runner:
+    requires:
+      - resume-editor-runner
+    service: resume-talking-points
+    scope: root
+    inputs:
+      from: resume-editor-runner
+      serviceType: resume-analysis
+      workflowType: resume_analysis
+      documentKind: resume
+  resume-issue-review-runner:
+    requires:
+      - resume-scope-runner
+    service: resume-issue-review
+    scope: root
+    inputs:
+      from: resume-scope-runner
+      serviceType: resume-analysis
+      workflowType: resume_analysis
+      documentKind: resume
+  finalize-resume-analysis:
+    requires:
+      - resume-talking-points-runner
+      - resume-issue-review-runner
+    service: finalize
+    scope: root
+    mode: sync_lambda
+    terminal: true
+    inputs:
+      serviceType: resume-analysis
+      workflowType: resume_analysis

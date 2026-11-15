@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "handlers": {
+    "build": {
+      "command": [
+        "python3",
+        "handlers/launcher.py"
+      ],
+      "timeoutSeconds": 1
+    },
+    "review_a": {
+      "command": [
+        "python3",
+        "handlers/launcher.py"
+      ],
+      "timeoutSeconds": 1
+    },
+    "review_b": {
+      "command": [
+        "python3",
+        "handlers/launcher.py"
+      ],
+      "timeoutSeconds": 1
+    },
+    "finish": {
+      "command": [
+        "python3",
+        "handlers/finish.py"
+      ],
+      "timeoutSeconds": 1
+    }
+  }
+}

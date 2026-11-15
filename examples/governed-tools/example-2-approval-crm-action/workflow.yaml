@@ -1,0 +1,27 @@
+name: approval-crm-update-workflow
+version: 1
+
+controls:
+  policyVersion: 1
+  limits:
+    maxIterations: 4
+    maxToolCalls: 4
+    maxDuration: 30m
+  budgets:
+    - name: crm-operations
+      resource: model_cost
+      unit: usd
+      limit: "1.00"
+      enforcement: hard
+
+phases:
+  update-customer-status:
+    type: mcp_tool
+    order: 1
+    tool: crm-update
+    toolVersion: 1.0.0
+    serverRef: internal-crm
+    timeout: 30s
+    controls:
+      budget: crm-operations
+    terminal: true

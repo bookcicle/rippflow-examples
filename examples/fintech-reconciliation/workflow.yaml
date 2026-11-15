@@ -1,0 +1,39 @@
+name: fintech-statement-reconciliation
+version: 1.0.0
+default_group: python-standard
+phases:
+  ingest-packet:
+    requires: []
+    service: csv.parser
+    scope: root
+    mode: sync_lambda
+    inputs:
+      source: s3://statement-uploads/q1-packet.zip
+  parse-statement:
+    requires:
+      - ingest-packet
+    service: pdf.ocr_extract
+    scope: per_shard
+    inputs:
+      dpi: 300
+  verify-balance:
+    requires:
+      - parse-statement
+    service: auditor.reconcile_math
+    scope: per_shard
+    outcomes:
+      completed:
+        advance_barrier: true
+      rework:
+        rerun_phase: parse-statement
+        max_loops: 2
+        override_inputs:
+          dpi: 600
+          high_accuracy_table_mode: true
+  emit-underwriting-summary:
+    requires:
+      - verify-balance
+    service: underwriter.summarize
+    scope: fan_in_all
+    mode: sync_lambda
+    terminal: true

@@ -1,0 +1,35 @@
+apiVersion: rippflow.dev/v1
+kind: Tool
+
+metadata:
+  name: customer-lookup
+  version: 1.0.0
+
+spec:
+  type: mcp
+  serverRef: internal-crm
+  toolName: lookup_customer_profile
+
+  inputSchema:
+    type: object
+    required:
+      - customerId
+    properties:
+      customerId:
+        type: string
+
+  idempotency:
+    mode: required
+    key: workflow-operation-id
+
+  authorization:
+    scopes:
+      - crm.customer.read
+
+  controls:
+    approval: none
+    budget: crm-read-operations
+    maxCostPerCall: 0.01
+    maxConcurrent: 25
+
+  timeout: 15s

@@ -1,0 +1,27 @@
+name: mcp-customer-lookup-workflow
+version: 1
+
+controls:
+  policyVersion: 1
+  limits:
+    maxIterations: 4
+    maxToolCalls: 5
+    maxDuration: 10m
+  budgets:
+    - name: crm-read-operations
+      resource: model_cost
+      unit: usd
+      limit: "0.50"
+      enforcement: hard
+
+phases:
+  lookup-customer:
+    type: mcp_tool
+    order: 1
+    tool: customer-lookup
+    toolVersion: 1.0.0
+    serverRef: internal-crm
+    timeout: 15s
+    controls:
+      budget: crm-read-operations
+    terminal: true

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "handlers": {
+    "sensor": {
+      "command": [
+        "./handler"
+      ],
+      "timeoutSeconds": 5
+    }
+  }
+}

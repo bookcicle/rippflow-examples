@@ -1,0 +1,12 @@
+name: read-order-with-approved-role
+version: 1.0.0
+default_group: python-standard
+phases:
+  read_order:
+    service: orders.read
+    role: orders-reader
+    isolationBoundary: hardened_subprocess_with_scoped_session
+    inputs:
+      table: app-orders
+      orderId: order-123
+    terminal: true

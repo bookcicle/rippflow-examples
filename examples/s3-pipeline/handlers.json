@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "roles": {
+    "s3-reader": "arn:aws:iam::111122223333:role/s3-reader",
+    "s3-writer": "arn:aws:iam::111122223333:role/s3-writer"
+  },
+  "handlers": {
+    "s3.pull": {
+      "command": [
+        "python3",
+        "handlers/s3_pipeline.py"
+      ],
+      "timeoutSeconds": 30
+    },
+    "orders.mutate": {
+      "command": [
+        "python3",
+        "handlers/s3_pipeline.py"
+      ],
+      "timeoutSeconds": 30
+    },
+    "s3.push": {
+      "command": [
+        "python3",
+        "handlers/s3_pipeline.py"
+      ],
+      "timeoutSeconds": 30
+    }
+  }
+}

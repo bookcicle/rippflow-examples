@@ -1,0 +1,15 @@
+{
+  "apiVersion": "rippflow.dev/v1",
+  "name": "multi-model-review",
+  "workflow": "workflows/review.yaml",
+  "handlers": "handlers.json",
+  "catalog": "installed-groups.json",
+  "artifacts": {
+    "build": "handlers/review_agent.py",
+    "publish_pr": "handlers/review_agent.py",
+    "reviewer_a": "handlers/review_agent.py",
+    "reviewer_b": "handlers/review_agent.py",
+    "decision": "handlers/review_agent.py",
+    "human_gate": "handlers/review_agent.py"
+  }
+}

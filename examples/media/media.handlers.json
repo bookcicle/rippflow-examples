@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "handlers": {
+    "ffmpeg.transcode_h264": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "audio.check_lufs": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    },
+    "hls.build_master_playlist": {
+      "cwd": "../..",
+      "command": ["python3", "examples/python/handler.py"],
+      "timeoutSeconds": 30
+    }
+  }
+}
