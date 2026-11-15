@@ -368,6 +368,8 @@ name = "sample-pkg"
 version = "0.2.0"
 description = "A standard PEP 621 sample package"
 dependencies = [
+    "requests[socks]>=2.0",
+    "urllib3>=1.26,<3",
     "fastapi>=0.100.0",
     "pydantic>=2.0",
 ]
@@ -377,7 +379,10 @@ sample-cli = "sample_pkg.cli:main"
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
+    "pytest>=7.0,<8.0",
+]
+async = [
+    "aiohttp[speedups]>=3.8.0,<4.0.0",
 ]
 """
             (Path(td) / "pyproject.toml").write_text(pyproject_content, encoding="utf-8")
@@ -394,10 +399,53 @@ dev = [
 
             full_delta = "\n".join(e.get("text", "") for e in events if e.get("type") == "delta")
             self.assertIn("sample-pkg", full_delta)
+            self.assertIn("requests[socks]", full_delta)
+            self.assertIn(">=2.0", full_delta)
+            self.assertIn("urllib3", full_delta)
+            self.assertIn(">=1.26,<3", full_delta)
             self.assertIn("fastapi", full_delta)
             self.assertIn("pydantic", full_delta)
             self.assertIn("sample-cli", full_delta)
             self.assertIn("pytest", full_delta)
+            self.assertIn(">=7.0,<8.0", full_delta)
+            self.assertIn("aiohttp[speedups]", full_delta)
+            self.assertIn(">=3.8.0,<4.0.0", full_delta)
+
+    def test_pyproject_toml_quote_aware_array_and_comments(self):
+        """Validates that bracket delimiters and commas inside quotes are preserved,
+        comments outside quotes are stripped, and single-line arrays work properly."""
+        with tempfile.TemporaryDirectory() as td:
+            pyproject_content = """[project]
+name = "quote-test"
+version = "1.0.0"
+dependencies = [
+    "pkg-a[extra1,extra2]>=1.0.0,<=2.0.0", # extra bracket and comma in version
+    'pkg-b[all]~=3.2.0',
+]
+
+[project.optional-dependencies]
+test = ["coverage[toml]>=6.0,<7.0", "mock>=4.0"]
+"""
+            (Path(td) / "pyproject.toml").write_text(pyproject_content, encoding="utf-8")
+
+            payload = {
+                "protocol": "rippflow-agent/v1",
+                "action": "chat",
+                "agent": "js-workspace-helper",
+                "prompt": "Check dependencies",
+                "cwd": td,
+            }
+            code, events, stderr = self.run_agent(payload)
+            self.assertEqual(code, 0, f"agent.mjs failed: {stderr}")
+
+            full_delta = "\n".join(e.get("text", "") for e in events if e.get("type") == "delta")
+            self.assertIn("pkg-a[extra1,extra2]", full_delta)
+            self.assertIn(">=1.0.0,<=2.0.0", full_delta)
+            self.assertIn("pkg-b[all]", full_delta)
+            self.assertIn("~=3.2.0", full_delta)
+            self.assertIn("coverage[toml]", full_delta)
+            self.assertIn(">=6.0,<7.0", full_delta)
+            self.assertIn("mock", full_delta)
 
     def test_malformed_input(self):
         code, events, _ = self.run_agent("{broken json")
