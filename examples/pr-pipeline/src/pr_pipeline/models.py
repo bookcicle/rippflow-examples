@@ -13,6 +13,32 @@ from typing import Any
 
 DEFAULT_MAX_TURNS = 15
 
+MODEL_SHORTHAND_ALIASES: dict[str, str] = {
+    "3.8flash": "gemini-3.8-flash-high",
+    "3.8-flash": "gemini-3.8-flash-high",
+    "gemini-3.8-flash": "gemini-3.8-flash-high",
+    "argon": "gemini-4-argon-high",
+    "gemini-4-argon": "gemini-4-argon-high",
+}
+
+
+def normalize_model_name(raw_model: str) -> str:
+    """Resolves user shorthand aliases (e.g. `3.8flash`, `argon`) to canonical CLI model IDs."""
+    cleaned = raw_model.strip()
+    return MODEL_SHORTHAND_ALIASES.get(cleaned.lower(), cleaned)
+
+
+def infer_provider_for_model(model_name: str, default: str = "codex") -> str:
+    """Infers `'antigravity'` or `'codex'` from a canonical or shorthand model identifier."""
+    lowered = normalize_model_name(model_name).lower()
+    if not lowered:
+        return default
+    if lowered.startswith(("gemini-", "claude-", "gpt-oss-")):
+        return "antigravity"
+    if lowered.startswith(("gpt-", "o1", "o3", "o4", "codex")):
+        return "codex"
+    return default
+
 
 def load_dotenv_files(*candidate_dirs: Path) -> dict[str, str]:
     """Loads `.env` key-value pairs from candidate directories without clobbering existing `os.environ`."""
@@ -151,6 +177,7 @@ class PipelineConfig:
     feature_title: str = ""
     regression_mode: bool = False
     author_provider: str = "antigravity"  # "antigravity" | "codex"
+    reviewer_provider: str = "codex"  # "codex" | "antigravity"
     author_gh_user: str = "bot-author"
     reviewer_gh_user: str = "human-reviewer"
     author_git_email: str | None = None
@@ -315,19 +342,42 @@ class PipelineConfig:
             or os.environ.get("AUTHOR_PROVIDER")
             or "antigravity"
         ).strip().lower()
-        if author_provider not in {"antigravity", "gemini", "codex"}:
+        if author_provider not in {"antigravity", "agy", "gemini", "codex"}:
             raise ValueError(f"Unsupported authorProvider '{author_provider}' (expected 'antigravity' or 'codex')")
 
         resolved_provider = "codex" if author_provider == "codex" else "antigravity"
-        resolved_reviewer_model = str(raw.get("reviewerModel") or os.environ.get("REVIEWER_MODEL") or "gpt-6.1-sol")
+        raw_reviewer_model = str(
+            raw.get("reviewerModel")
+            or raw.get("reviewer_model")
+            or os.environ.get("REVIEWER_MODEL")
+            or "gpt-6.1-sol"
+        ).strip()
+        resolved_reviewer_model = normalize_model_name(raw_reviewer_model)
+
+        raw_reviewer_provider = str(
+            raw.get("reviewerProvider")
+            or raw.get("reviewer_provider")
+            or os.environ.get("REVIEWER_PROVIDER")
+            or ""
+        ).strip().lower()
+        if raw_reviewer_provider:
+            if raw_reviewer_provider not in {"antigravity", "agy", "gemini", "codex"}:
+                raise ValueError(
+                    f"Unsupported reviewerProvider '{raw_reviewer_provider}' (expected 'codex' or 'antigravity')"
+                )
+            resolved_reviewer_provider = "codex" if raw_reviewer_provider == "codex" else "antigravity"
+        else:
+            resolved_reviewer_provider = infer_provider_for_model(resolved_reviewer_model, "codex")
+
         explicit_author_model = str(raw.get("authorModel") or raw.get("author_model") or "").strip()
         env_author_model = str(os.environ.get("CODEX_AUTHOR_MODEL" if resolved_provider == "codex" else "AUTHOR_MODEL") or "").strip()
         if explicit_author_model:
-            resolved_author_model = explicit_author_model
+            resolved_author_model = normalize_model_name(explicit_author_model)
         elif env_author_model and not (resolved_provider == "codex" and env_author_model.lower().startswith("gemini")):
-            resolved_author_model = env_author_model
+            resolved_author_model = normalize_model_name(env_author_model)
         else:
-            resolved_author_model = resolved_reviewer_model if resolved_provider == "codex" else (os.environ.get("AUTHOR_MODEL") or "gemini-4-hydrogen-medium")
+            fallback_author = resolved_reviewer_model if resolved_provider == "codex" else (os.environ.get("AUTHOR_MODEL") or "gemini-4-hydrogen-medium")
+            resolved_author_model = normalize_model_name(fallback_author)
 
         raw_reg = raw.get("regressionMode", raw.get("regression_mode"))
         regression_mode = (
@@ -347,6 +397,7 @@ class PipelineConfig:
             feature_title=feature_title,
             regression_mode=regression_mode,
             author_provider=resolved_provider,
+            reviewer_provider=resolved_reviewer_provider,
             author_gh_user=str(raw.get("authorGhUser") or os.environ.get("AUTHOR_GH_USER") or "bot-author"),
             reviewer_gh_user=str(raw.get("reviewerGhUser") or os.environ.get("REVIEWER_GH_USER") or "human-reviewer"),
             author_git_email=raw.get("authorGitEmail") or os.environ.get("AUTHOR_GIT_EMAIL"),
@@ -389,7 +440,9 @@ class ShardState:
     last_review_summary: str = ""
     pending_review_comments: list[dict[str, Any]] = field(default_factory=list)
     author_codex_session_id: str | None = None
+    author_agy_conversation_id: str | None = None
     codex_session_id: str | None = None
+    reviewer_agy_conversation_id: str | None = None
     last_reviewed_commit: str | None = None
     review_ledger: list[dict[str, Any]] = field(default_factory=list)
     history: list[dict[str, Any]] = field(default_factory=list)
