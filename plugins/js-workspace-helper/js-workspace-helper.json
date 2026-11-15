@@ -1,0 +1,26 @@
+{
+  "id": "js-workspace-helper",
+  "name": "JavaScript Workspace Helper",
+  "binary": "node",
+  "transport": "stdio",
+  "invoke": {
+    "args": [
+      "agent.mjs"
+    ]
+  },
+  "parser": "json_lines",
+  "doctor": {
+    "display_name": "Node.js Workspace Helper",
+    "official_url": "https://nodejs.org",
+    "install_command": "brew install node",
+    "guidance": "Install Node.js to run the js-workspace-helper plugin in /ask",
+    "install_by_os": {
+      "macos": "brew install node",
+      "linux": "sudo apt install nodejs",
+      "windows": "winget install OpenJS.NodeJS"
+    },
+    "ready_detail": "Ready for JavaScript, Rust, and Python workspace manifest inspection",
+    "missing_detail": "Optional — requires Node.js on PATH"
+  },
+  "models": []
+}
