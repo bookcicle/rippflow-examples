@@ -645,19 +645,52 @@ def _invoke_agy_cli_agent(
             cmd.append(f"--print={effective_prompt}")
             return cmd
 
-        active_session = session_id
-        last_error: str | None = None
-        for attempt in range(4):
-            proc = subprocess.run(
-                _build_cmd(active_session),
-                cwd=str(worktree),
-                env=agent_env,
+        initial_head = ""
+        if not read_only:
+            initial_head = subprocess.run(
+                ["git", "-C", str(worktree), "rev-parse", "--verify", "HEAD"],
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
                 text=True,
-                timeout=timeout_sec,
                 check=False,
-            )
+            ).stdout.strip()
+        active_session = session_id
+        last_error: str | None = None
+        for attempt in range(4):
+            try:
+                proc = subprocess.run(
+                    _build_cmd(active_session),
+                    cwd=str(worktree),
+                    env=agent_env,
+                    stdin=subprocess.DEVNULL,
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout_sec,
+                    check=False,
+                )
+            except subprocess.TimeoutExpired:
+                if not read_only:
+                    dirty = subprocess.run(
+                        ["git", "-C", str(worktree), "status", "--porcelain"],
+                        stdin=subprocess.DEVNULL,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    ).stdout.strip()
+                    curr_head = subprocess.run(
+                        ["git", "-C", str(worktree), "rev-parse", "--verify", "HEAD"],
+                        stdin=subprocess.DEVNULL,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    ).stdout.strip()
+                    if dirty or (initial_head and curr_head and curr_head != initial_head):
+                        return (
+                            f"agy CLI hit {timeout_sec}s limit after producing worktree changes; proceeding to local_test_suite.",
+                            None,
+                            active_session,
+                        )
+                raise
             combined = f"{proc.stderr}\n{proc.stdout}".strip()
             parsed: dict[str, Any] | None = None
             if proc.stdout.strip():
@@ -905,6 +938,8 @@ def run_author_turn(
         gh_token=author_token,
         git_email=cfg.author_git_email,
     )
+    if (wt / "Cargo.toml").is_file():
+        author_env["CARGO_TARGET_DIR"] = str(wt.parent / f".cargo-target-{state.shard}")
     _configure_worktree_author_git(wt, cfg, author_env)
     _hydrate_pr_review_context_if_needed(cfg=cfg, state=state, wt=wt, gh_env=author_env)
 
