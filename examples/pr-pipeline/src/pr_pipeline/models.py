@@ -116,7 +116,7 @@ def resolve_asset_path(raw_path: str, *, search_roots: list[Path], label: str = 
 def _auto_detect_mock_html_from_prompt(prompt_text: str, *, search_roots: list[Path]) -> str | None:
     """Auto-detects an existing `*mock*.html` or `*prototype*.html` path referenced in `promptFile` when `mockHtml` is omitted."""
     pattern = re.compile(
-        r"(?:`|\"|'|\s|\()((?:/|~/)[^\s`\"')>]*(?:mock|prototype)[^\s`\"')>]*\.html)\b",
+        r"(?:`|\"|'|\s|\()((?:/|\\\\|~/|~\\|[A-Za-z]:[/\\])[^\s`\"')>]*(?:mock|prototype)[^\s`\"')>]*\.html)\b",
         re.IGNORECASE,
     )
     for match in pattern.finditer(prompt_text):
@@ -579,7 +579,7 @@ def detect_github_repo_slug(repo_path: Path) -> str | None:
 
 def detect_default_test_command(worktree_path: Path) -> list[str]:
     if (worktree_path / "Cargo.toml").is_file():
-        return ["cargo", "test", "--locked"]
+        return ["cargo", "test", "--locked", "--message-format=short"]
     if (worktree_path / "package.json").is_file():
         return ["npm", "test"]
     if (worktree_path / "pyproject.toml").is_file() or (worktree_path / "pytest.ini").is_file() or (worktree_path / "tests").is_dir():
@@ -587,3 +587,54 @@ def detect_default_test_command(worktree_path: Path) -> list[str]:
     if (worktree_path / "go.mod").is_file():
         return ["go", "test", "./..."]
     return ["python3", "-m", "unittest", "discover"]
+
+
+_PRIMARY_ERROR_LINE_RE = re.compile(
+    r"^(?:error(?:\[E\d+\])?:|\s*-->\s+|\S+\.rs:\d+:\d+:\s*error|FAIL\b|FAILED\b|E\s+\S+|.*AssertionError|thread '.*' panicked at)"
+)
+
+
+def format_bounded_test_output(raw: str, max_chars: int = 12000) -> str:
+    """Preserves primary error/failure lines plus both head and tail of long test logs."""
+    if len(raw) <= max_chars:
+        return raw
+    if max_chars <= 0:
+        return ""
+
+    raw_lines = raw.splitlines()
+    primary_lines: list[str] = []
+    seen_primary: set[str] = set()
+    for line in raw_lines:
+        stripped = line.rstrip()
+        if not stripped:
+            continue
+        if _PRIMARY_ERROR_LINE_RE.match(stripped) and stripped not in seen_primary:
+            seen_primary.add(stripped)
+            primary_lines.append(stripped)
+            if len(primary_lines) >= 40:
+                break
+
+    primary_header = ""
+    if primary_lines:
+        header_budget = min(2800, max(200, max_chars // 4))
+        index_block = "[Primary Error / Failure Index]\n" + "\n".join(primary_lines)
+        if len(index_block) > header_budget:
+            index_block = index_block[:header_budget].rsplit("\n", 1)[0]
+        primary_header = index_block + "\n\n"
+
+    marker_probe = "\n... [truncated 000000 middle chars; head + tail preserved] ...\n"
+    remaining = max(0, max_chars - len(primary_header) - len(marker_probe))
+    if remaining < 40:
+        return raw[:max_chars]
+
+    head_chars = min(4500, max(1, (remaining * 45) // 100))
+    tail_chars = min(5500, max(1, remaining - head_chars))
+    if head_chars + tail_chars >= len(raw):
+        body = raw
+    else:
+        omitted = len(raw) - head_chars - tail_chars
+        marker = f"\n... [truncated {omitted} middle chars; head + tail preserved] ...\n"
+        body = raw[:head_chars] + marker + raw[-tail_chars:]
+
+    combined = f"{primary_header}{body}"
+    return combined[:max_chars] if len(combined) > max_chars else combined
