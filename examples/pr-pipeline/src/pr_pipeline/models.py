@@ -116,7 +116,7 @@ def resolve_asset_path(raw_path: str, *, search_roots: list[Path], label: str = 
 def _auto_detect_mock_html_from_prompt(prompt_text: str, *, search_roots: list[Path]) -> str | None:
     """Auto-detects an existing `*mock*.html` or `*prototype*.html` path referenced in `promptFile` when `mockHtml` is omitted."""
     pattern = re.compile(
-        r"(?:`|\"|'|\s|\()((?:/|~/)[^\s`\"')>]*(?:mock|prototype)[^\s`\"')>]*\.html)\b",
+        r"(?:`|\"|'|\s|\()((?:/|\\\\|~/|~\\|[A-Za-z]:[/\\])[^\s`\"')>]*(?:mock|prototype)[^\s`\"')>]*\.html)\b",
         re.IGNORECASE,
     )
     for match in pattern.finditer(prompt_text):

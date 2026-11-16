@@ -450,6 +450,7 @@ class TestDotenvAndNestedExamplesLayout:
             "MAX_TURNS",
             "BRANCH_PREFIX",
         ):
+            monkeypatch.setenv(key, "")
             monkeypatch.delenv(key, raising=False)
 
         workspace = tmp_path / "workspace"
@@ -684,6 +685,38 @@ class TestDotenvAndNestedExamplesLayout:
         )
         assert "Inspect Git History First" in author_prompt
         assert "Write a Reproducing Test First" in author_prompt
+
+    def test_auto_detect_mock_html_supports_windows_drive_and_backslash_paths(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from pr_pipeline import models as pipeline_models
+        from pr_pipeline.models import _auto_detect_mock_html_from_prompt
+
+        target_file = tmp_path / "dashboard_mock.html"
+        target_file.write_text("<html></html>", encoding="utf-8")
+        recorded: list[str] = []
+
+        def fake_resolve_asset_path(raw_path: str, *, search_roots: list[Path], label: str = "file") -> Path:
+            recorded.append(raw_path)
+            return target_file
+
+        monkeypatch.setattr(pipeline_models, "resolve_asset_path", fake_resolve_asset_path)
+
+        win_backslash = r"C:\Users\runneradmin\AppData\Local\Temp\dashboard_mock.html"
+        detected_backslash = _auto_detect_mock_html_from_prompt(
+            f"Read the approved HTML mock first:\n- `{win_backslash}`\n",
+            search_roots=[tmp_path],
+        )
+        assert detected_backslash == str(target_file)
+        assert recorded[-1] == win_backslash
+
+        win_forward = "D:/work/ui_prototype.html"
+        detected_forward = _auto_detect_mock_html_from_prompt(
+            f'Inspect "{win_forward}" before editing.',
+            search_roots=[tmp_path],
+        )
+        assert detected_forward == str(target_file)
+        assert recorded[-1] == win_forward
 
 
 class TestAgyCliAuthorAndReviewer:
