@@ -976,4 +976,145 @@ class TestAgyCliAuthorAndReviewer:
         )
         assert "proceeding to local_test_suite" in resp
 
+    def test_rework_fastpath_and_head_tail_test_truncation(
+        self, tmp_path: Path
+    ) -> None:
+        from pr_pipeline.agents import _build_author_prompt
+        from pr_pipeline.models import (
+            PipelineConfig,
+            RepoSpec,
+            ShardState,
+            detect_default_test_command,
+            format_bounded_test_output,
+        )
+
+        # 1. Default Cargo test command includes concise compiler diagnostics.
+        cargo_dir = tmp_path / "rust-crate"
+        cargo_dir.mkdir()
+        (cargo_dir / "Cargo.toml").write_text('[package]\nname = "demo"\n', encoding="utf-8")
+        assert detect_default_test_command(cargo_dir) == [
+            "cargo",
+            "test",
+            "--locked",
+            "--message-format=short",
+        ]
+
+        # 2. `format_bounded_test_output` keeps early errors + tail summary on long logs.
+        early_error = (
+            "error[E0599]: no method named `overflow_y_scroll` found\n"
+            " --> src/warp_shell.rs:55154:30\n"
+            "error[E0308]: mismatched types\n"
+        )
+        middle_noise = ("verbose help note padding line for rustc diagnostics\n" * 550)[:25500]
+        tail_summary = "error: could not compile `rippflow-cli` (bin \"rippflow\" test) due to 16 previous errors\nFAILED"
+        long_output = f"{early_error}\n{middle_noise}\n{tail_summary}"
+        assert len(long_output) > 25000
+
+        bounded = format_bounded_test_output(long_output, max_chars=12000)
+        assert len(bounded) <= 12000
+        assert "[Primary Error / Failure Index]" in bounded
+        assert "src/warp_shell.rs:55154" in bounded
+        assert "error[E0599]" in bounded
+        assert "head + tail preserved" in bounded
+        assert "due to 16 previous errors" in bounded
+
+        # 3. Rework author prompt places fast-path + failure before the original spec.
+        cfg = PipelineConfig(
+            feature_request="Large Studio specification " + ("X" * 500),
+            workspace_dir=str(tmp_path),
+            repos={"rippflow-cli": RepoSpec(name="rippflow-cli", path=str(cargo_dir))},
+            author_provider="antigravity",
+            reviewer_provider="antigravity",
+            author_model="3.8flash",
+            reviewer_model="argon",
+        )
+        rework_state = ShardState(
+            shard="rippflow-cli",
+            repo_path=str(cargo_dir),
+            worktree_path=str(cargo_dir),
+            branch_name="ai/feature/secrets-manager",
+            base_branch="main",
+            turns_used=1,
+            last_test_passed=False,
+            last_test_output=long_output[:20500] + "\n" + tail_summary,
+        )
+        rework_prompt = _build_author_prompt(cfg, rework_state, turn=2)
+        fastpath_idx = rework_prompt.index("Rework Fast-Path Instructions")
+        failure_idx = rework_prompt.index("Local Test Suite / Screenshot Failure")
+        spec_idx = rework_prompt.index("Reference: Original Prompt Specification")
+        assert fastpath_idx < failure_idx < spec_idx
+        assert "src/warp_shell.rs:55154" in rework_prompt
+        assert "error[E0599]" in rework_prompt
+        assert "due to 16 previous errors" in rework_prompt
+
+    def test_cargo_compile_failure_triggers_short_diagnostic_summary(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from pr_pipeline import phases
+        from pr_pipeline.models import RepoSpec, RunStore, ShardState
+
+        wt = tmp_path / "worktrees" / "svc-rust"
+        wt.mkdir(parents=True)
+        (wt / "Cargo.toml").write_text('[package]\nname = "svc-rust"\nversion = "0.1.0"\n', encoding="utf-8")
+
+        cfg = PipelineConfig(
+            feature_request="Add vault",
+            workspace_dir=str(tmp_path),
+            repos={
+                "svc-rust": RepoSpec(
+                    name="svc-rust",
+                    path=str(wt),
+                    test_command=["cargo", "test", "--locked"],
+                )
+            },
+            execution_mode="dry_run",
+        )
+        store = RunStore(tmp_path, "req-short-diag")
+        store.save_config(cfg)
+        store.save_shard(
+            ShardState(
+                shard="svc-rust",
+                repo_path=str(wt),
+                worktree_path=str(wt),
+                branch_name="ai/feature/add-vault",
+                base_branch="main",
+                turns_used=1,
+            )
+        )
+
+        invoked: list[list[str]] = []
+
+        def fake_run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            invoked.append(cmd)
+            if "--message-format=short" in cmd:
+                return subprocess.CompletedProcess(
+                    args=cmd,
+                    returncode=101,
+                    stdout="",
+                    stderr="src/warp_shell.rs:55154:30: error[E0599]: no method named `overflow_y_scroll`",
+                )
+            verbose_pad = "\n".join(f"note line {i}" for i in range(600))
+            return subprocess.CompletedProcess(
+                args=cmd,
+                returncode=101,
+                stdout="",
+                stderr=f"Compiling svc-rust\n{verbose_pad}\nerror: could not compile `svc-rust`",
+            )
+
+        monkeypatch.setattr(phases.subprocess, "run", fake_run)
+        result = phases._execute_local_test_suite_job(
+            request_id="req-short-diag",
+            shard="svc-rust",
+            repo_root=tmp_path,
+        )
+        assert result["nextDecision"] == "rework"
+        assert len(invoked) == 2
+        assert invoked[1] == ["cargo", "check", "--locked", "--tests", "--message-format=short"]
+        updated = store.load_shard("svc-rust")
+        assert updated.last_test_output is not None
+        assert "[Concise rustc --message-format=short summary]" in updated.last_test_output
+        assert "src/warp_shell.rs:55154:30: error[E0599]" in updated.last_test_output
+
+
+
 

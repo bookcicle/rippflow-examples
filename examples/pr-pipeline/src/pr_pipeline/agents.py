@@ -24,6 +24,7 @@ from .models import (
     PipelineConfig,
     ShardState,
     build_scoped_git_gh_env,
+    format_bounded_test_output,
     resolve_gh_token,
 )
 from .visual_qa import pin_mock_screenshots_to_pr
@@ -310,8 +311,31 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
 
     feedback_sections: list[str] = [
         f"Turn {turn} of {cfg.max_turns} rework on repository `{state.shard}` (branch `{state.branch_name}`).",
-        f"Original Prompt Specification:\n{spec_text}",
+        (
+            f"## Rework Fast-Path Instructions (Turn {turn} of {cfg.max_turns})\n"
+            "1. Prior turn changes are already committed on this branch (`git log -n 3 --oneline`, "
+            "`git diff origin/main...HEAD --stat`). Do **NOT** re-scan large files or re-implement from scratch.\n"
+            "2. Read **only ±30 lines** around the exact `file:line` locations in `Local Test Suite / Screenshot Failure` "
+            "or `Current Open Code Review Comments` below.\n"
+            "3. Apply surgical fixes without breaking previously resolved items, commit (`git add -A && git commit`), "
+            "and finish promptly well under timeout."
+        ),
     ]
+    if state.last_test_passed is False and state.last_test_output:
+        bounded_test_out = format_bounded_test_output(state.last_test_output, max_chars=12000)
+        feedback_sections.append(
+            "## Local Test Suite / Screenshot Failure (Must Fix)\n"
+            f"```\n{bounded_test_out}\n```"
+        )
+    if state.pending_review_comments:
+        formatted = "\n".join(
+            f"- [{c.get('severity', 'P2')}] `{c.get('path', '?')}:{c.get('line', 1)}` — {c.get('body', '')}"
+            for c in state.pending_review_comments
+        )
+        feedback_sections.append(
+            f"## Current Open Code Review Comments from `{cfg.reviewer_gh_user}` (Must Address All)\n"
+            f"Summary: {state.last_review_summary}\n{formatted}"
+        )
     if img_manifest:
         feedback_sections.append(
             "## Attached Visual QA Comparison Images (Mock vs. Actual Rendered UI)\n"
@@ -324,20 +348,7 @@ def _build_author_prompt(cfg: PipelineConfig, state: ShardState, turn: int) -> s
             feedback_sections.append(
                 "## Earlier Review History (Do Not Regress Previously Resolved Items)\n" + earlier_ledger
             )
-    if state.last_test_passed is False and state.last_test_output:
-        feedback_sections.append(
-            "## Local Test Suite / Screenshot Failure (Must Fix)\n"
-            f"```\n{state.last_test_output[-6000:]}\n```"
-        )
-    if state.pending_review_comments:
-        formatted = "\n".join(
-            f"- [{c.get('severity', 'P2')}] `{c.get('path', '?')}:{c.get('line', 1)}` — {c.get('body', '')}"
-            for c in state.pending_review_comments
-        )
-        feedback_sections.append(
-            f"## Current Open Code Review Comments from `{cfg.reviewer_gh_user}` (Must Address All)\n"
-            f"Summary: {state.last_review_summary}\n{formatted}"
-        )
+    feedback_sections.append(f"## Reference: Original Prompt Specification\n{spec_text}")
     feedback_sections.append(
         "Apply targeted fixes in this worktree without breaking previously resolved review items "
         "(the `local_test_suite` phase will re-run tests and re-capture UI screenshots automatically right after this turn), "

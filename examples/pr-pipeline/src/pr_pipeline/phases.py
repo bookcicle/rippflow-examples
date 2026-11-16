@@ -38,6 +38,7 @@ from .models import (
     build_scoped_git_gh_env,
     detect_default_test_command,
     detect_github_repo_slug,
+    format_bounded_test_output,
     load_dotenv_files,
     resolve_gh_token,
     slugify,
@@ -557,6 +558,7 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
     if (wt / "Cargo.toml").is_file():
         # Always isolate Cargo build artifacts per worktree so concurrent pipeline runs never contend on `~/.cargo/target`!
         env["CARGO_TARGET_DIR"] = str(wt.parent / f".cargo-target-{shard}")
+        env.setdefault("CARGO_TERM_COLOR", "never")
     venv_bin = repo_root / ".venv" / ("Scripts" if os.name == "nt" else "bin")
     if venv_bin.is_dir():
         env["PATH"] = f"{venv_bin}{os.pathsep}{env.get('PATH', '')}"
@@ -571,7 +573,37 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
         timeout=780,
         check=False,
     )
-    combined_out = redact_secrets(f"{proc.stdout}\n{proc.stderr}".strip())[-8000:]
+    raw_out = redact_secrets(f"{proc.stdout}\n{proc.stderr}".strip())
+    cmd_str = " ".join(str(part) for part in cmd)
+    if (
+        proc.returncode != 0
+        and (wt / "Cargo.toml").is_file()
+        and "could not compile" in raw_out
+        and "--message-format=short" not in cmd_str
+    ):
+        try:
+            short_proc = subprocess.run(
+                ["cargo", "check", "--locked", "--tests", "--message-format=short"],
+                cwd=str(wt),
+                env=env,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=180,
+                check=False,
+            )
+            short_raw = redact_secrets(f"{short_proc.stdout}\n{short_proc.stderr}".strip())
+            error_lines = [line for line in short_raw.splitlines() if ": error" in line]
+            if error_lines:
+                short_summary = "\n".join(error_lines)[:4000]
+                raw_out = (
+                    "[Concise rustc --message-format=short summary]\n"
+                    f"{short_summary}\n\n{raw_out}"
+                )
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+
+    combined_out = format_bounded_test_output(raw_out, max_chars=14000)
     passed = proc.returncode == 0
     if passed and cfg.execution_mode == "live":
         ahead_proc = subprocess.run(
@@ -583,11 +615,14 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
         )
         if ahead_proc.returncode == 0 and int((ahead_proc.stdout or "0").strip() or "0") == 0:
             passed = False
-            combined_out = (
-                f"No commits authored yet on `{state.branch_name}` ahead of `origin/{state.base_branch}` "
-                "(e.g. zero matching new feature tests ran). Implement and commit the requested feature + unit tests.\n"
-                + combined_out
-            )[-8000:]
+            combined_out = format_bounded_test_output(
+                (
+                    f"No commits authored yet on `{state.branch_name}` ahead of `origin/{state.base_branch}` "
+                    "(e.g. zero matching new feature tests ran). Implement and commit the requested feature + unit tests.\n"
+                    + raw_out
+                ),
+                max_chars=14000,
+            )
 
     # Visual QA screenshot capture step: ONLY runs when the feature run has UI visual QA configured
     # (`screenshotCommand` or `mockHtml`/`mockScreenshots`). Non-UI feature runs skip this completely.
@@ -637,17 +672,19 @@ def _execute_local_test_suite_job(*, request_id: str, shard: str, repo_root: Pat
             shot_out = redact_secrets(f"{shot_proc.stdout}\n{shot_proc.stderr}".strip())[-4000:]
             if shot_proc.returncode != 0:
                 passed = False
-                combined_out = (
-                    f"[Visual QA Screenshot Command Failed (exit {shot_proc.returncode})]\n{shot_out}\n\n{combined_out}"
-                )[-8000:]
+                combined_out = format_bounded_test_output(
+                    f"[Visual QA Screenshot Command Failed (exit {shot_proc.returncode})]\n{shot_out}\n\n{combined_out}",
+                    max_chars=14000,
+                )
             else:
                 captured_ui_imgs = collect_image_files([turn_shot_dir])
                 if not captured_ui_imgs:
                     passed = False
-                    combined_out = (
+                    combined_out = format_bounded_test_output(
                         f"[Visual QA Screenshot Command Succeeded (exit 0) but wrote 0 PNGs into "
-                        f"RIPPFLOW_UI_SCREENSHOT_DIR={turn_shot_dir}]\n{shot_out}\n\n{combined_out}"
-                    )[-8000:]
+                        f"RIPPFLOW_UI_SCREENSHOT_DIR={turn_shot_dir}]\n{shot_out}\n\n{combined_out}",
+                        max_chars=14000,
+                    )
         else:
             captured_ui_imgs = collect_image_files([turn_shot_dir])
 
