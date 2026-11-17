@@ -1,0 +1,58 @@
+{
+  "nodes": [
+    {
+      "id": "coord",
+      "label": "Coordinator",
+      "status": "active",
+      "role": "Orchestrator",
+      "x": 0.5,
+      "y": 0.22
+    },
+    {
+      "id": "res",
+      "label": "Researcher",
+      "status": "working",
+      "role": "Ingest",
+      "x": 0.18,
+      "y": 0.65
+    },
+    {
+      "id": "code",
+      "label": "Coder",
+      "status": "working",
+      "role": "CodeGen",
+      "x": 0.5,
+      "y": 0.78
+    },
+    {
+      "id": "ver",
+      "label": "Verifier",
+      "status": "working",
+      "role": "QA Test",
+      "x": 0.82,
+      "y": 0.65
+    }
+  ],
+  "edges": [
+    {
+      "from": "coord",
+      "to": "res",
+      "label": "28 msg/s"
+    },
+    {
+      "from": "res",
+      "to": "code",
+      "label": "31 ctx/s"
+    },
+    {
+      "from": "code",
+      "to": "ver",
+      "label": "24 patch/s"
+    },
+    {
+      "from": "ver",
+      "to": "coord",
+      "label": "verdict"
+    }
+  ]
+}

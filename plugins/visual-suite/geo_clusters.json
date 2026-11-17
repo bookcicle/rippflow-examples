@@ -1,0 +1,19 @@
+{
+  "links": [
+    {
+      "from": "us-east",
+      "to": "us-west",
+      "latency_ms": 36.2
+    },
+    {
+      "from": "us-east",
+      "to": "eu-west",
+      "latency_ms": 67.7
+    },
+    {
+      "from": "eu-west",
+      "to": "ap-se",
+      "latency_ms": 142.8
+    }
+  ]
+}
