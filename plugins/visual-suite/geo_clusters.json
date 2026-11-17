@@ -6,7 +6,7 @@
       "x": 0.283,
       "y": 0.304,
       "status": "healthy",
-      "ping_ms": 18.1
+      "ping_ms": 17.7
     },
     {
       "id": "us-west",
@@ -14,7 +14,7 @@
       "x": 0.165,
       "y": 0.261,
       "status": "healthy",
-      "ping_ms": 24.8
+      "ping_ms": 23.3
     },
     {
       "id": "sa-east",
@@ -22,7 +22,7 @@
       "x": 0.371,
       "y": 0.75,
       "status": "healthy",
-      "ping_ms": 113.7
+      "ping_ms": 114.2
     },
     {
       "id": "eu-west",
@@ -30,7 +30,7 @@
       "x": 0.483,
       "y": 0.194,
       "status": "healthy",
-      "ping_ms": 74.5
+      "ping_ms": 71.2
     },
     {
       "id": "eu-central",
@@ -38,7 +38,7 @@
       "x": 0.524,
       "y": 0.217,
       "status": "healthy",
-      "ping_ms": 65.9
+      "ping_ms": 63.5
     },
     {
       "id": "ap-se",
@@ -46,7 +46,7 @@
       "x": 0.788,
       "y": 0.57,
       "status": "healthy",
-      "ping_ms": 167.0
+      "ping_ms": 165.2
     },
     {
       "id": "ap-ne",
@@ -54,7 +54,7 @@
       "x": 0.888,
       "y": 0.321,
       "status": "healthy",
-      "ping_ms": 139.6
+      "ping_ms": 140.4
     },
     {
       "id": "ap-se2",
@@ -62,44 +62,44 @@
       "x": 0.92,
       "y": 0.825,
       "status": "healthy",
-      "ping_ms": 181.0
+      "ping_ms": 180.1
     }
   ],
   "links": [
     {
       "from": "us-west",
       "to": "us-east",
-      "latency_ms": 44.2
+      "latency_ms": 43.5
     },
     {
       "from": "us-east",
       "to": "eu-west",
-      "latency_ms": 67.4
+      "latency_ms": 69.7
     },
     {
       "from": "us-east",
       "to": "sa-east",
-      "latency_ms": 92.3
+      "latency_ms": 94.6
     },
     {
       "from": "eu-west",
       "to": "eu-central",
-      "latency_ms": 16.0
+      "latency_ms": 15.3
     },
     {
       "from": "eu-central",
       "to": "ap-se",
-      "latency_ms": 133.6
+      "latency_ms": 140.4
     },
     {
       "from": "ap-se",
       "to": "ap-ne",
-      "latency_ms": 53.9
+      "latency_ms": 51.8
     },
     {
       "from": "ap-se",
       "to": "ap-se2",
-      "latency_ms": 77.9
+      "latency_ms": 80.8
     }
   ]
 }

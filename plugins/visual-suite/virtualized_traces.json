@@ -1,0 +1,4002 @@
+[
+  {
+    "Trace ID": "trc-0001",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "221.0ms",
+    "Tokens": "2114",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0002",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "451.5ms",
+    "Tokens": "3048",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0003",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "48.0ms",
+    "Tokens": "1145",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0004",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "176.9ms",
+    "Tokens": "1575",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0005",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "422.2ms",
+    "Tokens": "756",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0006",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "362.5ms",
+    "Tokens": "2306",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0007",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "373.1ms",
+    "Tokens": "4047",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0008",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "62.0ms",
+    "Tokens": "1990",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0009",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "466.6ms",
+    "Tokens": "2167",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0010",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "372.9ms",
+    "Tokens": "3943",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0011",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "271.8ms",
+    "Tokens": "776",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0012",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "38.0ms",
+    "Tokens": "3533",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0013",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "42.2ms",
+    "Tokens": "3682",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0014",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "193.5ms",
+    "Tokens": "488",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0015",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "444.3ms",
+    "Tokens": "1499",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0016",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "371.2ms",
+    "Tokens": "1168",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0017",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "270.1ms",
+    "Tokens": "2606",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0018",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "125.2ms",
+    "Tokens": "2917",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0019",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "280.6ms",
+    "Tokens": "2530",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0020",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "85.7ms",
+    "Tokens": "2515",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0021",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "325.2ms",
+    "Tokens": "424",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0022",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "155.5ms",
+    "Tokens": "1104",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0023",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "271.5ms",
+    "Tokens": "1852",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0024",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "136.9ms",
+    "Tokens": "1475",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0025",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "285.8ms",
+    "Tokens": "613",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0026",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "405.8ms",
+    "Tokens": "3354",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0027",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "377.7ms",
+    "Tokens": "2747",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0028",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "384.8ms",
+    "Tokens": "3309",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0029",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "253.2ms",
+    "Tokens": "3994",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0030",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "380.9ms",
+    "Tokens": "337",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0031",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "25.0ms",
+    "Tokens": "4188",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0032",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "29.7ms",
+    "Tokens": "1125",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0033",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "98.4ms",
+    "Tokens": "1101",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0034",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "129.4ms",
+    "Tokens": "3140",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0035",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "275.4ms",
+    "Tokens": "3882",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0036",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "364.0ms",
+    "Tokens": "3747",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0037",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "473.4ms",
+    "Tokens": "3598",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0038",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "468.0ms",
+    "Tokens": "4083",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0039",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "450.3ms",
+    "Tokens": "1951",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0040",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "144.5ms",
+    "Tokens": "1137",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0041",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "18.1ms",
+    "Tokens": "730",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0042",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "304.8ms",
+    "Tokens": "1571",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0043",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "16.5ms",
+    "Tokens": "748",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0044",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "107.5ms",
+    "Tokens": "1086",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0045",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "65.0ms",
+    "Tokens": "2007",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0046",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "147.1ms",
+    "Tokens": "4149",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0047",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "310.8ms",
+    "Tokens": "1488",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0048",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "228.8ms",
+    "Tokens": "3782",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0049",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "327.6ms",
+    "Tokens": "3188",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0050",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "165.7ms",
+    "Tokens": "3906",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0051",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "307.3ms",
+    "Tokens": "1522",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0052",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "465.5ms",
+    "Tokens": "2914",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0053",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "23.6ms",
+    "Tokens": "1857",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0054",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "471.0ms",
+    "Tokens": "4117",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0055",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "170.6ms",
+    "Tokens": "2831",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0056",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "69.8ms",
+    "Tokens": "1918",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0057",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "137.3ms",
+    "Tokens": "354",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0058",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "465.6ms",
+    "Tokens": "2213",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0059",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "336.1ms",
+    "Tokens": "1547",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0060",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "278.1ms",
+    "Tokens": "190",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0061",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "162.2ms",
+    "Tokens": "2897",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0062",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "309.7ms",
+    "Tokens": "1779",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0063",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "347.2ms",
+    "Tokens": "761",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0064",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "305.7ms",
+    "Tokens": "3404",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0065",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "321.8ms",
+    "Tokens": "2318",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0066",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "472.2ms",
+    "Tokens": "2463",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0067",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "298.6ms",
+    "Tokens": "4056",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0068",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "150.0ms",
+    "Tokens": "2605",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0069",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "79.6ms",
+    "Tokens": "1901",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0070",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "94.9ms",
+    "Tokens": "1853",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0071",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "414.0ms",
+    "Tokens": "723",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0072",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "209.3ms",
+    "Tokens": "3678",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0073",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "357.5ms",
+    "Tokens": "2434",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0074",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "196.0ms",
+    "Tokens": "446",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0075",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "77.0ms",
+    "Tokens": "3313",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0076",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "459.6ms",
+    "Tokens": "1131",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0077",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "381.6ms",
+    "Tokens": "2016",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0078",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "466.2ms",
+    "Tokens": "338",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0079",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "157.1ms",
+    "Tokens": "3361",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0080",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "150.1ms",
+    "Tokens": "937",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0081",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "286.0ms",
+    "Tokens": "1316",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0082",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "107.8ms",
+    "Tokens": "799",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0083",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "357.6ms",
+    "Tokens": "460",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0084",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "30.6ms",
+    "Tokens": "2169",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0085",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "192.4ms",
+    "Tokens": "3867",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0086",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "362.4ms",
+    "Tokens": "1301",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0087",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "156.8ms",
+    "Tokens": "2413",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0088",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "286.9ms",
+    "Tokens": "3789",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0089",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "33.6ms",
+    "Tokens": "3100",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0090",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "363.9ms",
+    "Tokens": "175",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0091",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "428.5ms",
+    "Tokens": "789",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0092",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "243.4ms",
+    "Tokens": "2629",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0093",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "359.8ms",
+    "Tokens": "3980",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0094",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "145.0ms",
+    "Tokens": "1587",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0095",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "418.5ms",
+    "Tokens": "2719",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0096",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "292.1ms",
+    "Tokens": "2764",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0097",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "58.6ms",
+    "Tokens": "3389",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0098",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "354.1ms",
+    "Tokens": "954",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0099",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "205.3ms",
+    "Tokens": "777",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0100",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "241.7ms",
+    "Tokens": "507",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0101",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "185.4ms",
+    "Tokens": "2033",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0102",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "421.2ms",
+    "Tokens": "3396",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0103",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "66.7ms",
+    "Tokens": "1408",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0104",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "18.6ms",
+    "Tokens": "1165",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0105",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "409.7ms",
+    "Tokens": "343",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0106",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "232.0ms",
+    "Tokens": "3517",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0107",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "214.3ms",
+    "Tokens": "3393",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0108",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "232.5ms",
+    "Tokens": "3003",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0109",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "157.2ms",
+    "Tokens": "2740",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0110",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "14.6ms",
+    "Tokens": "1839",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0111",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "78.8ms",
+    "Tokens": "1190",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0112",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "133.4ms",
+    "Tokens": "1613",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0113",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "95.5ms",
+    "Tokens": "2410",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0114",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "188.5ms",
+    "Tokens": "2102",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0115",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "123.2ms",
+    "Tokens": "3355",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0116",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "407.5ms",
+    "Tokens": "2005",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0117",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "295.4ms",
+    "Tokens": "1929",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0118",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "344.8ms",
+    "Tokens": "2312",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0119",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "187.6ms",
+    "Tokens": "3012",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0120",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "302.2ms",
+    "Tokens": "3854",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0121",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "159.1ms",
+    "Tokens": "1035",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0122",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "136.7ms",
+    "Tokens": "1215",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0123",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "196.2ms",
+    "Tokens": "4117",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0124",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "411.9ms",
+    "Tokens": "729",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0125",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "250.1ms",
+    "Tokens": "1648",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0126",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "158.5ms",
+    "Tokens": "1230",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0127",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "91.3ms",
+    "Tokens": "1675",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0128",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "428.4ms",
+    "Tokens": "3980",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0129",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "99.3ms",
+    "Tokens": "778",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0130",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "216.0ms",
+    "Tokens": "1616",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0131",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "133.9ms",
+    "Tokens": "1423",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0132",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "156.5ms",
+    "Tokens": "3528",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0133",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "57.1ms",
+    "Tokens": "1685",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0134",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "431.4ms",
+    "Tokens": "1745",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0135",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "345.7ms",
+    "Tokens": "3329",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0136",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "446.8ms",
+    "Tokens": "3070",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0137",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "356.0ms",
+    "Tokens": "3124",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0138",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "86.7ms",
+    "Tokens": "1827",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0139",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "445.0ms",
+    "Tokens": "1584",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0140",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "74.3ms",
+    "Tokens": "3871",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0141",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "125.0ms",
+    "Tokens": "2416",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0142",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "88.3ms",
+    "Tokens": "1290",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0143",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "154.7ms",
+    "Tokens": "3642",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0144",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "427.3ms",
+    "Tokens": "2259",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0145",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "362.6ms",
+    "Tokens": "1709",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0146",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "148.7ms",
+    "Tokens": "1483",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0147",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "391.6ms",
+    "Tokens": "1246",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0148",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "387.1ms",
+    "Tokens": "1602",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0149",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "25.0ms",
+    "Tokens": "3413",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0150",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "465.8ms",
+    "Tokens": "4119",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0151",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "141.4ms",
+    "Tokens": "1791",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0152",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "225.1ms",
+    "Tokens": "3335",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0153",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "282.3ms",
+    "Tokens": "3218",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0154",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "330.9ms",
+    "Tokens": "2382",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0155",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "440.1ms",
+    "Tokens": "2267",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0156",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "197.3ms",
+    "Tokens": "2877",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0157",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "18.0ms",
+    "Tokens": "2822",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0158",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "462.8ms",
+    "Tokens": "1748",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0159",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "72.5ms",
+    "Tokens": "821",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0160",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "429.6ms",
+    "Tokens": "2980",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0161",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "293.9ms",
+    "Tokens": "3294",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0162",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "177.3ms",
+    "Tokens": "4124",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0163",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "259.5ms",
+    "Tokens": "3545",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0164",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "104.1ms",
+    "Tokens": "2081",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0165",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "295.8ms",
+    "Tokens": "558",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0166",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "298.0ms",
+    "Tokens": "710",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0167",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "145.2ms",
+    "Tokens": "1663",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0168",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "66.0ms",
+    "Tokens": "3095",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0169",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "444.6ms",
+    "Tokens": "1868",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0170",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "336.0ms",
+    "Tokens": "1206",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0171",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "378.4ms",
+    "Tokens": "205",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0172",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "128.9ms",
+    "Tokens": "2587",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0173",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "15.6ms",
+    "Tokens": "3636",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0174",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "81.1ms",
+    "Tokens": "2536",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0175",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "117.5ms",
+    "Tokens": "1602",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0176",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "237.7ms",
+    "Tokens": "1143",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0177",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "18.8ms",
+    "Tokens": "386",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0178",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "430.8ms",
+    "Tokens": "3473",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0179",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "72.9ms",
+    "Tokens": "1701",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0180",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "348.3ms",
+    "Tokens": "2038",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0181",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "140.4ms",
+    "Tokens": "862",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0182",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "239.4ms",
+    "Tokens": "3925",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0183",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "255.8ms",
+    "Tokens": "2617",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0184",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "403.1ms",
+    "Tokens": "2715",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0185",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "86.9ms",
+    "Tokens": "3031",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0186",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "326.2ms",
+    "Tokens": "942",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0187",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "468.7ms",
+    "Tokens": "4114",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0188",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "438.4ms",
+    "Tokens": "1822",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0189",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "211.7ms",
+    "Tokens": "3981",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0190",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "325.2ms",
+    "Tokens": "480",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0191",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "372.6ms",
+    "Tokens": "206",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0192",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "276.9ms",
+    "Tokens": "163",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0193",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "359.9ms",
+    "Tokens": "817",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0194",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "105.6ms",
+    "Tokens": "4021",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0195",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "371.9ms",
+    "Tokens": "512",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0196",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "416.7ms",
+    "Tokens": "1783",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0197",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "69.7ms",
+    "Tokens": "4140",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0198",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "332.3ms",
+    "Tokens": "1433",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0199",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "475.3ms",
+    "Tokens": "3331",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0200",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "336.1ms",
+    "Tokens": "2361",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0201",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "363.3ms",
+    "Tokens": "1140",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0202",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "448.9ms",
+    "Tokens": "867",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0203",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "102.2ms",
+    "Tokens": "1870",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0204",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "393.0ms",
+    "Tokens": "4060",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0205",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "347.4ms",
+    "Tokens": "3623",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0206",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "169.4ms",
+    "Tokens": "2411",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0207",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "89.4ms",
+    "Tokens": "3993",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0208",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "415.9ms",
+    "Tokens": "3688",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0209",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "103.6ms",
+    "Tokens": "3636",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0210",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "258.0ms",
+    "Tokens": "974",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0211",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "409.8ms",
+    "Tokens": "1856",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0212",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "346.7ms",
+    "Tokens": "3711",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0213",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "379.7ms",
+    "Tokens": "3268",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0214",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "472.0ms",
+    "Tokens": "3955",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0215",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "126.5ms",
+    "Tokens": "2469",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0216",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "349.2ms",
+    "Tokens": "1853",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0217",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "25.4ms",
+    "Tokens": "2581",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0218",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "218.2ms",
+    "Tokens": "1016",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0219",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "12.6ms",
+    "Tokens": "941",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0220",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "421.7ms",
+    "Tokens": "982",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0221",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "207.4ms",
+    "Tokens": "2459",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0222",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "453.7ms",
+    "Tokens": "3214",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0223",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "466.2ms",
+    "Tokens": "189",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0224",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "130.9ms",
+    "Tokens": "310",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0225",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "87.2ms",
+    "Tokens": "3039",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0226",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "27.4ms",
+    "Tokens": "3387",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0227",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "350.5ms",
+    "Tokens": "2795",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0228",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "339.2ms",
+    "Tokens": "3245",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0229",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "49.2ms",
+    "Tokens": "3394",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0230",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "249.5ms",
+    "Tokens": "575",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0231",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "50.9ms",
+    "Tokens": "725",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0232",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "423.3ms",
+    "Tokens": "2074",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0233",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "49.5ms",
+    "Tokens": "267",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0234",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "391.2ms",
+    "Tokens": "2138",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0235",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "415.6ms",
+    "Tokens": "1435",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0236",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "47.1ms",
+    "Tokens": "4126",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0237",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "146.3ms",
+    "Tokens": "4101",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0238",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "93.5ms",
+    "Tokens": "3536",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0239",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "191.7ms",
+    "Tokens": "1121",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0240",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "295.1ms",
+    "Tokens": "1715",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0241",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "75.2ms",
+    "Tokens": "886",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0242",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "305.2ms",
+    "Tokens": "3008",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0243",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "123.8ms",
+    "Tokens": "2706",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0244",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "417.9ms",
+    "Tokens": "3350",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0245",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "110.8ms",
+    "Tokens": "544",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0246",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "80.8ms",
+    "Tokens": "2781",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0247",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "172.8ms",
+    "Tokens": "791",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0248",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "421.8ms",
+    "Tokens": "3501",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0249",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "67.7ms",
+    "Tokens": "1379",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0250",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "352.8ms",
+    "Tokens": "474",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0251",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "153.6ms",
+    "Tokens": "2159",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0252",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "128.2ms",
+    "Tokens": "3941",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0253",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "88.0ms",
+    "Tokens": "3815",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0254",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "237.0ms",
+    "Tokens": "3347",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0255",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "242.9ms",
+    "Tokens": "1726",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0256",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "142.9ms",
+    "Tokens": "2932",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0257",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "125.2ms",
+    "Tokens": "559",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0258",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "21.2ms",
+    "Tokens": "357",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0259",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "314.2ms",
+    "Tokens": "3320",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0260",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "182.9ms",
+    "Tokens": "1757",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0261",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "141.5ms",
+    "Tokens": "1928",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0262",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "432.9ms",
+    "Tokens": "800",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0263",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "77.5ms",
+    "Tokens": "1941",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0264",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "356.5ms",
+    "Tokens": "2675",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0265",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "333.1ms",
+    "Tokens": "585",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0266",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "338.9ms",
+    "Tokens": "1034",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0267",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "230.4ms",
+    "Tokens": "764",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0268",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "102.2ms",
+    "Tokens": "2599",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0269",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "386.8ms",
+    "Tokens": "2178",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0270",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "444.5ms",
+    "Tokens": "3806",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0271",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "256.0ms",
+    "Tokens": "2474",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0272",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "101.5ms",
+    "Tokens": "3897",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0273",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "87.5ms",
+    "Tokens": "1498",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0274",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "115.1ms",
+    "Tokens": "2621",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0275",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "274.9ms",
+    "Tokens": "1729",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0276",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "205.9ms",
+    "Tokens": "4173",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0277",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "409.5ms",
+    "Tokens": "612",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0278",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "473.9ms",
+    "Tokens": "2085",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0279",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "14.1ms",
+    "Tokens": "880",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0280",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "384.9ms",
+    "Tokens": "4137",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0281",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "88.3ms",
+    "Tokens": "334",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0282",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "281.1ms",
+    "Tokens": "1463",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0283",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "363.3ms",
+    "Tokens": "3123",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0284",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "427.0ms",
+    "Tokens": "4035",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0285",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "314.4ms",
+    "Tokens": "905",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0286",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "460.8ms",
+    "Tokens": "915",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0287",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "367.4ms",
+    "Tokens": "2951",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0288",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "181.8ms",
+    "Tokens": "1382",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0289",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "355.1ms",
+    "Tokens": "2755",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0290",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "38.0ms",
+    "Tokens": "3786",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0291",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "430.9ms",
+    "Tokens": "1878",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0292",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "90.0ms",
+    "Tokens": "1888",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0293",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "191.7ms",
+    "Tokens": "3375",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0294",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "406.6ms",
+    "Tokens": "1399",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0295",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "447.1ms",
+    "Tokens": "1850",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0296",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "263.0ms",
+    "Tokens": "388",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0297",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "172.1ms",
+    "Tokens": "235",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0298",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "417.8ms",
+    "Tokens": "3048",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0299",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "40.7ms",
+    "Tokens": "3714",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0300",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "141.2ms",
+    "Tokens": "3492",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0301",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "415.6ms",
+    "Tokens": "3854",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0302",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "370.8ms",
+    "Tokens": "2925",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0303",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "206.9ms",
+    "Tokens": "2470",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0304",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "366.3ms",
+    "Tokens": "3795",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0305",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "388.3ms",
+    "Tokens": "1775",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0306",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "140.4ms",
+    "Tokens": "3448",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0307",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "351.4ms",
+    "Tokens": "2847",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0308",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "254.9ms",
+    "Tokens": "2532",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0309",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "316.1ms",
+    "Tokens": "2935",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0310",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "193.3ms",
+    "Tokens": "4180",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0311",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "401.2ms",
+    "Tokens": "566",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0312",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "62.7ms",
+    "Tokens": "1408",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0313",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "244.3ms",
+    "Tokens": "1327",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0314",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "477.8ms",
+    "Tokens": "3001",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0315",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "202.8ms",
+    "Tokens": "201",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0316",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "306.1ms",
+    "Tokens": "3835",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0317",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "287.2ms",
+    "Tokens": "1782",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0318",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "370.9ms",
+    "Tokens": "3076",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0319",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "323.7ms",
+    "Tokens": "4114",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0320",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "403.9ms",
+    "Tokens": "3116",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0321",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "280.4ms",
+    "Tokens": "2815",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0322",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "378.5ms",
+    "Tokens": "350",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0323",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "106.8ms",
+    "Tokens": "323",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0324",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "34.4ms",
+    "Tokens": "2335",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0325",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "180.9ms",
+    "Tokens": "3418",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0326",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "65.7ms",
+    "Tokens": "4014",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0327",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "282.9ms",
+    "Tokens": "3487",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0328",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "31.4ms",
+    "Tokens": "3838",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0329",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "458.2ms",
+    "Tokens": "2766",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0330",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "105.5ms",
+    "Tokens": "3846",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0331",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "335.0ms",
+    "Tokens": "2351",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0332",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "12.5ms",
+    "Tokens": "1261",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0333",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "286.6ms",
+    "Tokens": "1035",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0334",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "149.9ms",
+    "Tokens": "2244",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0335",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "322.2ms",
+    "Tokens": "3475",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0336",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "62.4ms",
+    "Tokens": "1120",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0337",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "354.5ms",
+    "Tokens": "3992",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0338",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "110.2ms",
+    "Tokens": "815",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0339",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "274.6ms",
+    "Tokens": "360",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0340",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "251.2ms",
+    "Tokens": "2669",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0341",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "38.4ms",
+    "Tokens": "3807",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0342",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "306.2ms",
+    "Tokens": "3555",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0343",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "102.7ms",
+    "Tokens": "363",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0344",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "363.0ms",
+    "Tokens": "2965",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0345",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "370.3ms",
+    "Tokens": "1642",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0346",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "116.6ms",
+    "Tokens": "3976",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0347",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "406.8ms",
+    "Tokens": "635",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0348",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "404.4ms",
+    "Tokens": "3498",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0349",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "20.0ms",
+    "Tokens": "2204",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0350",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "132.4ms",
+    "Tokens": "3815",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0351",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "153.2ms",
+    "Tokens": "1123",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0352",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "267.5ms",
+    "Tokens": "2134",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0353",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "291.3ms",
+    "Tokens": "2255",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0354",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "473.6ms",
+    "Tokens": "1858",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0355",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "254.0ms",
+    "Tokens": "2706",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0356",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "80.9ms",
+    "Tokens": "2212",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0357",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "302.5ms",
+    "Tokens": "1063",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0358",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "248.1ms",
+    "Tokens": "314",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0359",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "239.0ms",
+    "Tokens": "3225",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0360",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "141.0ms",
+    "Tokens": "1621",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0361",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "351.0ms",
+    "Tokens": "2279",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0362",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "29.3ms",
+    "Tokens": "1586",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0363",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "366.0ms",
+    "Tokens": "2216",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0364",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "164.7ms",
+    "Tokens": "1852",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0365",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "162.0ms",
+    "Tokens": "3482",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0366",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "154.5ms",
+    "Tokens": "2027",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0367",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "79.3ms",
+    "Tokens": "2331",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0368",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "87.3ms",
+    "Tokens": "3923",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0369",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "472.1ms",
+    "Tokens": "3295",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0370",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "407.5ms",
+    "Tokens": "1896",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0371",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "313.0ms",
+    "Tokens": "375",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0372",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "395.0ms",
+    "Tokens": "690",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0373",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "403.8ms",
+    "Tokens": "3249",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0374",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "199.9ms",
+    "Tokens": "437",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0375",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "177.2ms",
+    "Tokens": "2779",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0376",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "68.0ms",
+    "Tokens": "164",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0377",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "80.9ms",
+    "Tokens": "2595",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0378",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "123.0ms",
+    "Tokens": "457",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0379",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "282.0ms",
+    "Tokens": "970",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0380",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "460.6ms",
+    "Tokens": "2045",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0381",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "393.0ms",
+    "Tokens": "3579",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0382",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "192.7ms",
+    "Tokens": "2573",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0383",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "330.8ms",
+    "Tokens": "3014",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0384",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "20.8ms",
+    "Tokens": "2829",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0385",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "452.8ms",
+    "Tokens": "4159",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0386",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "107.0ms",
+    "Tokens": "2612",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0387",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "349.0ms",
+    "Tokens": "824",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0388",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "160.3ms",
+    "Tokens": "1283",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0389",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "233.5ms",
+    "Tokens": "737",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0390",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "103.4ms",
+    "Tokens": "2111",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0391",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "311.9ms",
+    "Tokens": "1484",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0392",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "313.8ms",
+    "Tokens": "3994",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0393",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "240.9ms",
+    "Tokens": "2199",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0394",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "35.6ms",
+    "Tokens": "1804",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0395",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "293.7ms",
+    "Tokens": "472",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0396",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "455.4ms",
+    "Tokens": "2785",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0397",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "51.2ms",
+    "Tokens": "2162",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0398",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "352.1ms",
+    "Tokens": "447",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0399",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "31.8ms",
+    "Tokens": "3595",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0400",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "418.9ms",
+    "Tokens": "2504",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0401",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "346.0ms",
+    "Tokens": "215",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0402",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "263.6ms",
+    "Tokens": "2879",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0403",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "83.4ms",
+    "Tokens": "4080",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0404",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "86.4ms",
+    "Tokens": "1310",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0405",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "209.3ms",
+    "Tokens": "563",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0406",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "153.8ms",
+    "Tokens": "298",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0407",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "147.3ms",
+    "Tokens": "472",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0408",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "166.3ms",
+    "Tokens": "1185",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0409",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "381.3ms",
+    "Tokens": "4067",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0410",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "170.1ms",
+    "Tokens": "3317",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0411",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "198.4ms",
+    "Tokens": "784",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0412",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "236.0ms",
+    "Tokens": "3346",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0413",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "210.8ms",
+    "Tokens": "2836",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0414",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "314.0ms",
+    "Tokens": "2679",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0415",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "29.3ms",
+    "Tokens": "1174",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0416",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "412.2ms",
+    "Tokens": "252",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0417",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "375.1ms",
+    "Tokens": "2840",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0418",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "170.4ms",
+    "Tokens": "3496",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0419",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "477.4ms",
+    "Tokens": "3056",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0420",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "86.4ms",
+    "Tokens": "920",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0421",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "14.8ms",
+    "Tokens": "3919",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0422",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "28.4ms",
+    "Tokens": "589",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0423",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "352.9ms",
+    "Tokens": "1654",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0424",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "62.8ms",
+    "Tokens": "2245",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0425",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "476.0ms",
+    "Tokens": "1691",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0426",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "71.0ms",
+    "Tokens": "403",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0427",
+    "Agent": "verifier",
+    "Model": "deepseek-v2",
+    "Latency": "141.2ms",
+    "Tokens": "3824",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0428",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "30.6ms",
+    "Tokens": "1288",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0429",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "33.8ms",
+    "Tokens": "2425",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0430",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "91.9ms",
+    "Tokens": "3088",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0431",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "275.1ms",
+    "Tokens": "883",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0432",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "362.5ms",
+    "Tokens": "1078",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0433",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "261.7ms",
+    "Tokens": "4039",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0434",
+    "Agent": "deployer",
+    "Model": "llama-3-70b",
+    "Latency": "270.7ms",
+    "Tokens": "3785",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0435",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "377.1ms",
+    "Tokens": "1572",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0436",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "346.6ms",
+    "Tokens": "803",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0437",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "442.1ms",
+    "Tokens": "1105",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0438",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "269.0ms",
+    "Tokens": "923",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0439",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "431.9ms",
+    "Tokens": "3482",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0440",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "104.4ms",
+    "Tokens": "3973",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0441",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "400.7ms",
+    "Tokens": "2780",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0442",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "48.6ms",
+    "Tokens": "662",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0443",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "300.6ms",
+    "Tokens": "1002",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0444",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "414.8ms",
+    "Tokens": "3168",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0445",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "477.9ms",
+    "Tokens": "3169",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0446",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "314.3ms",
+    "Tokens": "2231",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0447",
+    "Agent": "tester",
+    "Model": "gemini-1.5",
+    "Latency": "294.6ms",
+    "Tokens": "1639",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0448",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "359.5ms",
+    "Tokens": "673",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0449",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "449.3ms",
+    "Tokens": "3431",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0450",
+    "Agent": "verifier",
+    "Model": "llama-3-70b",
+    "Latency": "424.3ms",
+    "Tokens": "1156",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0451",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "50.4ms",
+    "Tokens": "541",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0452",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "218.9ms",
+    "Tokens": "1898",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0453",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "252.1ms",
+    "Tokens": "2116",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0454",
+    "Agent": "researcher",
+    "Model": "claude-3.5",
+    "Latency": "61.1ms",
+    "Tokens": "1493",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0455",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "317.4ms",
+    "Tokens": "3595",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0456",
+    "Agent": "verifier",
+    "Model": "gemini-1.5",
+    "Latency": "464.0ms",
+    "Tokens": "2524",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0457",
+    "Agent": "planner",
+    "Model": "gpt-4o",
+    "Latency": "309.8ms",
+    "Tokens": "4046",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0458",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "241.2ms",
+    "Tokens": "2592",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0459",
+    "Agent": "researcher",
+    "Model": "gpt-4o",
+    "Latency": "291.7ms",
+    "Tokens": "2443",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0460",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "265.0ms",
+    "Tokens": "2941",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0461",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "300.9ms",
+    "Tokens": "1604",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0462",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "52.5ms",
+    "Tokens": "3242",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0463",
+    "Agent": "coder",
+    "Model": "deepseek-v2",
+    "Latency": "147.9ms",
+    "Tokens": "2857",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0464",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "26.4ms",
+    "Tokens": "1653",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0465",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "21.7ms",
+    "Tokens": "3153",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0466",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "413.9ms",
+    "Tokens": "1317",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0467",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "225.7ms",
+    "Tokens": "2174",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0468",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "349.8ms",
+    "Tokens": "3199",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0469",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "68.7ms",
+    "Tokens": "1227",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0470",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "292.3ms",
+    "Tokens": "3627",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0471",
+    "Agent": "tester",
+    "Model": "llama-3-70b",
+    "Latency": "252.2ms",
+    "Tokens": "2127",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0472",
+    "Agent": "verifier",
+    "Model": "gpt-4o",
+    "Latency": "202.2ms",
+    "Tokens": "888",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0473",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "425.7ms",
+    "Tokens": "158",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0474",
+    "Agent": "planner",
+    "Model": "claude-3.5",
+    "Latency": "154.5ms",
+    "Tokens": "2200",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0475",
+    "Agent": "planner",
+    "Model": "gemini-1.5",
+    "Latency": "323.9ms",
+    "Tokens": "1352",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0476",
+    "Agent": "deployer",
+    "Model": "deepseek-v2",
+    "Latency": "238.6ms",
+    "Tokens": "2746",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0477",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "114.2ms",
+    "Tokens": "2937",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0478",
+    "Agent": "coder",
+    "Model": "llama-3-70b",
+    "Latency": "13.4ms",
+    "Tokens": "3599",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0479",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "318.1ms",
+    "Tokens": "1822",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0480",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "415.8ms",
+    "Tokens": "1869",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0481",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "416.4ms",
+    "Tokens": "309",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0482",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "174.1ms",
+    "Tokens": "810",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0483",
+    "Agent": "deployer",
+    "Model": "gemini-1.5",
+    "Latency": "315.8ms",
+    "Tokens": "2302",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0484",
+    "Agent": "deployer",
+    "Model": "gpt-4o",
+    "Latency": "271.2ms",
+    "Tokens": "2343",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0485",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "211.1ms",
+    "Tokens": "2692",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0486",
+    "Agent": "planner",
+    "Model": "llama-3-70b",
+    "Latency": "141.5ms",
+    "Tokens": "1295",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0487",
+    "Agent": "tester",
+    "Model": "gpt-4o",
+    "Latency": "349.9ms",
+    "Tokens": "3241",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0488",
+    "Agent": "researcher",
+    "Model": "deepseek-v2",
+    "Latency": "239.8ms",
+    "Tokens": "2288",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0489",
+    "Agent": "deployer",
+    "Model": "claude-3.5",
+    "Latency": "183.4ms",
+    "Tokens": "4055",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0490",
+    "Agent": "coder",
+    "Model": "gpt-4o",
+    "Latency": "269.3ms",
+    "Tokens": "348",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0491",
+    "Agent": "tester",
+    "Model": "claude-3.5",
+    "Latency": "267.4ms",
+    "Tokens": "2219",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0492",
+    "Agent": "coder",
+    "Model": "claude-3.5",
+    "Latency": "445.0ms",
+    "Tokens": "3184",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0493",
+    "Agent": "planner",
+    "Model": "deepseek-v2",
+    "Latency": "209.1ms",
+    "Tokens": "1096",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0494",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "37.6ms",
+    "Tokens": "2436",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0495",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "336.9ms",
+    "Tokens": "1379",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0496",
+    "Agent": "coder",
+    "Model": "gemini-1.5",
+    "Latency": "141.2ms",
+    "Tokens": "2785",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0497",
+    "Agent": "tester",
+    "Model": "deepseek-v2",
+    "Latency": "79.2ms",
+    "Tokens": "3131",
+    "Status": "SUCCESS"
+  },
+  {
+    "Trace ID": "trc-0498",
+    "Agent": "researcher",
+    "Model": "llama-3-70b",
+    "Latency": "208.1ms",
+    "Tokens": "2526",
+    "Status": "RUNNING"
+  },
+  {
+    "Trace ID": "trc-0499",
+    "Agent": "verifier",
+    "Model": "claude-3.5",
+    "Latency": "447.7ms",
+    "Tokens": "1967",
+    "Status": "FAILED"
+  },
+  {
+    "Trace ID": "trc-0500",
+    "Agent": "researcher",
+    "Model": "gemini-1.5",
+    "Latency": "295.1ms",
+    "Tokens": "3310",
+    "Status": "SUCCESS"
+  }
+]

@@ -47,6 +47,26 @@
         "gap": 12,
         "children": [
           {
+            "type": "Table",
+            "title": "Agent Execution Traces (500 Records)",
+            "virtualized": true,
+            "sticky_header": true,
+            "columns": ["Trace ID", "Agent", "Model", "Latency", "Tokens", "Status"],
+            "source": { "file": "virtualized_traces.json" }
+          },
+          {
+            "type": "List",
+            "title": "Live Agent Event Stream (300 Items)",
+            "virtualized": true,
+            "source": { "file": "virtualized_logs.json" }
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
             "type": "CandleStick",
             "title": "Execution Latency Variance (OHLC)",
             "source": { "file": "latency_stream.jsonl" }

@@ -1,0 +1,2402 @@
+[
+  {
+    "title": "Model response streaming [#001]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "8s ago"
+  },
+  {
+    "title": "Tool execution complete [#002]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "45s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#003]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "24s ago"
+  },
+  {
+    "title": "Model response streaming [#004]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Tool execution complete [#005]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "34s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#006]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "20s ago"
+  },
+  {
+    "title": "Validation assertion verified [#007]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "14s ago"
+  },
+  {
+    "title": "Tool execution complete [#008]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "58s ago"
+  },
+  {
+    "title": "Tool execution complete [#009]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "18s ago"
+  },
+  {
+    "title": "Model response streaming [#010]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "14s ago"
+  },
+  {
+    "title": "Tool execution complete [#011]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "2s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#012]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "22s ago"
+  },
+  {
+    "title": "Tool execution complete [#013]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "49s ago"
+  },
+  {
+    "title": "Model response streaming [#014]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "55s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#015]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "57s ago"
+  },
+  {
+    "title": "Model response streaming [#016]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "51s ago"
+  },
+  {
+    "title": "Subagent task spawned [#017]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "58s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#018]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "56s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#019]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "46s ago"
+  },
+  {
+    "title": "Tool execution complete [#020]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "21s ago"
+  },
+  {
+    "title": "Tool execution complete [#021]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "36s ago"
+  },
+  {
+    "title": "Tool execution complete [#022]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "30s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#023]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "34s ago"
+  },
+  {
+    "title": "Tool execution complete [#024]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "4s ago"
+  },
+  {
+    "title": "Tool execution complete [#025]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "27s ago"
+  },
+  {
+    "title": "Tool execution complete [#026]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "54s ago"
+  },
+  {
+    "title": "Tool execution complete [#027]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "51s ago"
+  },
+  {
+    "title": "Validation assertion verified [#028]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "44s ago"
+  },
+  {
+    "title": "Tool execution complete [#029]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "21s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#030]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "38s ago"
+  },
+  {
+    "title": "Validation assertion verified [#031]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "44s ago"
+  },
+  {
+    "title": "Model response streaming [#032]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "19s ago"
+  },
+  {
+    "title": "Validation assertion verified [#033]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "26s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#034]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "52s ago"
+  },
+  {
+    "title": "Model response streaming [#035]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "32s ago"
+  },
+  {
+    "title": "Tool execution complete [#036]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "12s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#037]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "46s ago"
+  },
+  {
+    "title": "Model response streaming [#038]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "55s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#039]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "1s ago"
+  },
+  {
+    "title": "Tool execution complete [#040]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "59s ago"
+  },
+  {
+    "title": "Tool execution complete [#041]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "3s ago"
+  },
+  {
+    "title": "Validation assertion verified [#042]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "51s ago"
+  },
+  {
+    "title": "Model response streaming [#043]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "47s ago"
+  },
+  {
+    "title": "Validation assertion verified [#044]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "51s ago"
+  },
+  {
+    "title": "Model response streaming [#045]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "14s ago"
+  },
+  {
+    "title": "Subagent task spawned [#046]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Subagent task spawned [#047]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "27s ago"
+  },
+  {
+    "title": "Subagent task spawned [#048]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "17s ago"
+  },
+  {
+    "title": "Tool execution complete [#049]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "2s ago"
+  },
+  {
+    "title": "Model response streaming [#050]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "4s ago"
+  },
+  {
+    "title": "Validation assertion verified [#051]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "18s ago"
+  },
+  {
+    "title": "Model response streaming [#052]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "32s ago"
+  },
+  {
+    "title": "Tool execution complete [#053]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "7s ago"
+  },
+  {
+    "title": "Tool execution complete [#054]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "14s ago"
+  },
+  {
+    "title": "Subagent task spawned [#055]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "48s ago"
+  },
+  {
+    "title": "Subagent task spawned [#056]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "34s ago"
+  },
+  {
+    "title": "Subagent task spawned [#057]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "46s ago"
+  },
+  {
+    "title": "Subagent task spawned [#058]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "25s ago"
+  },
+  {
+    "title": "Validation assertion verified [#059]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "36s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#060]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "27s ago"
+  },
+  {
+    "title": "Model response streaming [#061]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "17s ago"
+  },
+  {
+    "title": "Tool execution complete [#062]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "2s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#063]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "10s ago"
+  },
+  {
+    "title": "Subagent task spawned [#064]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "12s ago"
+  },
+  {
+    "title": "Subagent task spawned [#065]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "26s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#066]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "22s ago"
+  },
+  {
+    "title": "Model response streaming [#067]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "9s ago"
+  },
+  {
+    "title": "Subagent task spawned [#068]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "48s ago"
+  },
+  {
+    "title": "Subagent task spawned [#069]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "5s ago"
+  },
+  {
+    "title": "Validation assertion verified [#070]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "12s ago"
+  },
+  {
+    "title": "Subagent task spawned [#071]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "33s ago"
+  },
+  {
+    "title": "Validation assertion verified [#072]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "7s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#073]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "4s ago"
+  },
+  {
+    "title": "Model response streaming [#074]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#075]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "33s ago"
+  },
+  {
+    "title": "Model response streaming [#076]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "27s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#077]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "13s ago"
+  },
+  {
+    "title": "Subagent task spawned [#078]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "48s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#079]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "30s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#080]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "30s ago"
+  },
+  {
+    "title": "Tool execution complete [#081]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "54s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#082]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "37s ago"
+  },
+  {
+    "title": "Tool execution complete [#083]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "53s ago"
+  },
+  {
+    "title": "Subagent task spawned [#084]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "23s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#085]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "47s ago"
+  },
+  {
+    "title": "Validation assertion verified [#086]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "51s ago"
+  },
+  {
+    "title": "Tool execution complete [#087]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "13s ago"
+  },
+  {
+    "title": "Tool execution complete [#088]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "52s ago"
+  },
+  {
+    "title": "Subagent task spawned [#089]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "41s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#090]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "24s ago"
+  },
+  {
+    "title": "Tool execution complete [#091]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "37s ago"
+  },
+  {
+    "title": "Validation assertion verified [#092]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "45s ago"
+  },
+  {
+    "title": "Model response streaming [#093]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "12s ago"
+  },
+  {
+    "title": "Tool execution complete [#094]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "13s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#095]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "50s ago"
+  },
+  {
+    "title": "Tool execution complete [#096]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "25s ago"
+  },
+  {
+    "title": "Subagent task spawned [#097]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "35s ago"
+  },
+  {
+    "title": "Subagent task spawned [#098]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "52s ago"
+  },
+  {
+    "title": "Validation assertion verified [#099]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "36s ago"
+  },
+  {
+    "title": "Tool execution complete [#100]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "19s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#101]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "43s ago"
+  },
+  {
+    "title": "Validation assertion verified [#102]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "32s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#103]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "28s ago"
+  },
+  {
+    "title": "Validation assertion verified [#104]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "35s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#105]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "25s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#106]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "44s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#107]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "50s ago"
+  },
+  {
+    "title": "Model response streaming [#108]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "27s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#109]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "43s ago"
+  },
+  {
+    "title": "Tool execution complete [#110]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "14s ago"
+  },
+  {
+    "title": "Model response streaming [#111]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "20s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#112]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "9s ago"
+  },
+  {
+    "title": "Subagent task spawned [#113]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "15s ago"
+  },
+  {
+    "title": "Subagent task spawned [#114]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "53s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#115]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "45s ago"
+  },
+  {
+    "title": "Validation assertion verified [#116]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "39s ago"
+  },
+  {
+    "title": "Subagent task spawned [#117]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "23s ago"
+  },
+  {
+    "title": "Model response streaming [#118]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "16s ago"
+  },
+  {
+    "title": "Subagent task spawned [#119]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "48s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#120]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "8s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#121]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "46s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#122]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "48s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#123]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "1s ago"
+  },
+  {
+    "title": "Model response streaming [#124]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "21s ago"
+  },
+  {
+    "title": "Subagent task spawned [#125]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "17s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#126]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "13s ago"
+  },
+  {
+    "title": "Model response streaming [#127]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "14s ago"
+  },
+  {
+    "title": "Model response streaming [#128]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "14s ago"
+  },
+  {
+    "title": "Model response streaming [#129]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "6s ago"
+  },
+  {
+    "title": "Subagent task spawned [#130]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "25s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#131]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "47s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#132]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "11s ago"
+  },
+  {
+    "title": "Model response streaming [#133]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "39s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#134]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "3s ago"
+  },
+  {
+    "title": "Validation assertion verified [#135]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "40s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#136]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "37s ago"
+  },
+  {
+    "title": "Tool execution complete [#137]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "23s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#138]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "55s ago"
+  },
+  {
+    "title": "Tool execution complete [#139]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "16s ago"
+  },
+  {
+    "title": "Model response streaming [#140]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "14s ago"
+  },
+  {
+    "title": "Tool execution complete [#141]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "31s ago"
+  },
+  {
+    "title": "Validation assertion verified [#142]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "11s ago"
+  },
+  {
+    "title": "Validation assertion verified [#143]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "12s ago"
+  },
+  {
+    "title": "Subagent task spawned [#144]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "17s ago"
+  },
+  {
+    "title": "Subagent task spawned [#145]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "38s ago"
+  },
+  {
+    "title": "Tool execution complete [#146]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "8s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#147]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "48s ago"
+  },
+  {
+    "title": "Subagent task spawned [#148]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "20s ago"
+  },
+  {
+    "title": "Subagent task spawned [#149]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "51s ago"
+  },
+  {
+    "title": "Validation assertion verified [#150]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "17s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#151]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "53s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#152]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "38s ago"
+  },
+  {
+    "title": "Subagent task spawned [#153]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "28s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#154]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "54s ago"
+  },
+  {
+    "title": "Model response streaming [#155]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "42s ago"
+  },
+  {
+    "title": "Subagent task spawned [#156]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "7s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#157]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "15s ago"
+  },
+  {
+    "title": "Model response streaming [#158]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#159]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "21s ago"
+  },
+  {
+    "title": "Validation assertion verified [#160]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "58s ago"
+  },
+  {
+    "title": "Validation assertion verified [#161]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "46s ago"
+  },
+  {
+    "title": "Validation assertion verified [#162]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "57s ago"
+  },
+  {
+    "title": "Model response streaming [#163]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "40s ago"
+  },
+  {
+    "title": "Subagent task spawned [#164]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "48s ago"
+  },
+  {
+    "title": "Validation assertion verified [#165]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "7s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#166]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "2s ago"
+  },
+  {
+    "title": "Model response streaming [#167]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "26s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#168]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "50s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#169]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "37s ago"
+  },
+  {
+    "title": "Tool execution complete [#170]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "17s ago"
+  },
+  {
+    "title": "Validation assertion verified [#171]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "55s ago"
+  },
+  {
+    "title": "Model response streaming [#172]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "24s ago"
+  },
+  {
+    "title": "Subagent task spawned [#173]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Tool execution complete [#174]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "53s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#175]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "13s ago"
+  },
+  {
+    "title": "Model response streaming [#176]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "14s ago"
+  },
+  {
+    "title": "Model response streaming [#177]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "38s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#178]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "9s ago"
+  },
+  {
+    "title": "Subagent task spawned [#179]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "35s ago"
+  },
+  {
+    "title": "Tool execution complete [#180]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "30s ago"
+  },
+  {
+    "title": "Model response streaming [#181]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "31s ago"
+  },
+  {
+    "title": "Subagent task spawned [#182]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "16s ago"
+  },
+  {
+    "title": "Subagent task spawned [#183]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "23s ago"
+  },
+  {
+    "title": "Model response streaming [#184]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "8s ago"
+  },
+  {
+    "title": "Model response streaming [#185]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "47s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#186]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "55s ago"
+  },
+  {
+    "title": "Model response streaming [#187]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "51s ago"
+  },
+  {
+    "title": "Tool execution complete [#188]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "48s ago"
+  },
+  {
+    "title": "Model response streaming [#189]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "26s ago"
+  },
+  {
+    "title": "Subagent task spawned [#190]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "3s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#191]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "26s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#192]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "30s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#193]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "31s ago"
+  },
+  {
+    "title": "Subagent task spawned [#194]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "51s ago"
+  },
+  {
+    "title": "Subagent task spawned [#195]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "10s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#196]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "47s ago"
+  },
+  {
+    "title": "Tool execution complete [#197]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "21s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#198]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "1s ago"
+  },
+  {
+    "title": "Model response streaming [#199]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "54s ago"
+  },
+  {
+    "title": "Model response streaming [#200]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "56s ago"
+  },
+  {
+    "title": "Model response streaming [#201]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "44s ago"
+  },
+  {
+    "title": "Model response streaming [#202]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "5s ago"
+  },
+  {
+    "title": "Subagent task spawned [#203]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "51s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#204]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "19s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#205]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "41s ago"
+  },
+  {
+    "title": "Validation assertion verified [#206]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "2s ago"
+  },
+  {
+    "title": "Tool execution complete [#207]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "36s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#208]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "32s ago"
+  },
+  {
+    "title": "Subagent task spawned [#209]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#210]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "3s ago"
+  },
+  {
+    "title": "Validation assertion verified [#211]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "23s ago"
+  },
+  {
+    "title": "Tool execution complete [#212]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "43s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#213]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "27s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#214]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "52s ago"
+  },
+  {
+    "title": "Validation assertion verified [#215]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "46s ago"
+  },
+  {
+    "title": "Model response streaming [#216]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "34s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#217]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "55s ago"
+  },
+  {
+    "title": "Tool execution complete [#218]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "25s ago"
+  },
+  {
+    "title": "Subagent task spawned [#219]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "27s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#220]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "59s ago"
+  },
+  {
+    "title": "Subagent task spawned [#221]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Tool execution complete [#222]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "20s ago"
+  },
+  {
+    "title": "Validation assertion verified [#223]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "17s ago"
+  },
+  {
+    "title": "Validation assertion verified [#224]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "55s ago"
+  },
+  {
+    "title": "Tool execution complete [#225]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "5s ago"
+  },
+  {
+    "title": "Model response streaming [#226]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "35s ago"
+  },
+  {
+    "title": "Subagent task spawned [#227]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "10s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#228]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "35s ago"
+  },
+  {
+    "title": "Model response streaming [#229]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "18s ago"
+  },
+  {
+    "title": "Model response streaming [#230]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "40s ago"
+  },
+  {
+    "title": "Model response streaming [#231]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "47s ago"
+  },
+  {
+    "title": "Tool execution complete [#232]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "57s ago"
+  },
+  {
+    "title": "Subagent task spawned [#233]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "34s ago"
+  },
+  {
+    "title": "Model response streaming [#234]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "17s ago"
+  },
+  {
+    "title": "Model response streaming [#235]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "14s ago"
+  },
+  {
+    "title": "Model response streaming [#236]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "11s ago"
+  },
+  {
+    "title": "Validation assertion verified [#237]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "20s ago"
+  },
+  {
+    "title": "Validation assertion verified [#238]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "34s ago"
+  },
+  {
+    "title": "Model response streaming [#239]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "42s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#240]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "18s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#241]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "54s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#242]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "50s ago"
+  },
+  {
+    "title": "Validation assertion verified [#243]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "4s ago"
+  },
+  {
+    "title": "Subagent task spawned [#244]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "50s ago"
+  },
+  {
+    "title": "Validation assertion verified [#245]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "44s ago"
+  },
+  {
+    "title": "Model response streaming [#246]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "34s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#247]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "19s ago"
+  },
+  {
+    "title": "Validation assertion verified [#248]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "14s ago"
+  },
+  {
+    "title": "Validation assertion verified [#249]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "22s ago"
+  },
+  {
+    "title": "Tool execution complete [#250]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "2s ago"
+  },
+  {
+    "title": "Subagent task spawned [#251]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "9s ago"
+  },
+  {
+    "title": "Validation assertion verified [#252]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "44s ago"
+  },
+  {
+    "title": "Model response streaming [#253]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "4s ago"
+  },
+  {
+    "title": "Validation assertion verified [#254]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "48s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#255]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "38s ago"
+  },
+  {
+    "title": "Model response streaming [#256]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "57s ago"
+  },
+  {
+    "title": "Subagent task spawned [#257]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "36s ago"
+  },
+  {
+    "title": "Subagent task spawned [#258]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "7s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#259]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "7s ago"
+  },
+  {
+    "title": "Tool execution complete [#260]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "24s ago"
+  },
+  {
+    "title": "Validation assertion verified [#261]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "27s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#262]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "52s ago"
+  },
+  {
+    "title": "Validation assertion verified [#263]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "56s ago"
+  },
+  {
+    "title": "Subagent task spawned [#264]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "53s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#265]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "17s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#266]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "3s ago"
+  },
+  {
+    "title": "Subagent task spawned [#267]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "39s ago"
+  },
+  {
+    "title": "Model response streaming [#268]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "15s ago"
+  },
+  {
+    "title": "Validation assertion verified [#269]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "58s ago"
+  },
+  {
+    "title": "Model response streaming [#270]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "4s ago"
+  },
+  {
+    "title": "Subagent task spawned [#271]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "30s ago"
+  },
+  {
+    "title": "Model response streaming [#272]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "47s ago"
+  },
+  {
+    "title": "Tool execution complete [#273]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "14s ago"
+  },
+  {
+    "title": "Validation assertion verified [#274]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "52s ago"
+  },
+  {
+    "title": "Validation assertion verified [#275]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "51s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#276]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "8s ago"
+  },
+  {
+    "title": "Tool execution complete [#277]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "7s ago"
+  },
+  {
+    "title": "Tool execution complete [#278]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "40s ago"
+  },
+  {
+    "title": "Validation assertion verified [#279]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "50s ago"
+  },
+  {
+    "title": "Tool execution complete [#280]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "37s ago"
+  },
+  {
+    "title": "Validation assertion verified [#281]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "3s ago"
+  },
+  {
+    "title": "Tool execution complete [#282]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "59s ago"
+  },
+  {
+    "title": "Model response streaming [#283]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "12s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#284]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "48s ago"
+  },
+  {
+    "title": "Validation assertion verified [#285]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "12s ago"
+  },
+  {
+    "title": "Tool execution complete [#286]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "7s ago"
+  },
+  {
+    "title": "Subagent task spawned [#287]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "12s ago"
+  },
+  {
+    "title": "Subagent task spawned [#288]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "51s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#289]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "12s ago"
+  },
+  {
+    "title": "Subagent task spawned [#290]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "50s ago"
+  },
+  {
+    "title": "Telemetry ping sample [#291]",
+    "subtitle": "Cluster node us-east-1 heartbeat latency 14ms",
+    "badge": "METRIC",
+    "badge_color": "cyan",
+    "status": "healthy",
+    "time": "12s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#292]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "56s ago"
+  },
+  {
+    "title": "Subagent task spawned [#293]",
+    "subtitle": "Subagent worker-3 allocated branch workspace",
+    "badge": "AGENT",
+    "badge_color": "indigo",
+    "status": "running",
+    "time": "57s ago"
+  },
+  {
+    "title": "Model response streaming [#294]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "46s ago"
+  },
+  {
+    "title": "Model response streaming [#295]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "13s ago"
+  },
+  {
+    "title": "Validation assertion verified [#296]",
+    "subtitle": "Unit test assert_eq!(output, expected) passed",
+    "badge": "TEST",
+    "badge_color": "green",
+    "status": "success",
+    "time": "33s ago"
+  },
+  {
+    "title": "Tool execution complete [#297]",
+    "subtitle": "tool_call: run_command returned exit code 0",
+    "badge": "TOOL",
+    "badge_color": "green",
+    "status": "success",
+    "time": "32s ago"
+  },
+  {
+    "title": "Model response streaming [#298]",
+    "subtitle": "Receiving chunk 42 from inference worker",
+    "badge": "STREAM",
+    "badge_color": "blue",
+    "status": "running",
+    "time": "6s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#299]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "30s ago"
+  },
+  {
+    "title": "Memory cache checkpoint [#300]",
+    "subtitle": "Saved 1,420 KV-cache entries to local store",
+    "badge": "CACHE",
+    "badge_color": "purple",
+    "status": "healthy",
+    "time": "29s ago"
+  }
+]
