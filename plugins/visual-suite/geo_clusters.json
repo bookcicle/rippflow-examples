@@ -1,19 +1,105 @@
 {
+  "nodes": [
+    {
+      "id": "us-east",
+      "label": "Virginia (US-East)",
+      "x": 0.26,
+      "y": 0.35,
+      "status": "healthy",
+      "ping_ms": 18.4
+    },
+    {
+      "id": "us-west",
+      "label": "Oregon (US-West)",
+      "x": 0.15,
+      "y": 0.3,
+      "status": "healthy",
+      "ping_ms": 24.8
+    },
+    {
+      "id": "sa-east",
+      "label": "S\u00e3o Paulo (SA)",
+      "x": 0.33,
+      "y": 0.7,
+      "status": "healthy",
+      "ping_ms": 111.8
+    },
+    {
+      "id": "eu-west",
+      "label": "Dublin (EU-West)",
+      "x": 0.46,
+      "y": 0.24,
+      "status": "healthy",
+      "ping_ms": 73.7
+    },
+    {
+      "id": "eu-central",
+      "label": "Frankfurt (EU)",
+      "x": 0.51,
+      "y": 0.25,
+      "status": "healthy",
+      "ping_ms": 63.1
+    },
+    {
+      "id": "ap-se",
+      "label": "Singapore (AP-SE)",
+      "x": 0.77,
+      "y": 0.56,
+      "status": "healthy",
+      "ping_ms": 165.8
+    },
+    {
+      "id": "ap-ne",
+      "label": "Tokyo (AP-NE)",
+      "x": 0.87,
+      "y": 0.32,
+      "status": "healthy",
+      "ping_ms": 141.8
+    },
+    {
+      "id": "ap-se2",
+      "label": "Sydney (AP-SE2)",
+      "x": 0.88,
+      "y": 0.76,
+      "status": "healthy",
+      "ping_ms": 179.2
+    }
+  ],
   "links": [
     {
-      "from": "us-east",
-      "to": "us-west",
-      "latency_ms": 36.2
+      "from": "us-west",
+      "to": "us-east",
+      "latency_ms": 41.3
     },
     {
       "from": "us-east",
       "to": "eu-west",
-      "latency_ms": 67.7
+      "latency_ms": 69.8
+    },
+    {
+      "from": "us-east",
+      "to": "sa-east",
+      "latency_ms": 93.3
     },
     {
       "from": "eu-west",
+      "to": "eu-central",
+      "latency_ms": 17.2
+    },
+    {
+      "from": "eu-central",
       "to": "ap-se",
-      "latency_ms": 142.8
+      "latency_ms": 134.8
+    },
+    {
+      "from": "ap-se",
+      "to": "ap-ne",
+      "latency_ms": 51.7
+    },
+    {
+      "from": "ap-se",
+      "to": "ap-se2",
+      "latency_ms": 76.5
     }
   ]
 }

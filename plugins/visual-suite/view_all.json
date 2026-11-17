@@ -48,12 +48,12 @@
         "children": [
           {
             "type": "CandleStick",
-            "title": "Execution Latency Variance (OHLC / Percentiles)",
+            "title": "Execution Latency Variance (OHLC)",
             "source": { "file": "latency_stream.jsonl" }
           },
           {
             "type": "Histogram",
-            "title": "Token Length Distribution (Bins & Frequencies)",
+            "title": "Token Length Distribution",
             "bins": 14,
             "source": { "file": "histogram_stream.jsonl" }
           }
@@ -65,12 +65,12 @@
         "children": [
           {
             "type": "ReactiveGraph",
-            "title": "Reactive Swarm Mesh (Node / Vertex Graph)",
+            "title": "Reactive Swarm Mesh",
             "source": { "file": "swarm_mesh.json" }
           },
           {
             "type": "RadialTree",
-            "title": "Concentric Radial Tree (Agent Delegation)",
+            "title": "Concentric Radial Hierarchy",
             "source": { "file": "radial_tree.json" }
           }
         ]
@@ -81,12 +81,12 @@
         "children": [
           {
             "type": "BubbleChart",
-            "title": "Model Frontier: Latency vs Quality vs VRAM (Bubble Plot)",
+            "title": "Model Benchmark Frontier",
             "source": { "file": "bubble_models.json" }
           },
           {
             "type": "ParallelSets",
-            "title": "Hyperparameter Sweep (Parallel Coordinates)",
+            "title": "Hyperparameter Sweep",
             "dimensions": [
               "Learning Rate",
               "Batch Size",
@@ -103,12 +103,12 @@
         "children": [
           {
             "type": "DonutChart",
-            "title": "GPU VRAM Allocation Gauge (Donut)",
+            "title": "GPU VRAM Allocation",
             "source": { "file": "vram_donut.json" }
           },
           {
             "type": "GeoMap",
-            "title": "Multi-Region Cluster Topology (Geo Mesh)",
+            "title": "Multi-Region Cluster Topology",
             "source": { "file": "geo_clusters.json" }
           }
         ]
@@ -119,9 +119,36 @@
         "children": [
           {
             "type": "Contour",
-            "title": "2D Loss Landscape Surface (Contour / Heatmap)",
+            "title": "2D Loss Landscape Surface",
             "source": { "file": "contour_matrix.json" }
           },
+          {
+            "type": "Sunburst",
+            "title": "Compute Hierarchy Partition",
+            "source": { "file": "sunburst.json" }
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
+            "type": "HorizontalBar",
+            "title": "Model Throughput Benchmarks",
+            "source": { "file": "horizontal_bar.json" }
+          },
+          {
+            "type": "RaceChart",
+            "title": "Live Agent Token Race",
+            "source": { "file": "race_chart.json" }
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
           {
             "type": "Table",
             "title": "Active Swarm Agent Workers",

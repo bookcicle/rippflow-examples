@@ -1,0 +1,35 @@
+{
+  "step": "Round 7 (T+34s)",
+  "entries": [
+    {
+      "id": "3",
+      "label": "researcher-agent",
+      "value": 93.5,
+      "change": 0
+    },
+    {
+      "id": "1",
+      "label": "coder-agent-1",
+      "value": 89.8,
+      "change": 0
+    },
+    {
+      "id": "4",
+      "label": "orchestrator",
+      "value": 88.5,
+      "change": 0
+    },
+    {
+      "id": "2",
+      "label": "verifier-agent",
+      "value": 87.7,
+      "change": 0
+    },
+    {
+      "id": "5",
+      "label": "evaluator-qa",
+      "value": 83.4,
+      "change": 0
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "segments": [
     {
       "label": "KV Cache",
-      "value": 8.9
+      "value": 10.0
     },
     {
       "label": "Model Weights",
@@ -14,7 +14,7 @@
     },
     {
       "label": "Free Capacity",
-      "value": 3.9
+      "value": 2.8
     }
   ]
 }
