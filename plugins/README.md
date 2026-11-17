@@ -14,6 +14,9 @@ This directory contains three working example chat-agent plugins demonstrating R
 | `ollama` | `cli` | `ollama` | YAML (`ollama.yaml`) | Declarative | Zero-code local LLM runner supporting models like `llama3.2`, `qwen2.5-coder`, `deepseek-r1`, `mistral`. |
 | `py-repo-analyst` | `stdio` | `python3` | YAML (`py-repo-analyst.yaml`) | Python 3 stdlib | Inspects `cwd` (git branch, working tree changes, recent commits, file counts, `rippflow.yaml` configuration) and answers questions. Queries local Ollama if reachable, falling back cleanly to deterministic analysis. |
 | `js-workspace-helper` | `stdio` | `node` | JSON (`js-workspace-helper.json`) | Node.js ESM | Analyzes `package.json`, `Cargo.toml`, and `pyproject.toml` manifests in `cwd`, emitting tables of scripts, build settings, and dependencies. |
+| `ds-evals` | `cli` | `python3` | YAML (`ds-evals.yaml`) | Declarative UI | Data science model evaluation studio: live loss curves (`LineChart`), confusion matrix (`ConfusionMatrix`), and checkpoints drawer (`tree`). |
+| `pipeline-dag` | `cli` | `python3` | YAML (`pipeline-dag.yaml`) | Declarative UI | Pipeline and workflow DAG visualizer: interactive node graph (`DagFlow`) and pipeline history drawer. |
+| `cluster-pulse` | `cli` | `python3` | YAML (`cluster-pulse.yaml`) | Declarative UI + Icons | Real-time GPU & compute telemetry tab, compute nodes drawer, and custom SVG hardware icon pack (`icons/`). |
 
 ---
 
@@ -49,6 +52,35 @@ The plugin responds by emitting NDJSON lines (newline-delimited JSON) to `stdout
   ```json
   {"type": "error", "text": "Target workspace directory does not exist: /invalid/path"}
   ```
+
+---
+
+## Declarative UI Plugins (Tabs, Drawers, and Icon Packs)
+
+Rippflow plugins can contribute rich interactive Studio tabs, custom sidebar drawers, and custom SVG icon packs through the `contributes` manifest section:
+
+```bash
+# 1. Install Data Science Model Training & Evals Studio
+rippflow plugin add plugins/ds-evals/ds-evals.yaml
+
+# 2. Install Pipeline DAG Visualizer
+rippflow plugin add plugins/pipeline-dag/pipeline-dag.yaml
+
+# 3. Install Cluster & Hardware Telemetry (with custom hardware icon pack)
+rippflow plugin add plugins/cluster-pulse/cluster-pulse.yaml
+```
+
+Each plugin includes a runnable simulation script for instant validation:
+```bash
+# Stream training loss and generate model checkpoints
+python3 plugins/ds-evals/mock_train.py
+
+# Simulate multi-step pipeline DAG state transitions
+python3 plugins/pipeline-dag/mock_pipeline.py
+
+# Stream GPU and VRAM hardware metrics
+python3 plugins/cluster-pulse/pulse_collector.py
+```
 
 ---
 

@@ -1,0 +1,79 @@
+{
+  "nodes": [
+    {
+      "id": "us-east-1",
+      "label": "Virginia (US-East)",
+      "lat": 38.0,
+      "lon": -77.5,
+      "status": "healthy",
+      "ping_ms": 10.1
+    },
+    {
+      "id": "us-east-2",
+      "label": "Ohio (US-East)",
+      "lat": 40.0,
+      "lon": -82.9,
+      "status": "healthy",
+      "ping_ms": 17.1
+    },
+    {
+      "id": "us-central",
+      "label": "Iowa (Central)",
+      "lat": 41.6,
+      "lon": -93.6,
+      "status": "healthy",
+      "ping_ms": 25.7
+    },
+    {
+      "id": "us-south",
+      "label": "Texas (South)",
+      "lat": 32.8,
+      "lon": -96.8,
+      "status": "healthy",
+      "ping_ms": 33.8
+    },
+    {
+      "id": "us-west-1",
+      "label": "N. California (West)",
+      "lat": 37.4,
+      "lon": -121.9,
+      "status": "healthy",
+      "ping_ms": 42.9
+    },
+    {
+      "id": "us-west-2",
+      "label": "Oregon (West)",
+      "lat": 45.8,
+      "lon": -119.3,
+      "status": "healthy",
+      "ping_ms": 40.3
+    }
+  ],
+  "links": [
+    {
+      "from": "us-west-2",
+      "to": "us-west-1",
+      "latency_ms": 13.8
+    },
+    {
+      "from": "us-west-1",
+      "to": "us-south",
+      "latency_ms": 35.4
+    },
+    {
+      "from": "us-south",
+      "to": "us-central",
+      "latency_ms": 21.1
+    },
+    {
+      "from": "us-central",
+      "to": "us-east-2",
+      "latency_ms": 18.6
+    },
+    {
+      "from": "us-east-2",
+      "to": "us-east-1",
+      "latency_ms": 12.4
+    }
+  ]
+}

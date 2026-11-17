@@ -1,0 +1,83 @@
+{
+  "$schema": "rippflow/ui-v1",
+  "id": "pipeline.dag",
+  "title": "Pipeline DAG",
+  "icon": "git-fork",
+  "layout": {
+    "type": "Col",
+    "gap": 12,
+    "children": [
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
+            "type": "MetricCard",
+            "label": "Pipeline Status",
+            "value": "Running (Step 3/5)",
+            "status": "info"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Active Workers",
+            "value": "8 Ray Workers",
+            "status": "success"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Estimated Duration",
+            "value": "4m 12s",
+            "trend": "+8s vs avg",
+            "status": "warning"
+          }
+        ]
+      },
+      {
+        "type": "DagFlow",
+        "title": "Pipeline Execution Graph",
+        "source": {
+          "file": ".rippflow/pipeline/history.json",
+          "watch": true
+        },
+        "nodes": [
+          {
+            "id": "ingest",
+            "label": "Extract & Normalize Raw Parquet",
+            "status": "success",
+            "step": "01"
+          },
+          {
+            "id": "transform",
+            "label": "Feature Transformation & Tokenization",
+            "status": "success",
+            "step": "02"
+          },
+          {
+            "id": "train",
+            "label": "Distributed Model Training",
+            "status": "running",
+            "step": "03"
+          },
+          {
+            "id": "eval",
+            "label": "Validation & Offline Evaluation",
+            "status": "pending",
+            "step": "04"
+          },
+          {
+            "id": "deploy",
+            "label": "Canary Rollout & Inference Smoke Test",
+            "status": "pending",
+            "step": "05"
+          }
+        ],
+        "edges": [
+          { "from": "ingest", "to": "transform" },
+          { "from": "transform", "to": "train" },
+          { "from": "train", "to": "eval" },
+          { "from": "eval", "to": "deploy" }
+        ]
+      }
+    ]
+  }
+}

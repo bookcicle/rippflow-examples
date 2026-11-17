@@ -156,6 +156,86 @@ class TestManifestValidation(unittest.TestCase):
         self.assertTrue(doctor.get("display_name"))
         self.assertTrue(doctor.get("install_command"))
 
+    def test_ds_evals_manifest(self):
+        manifest_path = self.plugins_dir / "ds-evals" / "ds-evals.yaml"
+        self.assertTrue(manifest_path.is_file(), f"Missing manifest: {manifest_path}")
+
+        spec = parse_manifest_file(str(manifest_path))
+        self.assertEqual(spec.get("id"), "ds-evals")
+        self.assertEqual(spec.get("name"), "Model Training & Evaluation Studio")
+        self.assertEqual(spec.get("binary"), "python3")
+
+        contributes = spec.get("contributes", {})
+        tabs = contributes.get("tabs", [])
+        self.assertEqual(len(tabs), 1)
+        self.assertEqual(tabs[0].get("id"), "ds-evals.training")
+        self.assertEqual(tabs[0].get("title"), "Model Performance")
+        self.assertEqual(tabs[0].get("icon"), "line-chart")
+
+        view_file = self.plugins_dir / "ds-evals" / tabs[0].get("view")
+        self.assertTrue(view_file.is_file(), f"Missing dashboard view: {view_file}")
+        with open(view_file, "r", encoding="utf-8") as f:
+            dash = json.load(f)
+        self.assertEqual(dash.get("id"), "ds-evals.training")
+
+        drawers = contributes.get("drawers", [])
+        self.assertEqual(len(drawers), 1)
+        self.assertEqual(drawers[0].get("id"), "ds-evals.checkpoints")
+        self.assertEqual(drawers[0].get("type"), "tree")
+
+    def test_pipeline_dag_manifest(self):
+        manifest_path = self.plugins_dir / "pipeline-dag" / "pipeline-dag.yaml"
+        self.assertTrue(manifest_path.is_file(), f"Missing manifest: {manifest_path}")
+
+        spec = parse_manifest_file(str(manifest_path))
+        self.assertEqual(spec.get("id"), "pipeline-dag")
+        self.assertEqual(spec.get("name"), "Pipeline DAG Visualizer")
+
+        contributes = spec.get("contributes", {})
+        tabs = contributes.get("tabs", [])
+        self.assertEqual(len(tabs), 1)
+        self.assertEqual(tabs[0].get("id"), "pipeline.dag")
+
+        view_file = self.plugins_dir / "pipeline-dag" / tabs[0].get("view")
+        self.assertTrue(view_file.is_file(), f"Missing dag view: {view_file}")
+        with open(view_file, "r", encoding="utf-8") as f:
+            dag = json.load(f)
+        self.assertEqual(dag.get("id"), "pipeline.dag")
+
+        drawers = contributes.get("drawers", [])
+        self.assertEqual(len(drawers), 1)
+        self.assertEqual(drawers[0].get("id"), "pipeline.runs")
+
+    def test_cluster_pulse_manifest(self):
+        manifest_path = self.plugins_dir / "cluster-pulse" / "cluster-pulse.yaml"
+        self.assertTrue(manifest_path.is_file(), f"Missing manifest: {manifest_path}")
+
+        spec = parse_manifest_file(str(manifest_path))
+        self.assertEqual(spec.get("id"), "cluster-pulse")
+        self.assertEqual(spec.get("name"), "Cluster & Hardware Telemetry")
+
+        contributes = spec.get("contributes", {})
+        tabs = contributes.get("tabs", [])
+        self.assertEqual(len(tabs), 1)
+        self.assertEqual(tabs[0].get("id"), "cluster.pulse")
+
+        view_file = self.plugins_dir / "cluster-pulse" / tabs[0].get("view")
+        self.assertTrue(view_file.is_file(), f"Missing telemetry view: {view_file}")
+
+        drawers = contributes.get("drawers", [])
+        self.assertEqual(len(drawers), 1)
+        self.assertEqual(drawers[0].get("id"), "cluster.nodes")
+
+        icon_packs = contributes.get("iconPacks", contributes.get("icon_packs", []))
+        self.assertEqual(len(icon_packs), 1)
+        self.assertEqual(icon_packs[0].get("id"), "compute-icons")
+
+        icons_dir = self.plugins_dir / "cluster-pulse" / icon_packs[0].get("path")
+        self.assertTrue(icons_dir.is_dir(), f"Missing icons dir: {icons_dir}")
+        self.assertTrue((icons_dir / "apple-silicon.svg").is_file())
+        self.assertTrue((icons_dir / "nvidia.svg").is_file())
+        self.assertTrue((icons_dir / "cloud-node.svg").is_file())
+
 
 class TestPyRepoAnalystExecution(unittest.TestCase):
     """Tests plugins/py-repo-analyst/agent.py over stdin/stdout."""

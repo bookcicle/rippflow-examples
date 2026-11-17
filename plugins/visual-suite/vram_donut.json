@@ -1,0 +1,20 @@
+{
+  "segments": [
+    {
+      "label": "KV Cache",
+      "value": 7.2
+    },
+    {
+      "label": "Model Weights",
+      "value": 8.2
+    },
+    {
+      "label": "Activations",
+      "value": 2.8
+    },
+    {
+      "label": "Free Capacity",
+      "value": 5.8
+    }
+  ]
+}

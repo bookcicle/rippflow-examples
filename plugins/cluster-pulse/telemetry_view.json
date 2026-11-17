@@ -1,0 +1,76 @@
+{
+  "$schema": "rippflow/ui-v1",
+  "id": "cluster.pulse",
+  "title": "Compute Pulse",
+  "icon": "cpu",
+  "layout": {
+    "type": "Col",
+    "gap": 12,
+    "children": [
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
+            "type": "MetricCard",
+            "label": "GPU Compute Utilization",
+            "value": "78.4%",
+            "trend": "+6.2%",
+            "status": "info"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Unified / VRAM Memory",
+            "value": "32.1 / 64 GB",
+            "status": "warning"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Active Nodes",
+            "value": "3 Nodes (1 Local, 2 Cloud)",
+            "status": "success"
+          }
+        ]
+      },
+      {
+        "type": "LineChart",
+        "title": "Memory Allocation Over Time",
+        "source": {
+          "file": ".rippflow/telemetry/stats.jsonl",
+          "watch": true
+        },
+        "x": "time",
+        "series": [
+          {
+            "key": "allocated_gb",
+            "label": "Allocated VRAM (GB)",
+            "color": "#f59e0b"
+          },
+          {
+            "key": "system_ram_gb",
+            "label": "System RAM (GB)",
+            "color": "#3b82f6"
+          }
+        ]
+      },
+      {
+        "type": "Table",
+        "title": "Top Heavy Compute Processes",
+        "columns": [
+          "PID",
+          "User",
+          "Command",
+          "VRAM Usage",
+          "GPU %",
+          "Status"
+        ],
+        "rows": [
+          ["54210", "andrewbarraford", "python3 train.py --batch-size 64", "16.8 GB", "94%", "Active"],
+          ["54884", "andrewbarraford", "cargo test --bin rippflow", "4.2 GB", "32%", "Active"],
+          ["55102", "ray_worker", "ray::RolloutWorker.step()", "8.1 GB", "68%", "Active"],
+          ["56012", "root", "ollama serve", "3.0 GB", "12%", "Idle"]
+        ]
+      }
+    ]
+  }
+}

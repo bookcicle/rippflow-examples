@@ -1,0 +1,54 @@
+{
+  "root": {
+    "name": "Compute Mesh",
+    "value": 100.0,
+    "children": [
+      {
+        "name": "Inference Engine",
+        "value": 39.4,
+        "children": [
+          {
+            "name": "Prefill Phase",
+            "value": 17.9
+          },
+          {
+            "name": "Decode Phase",
+            "value": 23.0
+          }
+        ]
+      },
+      {
+        "name": "Distributed Training",
+        "value": 35.1,
+        "children": [
+          {
+            "name": "Forward Pass",
+            "value": 15.0
+          },
+          {
+            "name": "Backward Pass",
+            "value": 13.0
+          },
+          {
+            "name": "AllReduce Sync",
+            "value": 8.0
+          }
+        ]
+      },
+      {
+        "name": "Memory Pool",
+        "value": 21.0,
+        "children": [
+          {
+            "name": "KV Cache",
+            "value": 14.0
+          },
+          {
+            "name": "Weight Buffer",
+            "value": 8.0
+          }
+        ]
+      }
+    ]
+  }
+}

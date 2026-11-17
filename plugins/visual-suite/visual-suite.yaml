@@ -1,0 +1,18 @@
+id: visual-suite
+name: "Visual Suite Showcase"
+binary: python3
+transport: cli
+invoke:
+  args:
+    - stream_generator.py
+    - "--continuous"
+doctor:
+  display_name: "Visual Suite Showcase"
+  official_url: "https://rippflow.com"
+  guidance: "Exhibits all declarative visual components: Candlestick, Histogram, BubbleChart, ReactiveGraph, RadialTree, ParallelSets, Contour, DonutChart, GeoMap."
+contributes:
+  tabs:
+    - id: "visual.all"
+      title: "Visual Showcase"
+      icon: "layout"
+      view: "view_all.json"

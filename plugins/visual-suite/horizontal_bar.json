@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "label": "Llama-3.1-70B",
+      "value": 141.3,
+      "unit": "req/s"
+    },
+    {
+      "label": "Claude-3.5-Sonnet",
+      "value": 125.8,
+      "unit": "req/s"
+    },
+    {
+      "label": "GPT-4o",
+      "value": 117.5,
+      "unit": "req/s"
+    },
+    {
+      "label": "DeepSeek-V3",
+      "value": 115.3,
+      "unit": "req/s"
+    },
+    {
+      "label": "Gemini-1.5-Pro",
+      "value": 98.6,
+      "unit": "req/s"
+    }
+  ]
+}
