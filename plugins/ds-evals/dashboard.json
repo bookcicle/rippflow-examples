@@ -1,0 +1,78 @@
+{
+  "$schema": "rippflow/ui-v1",
+  "id": "ds-evals.training",
+  "title": "Model Performance",
+  "icon": "line-chart",
+  "layout": {
+    "type": "Col",
+    "gap": 12,
+    "children": [
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
+            "type": "MetricCard",
+            "label": "Best Validation Loss",
+            "value": "0.142",
+            "trend": "-14.3%",
+            "status": "success"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Current Epoch",
+            "value": "42 / 100",
+            "status": "info"
+          },
+          {
+            "type": "MetricCard",
+            "label": "GPU Memory",
+            "value": "18.4 / 24 GB",
+            "status": "warning"
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
+            "type": "LineChart",
+            "title": "Training & Validation Loss",
+            "source": {
+              "file": ".rippflow/runs/latest/metrics.jsonl",
+              "watch": true
+            },
+            "x": "epoch",
+            "series": [
+              {
+                "key": "train_loss",
+                "label": "Train Loss",
+                "color": "#0ea5e9"
+              },
+              {
+                "key": "val_loss",
+                "label": "Val Loss",
+                "color": "#10b981"
+              }
+            ]
+          },
+          {
+            "type": "ConfusionMatrix",
+            "title": "Validation Split Classification",
+            "labels": [
+              "Cat",
+              "Dog",
+              "Bird"
+            ],
+            "matrix": [
+              [48.0, 2.0, 0.0],
+              [3.0, 45.0, 2.0],
+              [1.0, 4.0, 45.0]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

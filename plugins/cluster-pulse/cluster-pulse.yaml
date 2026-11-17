@@ -1,0 +1,30 @@
+id: cluster-pulse
+name: "Cluster & Hardware Telemetry"
+binary: python3
+transport: cli
+invoke:
+  args:
+    - pulse_collector.py
+    - "--quick"
+doctor:
+  display_name: "Cluster Hardware Telemetry"
+  official_url: "https://rippflow.com"
+  guidance: "Provides live hardware GPU/VRAM telemetry, compute nodes drawer, and hardware SVG icon pack."
+contributes:
+  tabs:
+    - id: "cluster.pulse"
+      title: "Compute Pulse"
+      icon: "cpu"
+      view: "telemetry_view.json"
+  drawers:
+    - id: "cluster.nodes"
+      title: "Compute Nodes"
+      icon: "server"
+      type: "tree"
+      dataSource:
+        file: ".rippflow/telemetry/nodes.json"
+        watch: true
+  iconPacks:
+    - id: "compute-icons"
+      name: "Compute Hardware Icons"
+      path: "icons/"

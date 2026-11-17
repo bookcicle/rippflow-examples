@@ -1,0 +1,23 @@
+[
+  {
+    "id": "node-local",
+    "name": "Apple M-Series Studio (Local)",
+    "status": "online",
+    "ping_ms": 1,
+    "icon": "apple-silicon"
+  },
+  {
+    "id": "node-aws-01",
+    "name": "AWS EC2 g5.2xlarge (us-east-1)",
+    "status": "online",
+    "ping_ms": 28,
+    "icon": "nvidia"
+  },
+  {
+    "id": "node-lambda-02",
+    "name": "Lambda Labs 8x A100 (us-west)",
+    "status": "online",
+    "ping_ms": 64,
+    "icon": "cloud-node"
+  }
+]

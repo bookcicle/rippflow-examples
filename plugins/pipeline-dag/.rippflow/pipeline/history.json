@@ -1,0 +1,36 @@
+{
+  "run_id": "run-pipe-20261117-01",
+  "status": "completed",
+  "nodes": [
+    {
+      "id": "ingest",
+      "label": "Extract & Normalize Raw Parquet",
+      "status": "success",
+      "step": "01"
+    },
+    {
+      "id": "transform",
+      "label": "Feature Transformation & Tokenization",
+      "status": "success",
+      "step": "02"
+    },
+    {
+      "id": "train",
+      "label": "Distributed Model Training",
+      "status": "success",
+      "step": "03"
+    },
+    {
+      "id": "eval",
+      "label": "Validation & Offline Evaluation",
+      "status": "success",
+      "step": "04"
+    },
+    {
+      "id": "deploy",
+      "label": "Canary Rollout & Inference Smoke Test",
+      "status": "success",
+      "step": "05"
+    }
+  ]
+}

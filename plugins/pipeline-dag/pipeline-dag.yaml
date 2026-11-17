@@ -1,0 +1,26 @@
+id: pipeline-dag
+name: "Pipeline DAG Visualizer"
+binary: python3
+transport: cli
+invoke:
+  args:
+    - mock_pipeline.py
+    - "--quick"
+doctor:
+  display_name: "Pipeline DAG Visualizer"
+  official_url: "https://rippflow.com"
+  guidance: "Provides interactive DAG visualization for staged multi-agent workflows and ETL pipelines."
+contributes:
+  tabs:
+    - id: "pipeline.dag"
+      title: "Pipeline DAG"
+      icon: "git-fork"
+      view: "dag_view.json"
+  drawers:
+    - id: "pipeline.runs"
+      title: "Pipeline Runs"
+      icon: "history"
+      type: "tree"
+      dataSource:
+        file: ".rippflow/pipeline/history.json"
+        watch: true

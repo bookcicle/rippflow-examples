@@ -1,0 +1,18 @@
+[
+  {
+    "id": "checkpoint-epoch-5",
+    "name": "model_epoch_005.pt",
+    "epoch": 5,
+    "val_loss": 0.6542,
+    "size_mb": 142.5,
+    "is_best": false
+  },
+  {
+    "id": "checkpoint-epoch-10",
+    "name": "model_epoch_010.pt",
+    "epoch": 10,
+    "val_loss": 0.4715,
+    "size_mb": 142.5,
+    "is_best": true
+  }
+]

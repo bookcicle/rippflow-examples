@@ -1,0 +1,26 @@
+id: ds-evals
+name: "Model Training & Evaluation Studio"
+binary: python3
+transport: cli
+invoke:
+  args:
+    - mock_train.py
+    - "--quick"
+doctor:
+  display_name: "Model Training Studio"
+  official_url: "https://rippflow.com"
+  guidance: "Provides live PyTorch and Scikit-learn training metrics dashboard and checkpoints drawer."
+contributes:
+  tabs:
+    - id: "ds-evals.training"
+      title: "Model Performance"
+      icon: "line-chart"
+      view: "dashboard.json"
+  drawers:
+    - id: "ds-evals.checkpoints"
+      title: "Model Checkpoints"
+      icon: "layers"
+      type: "tree"
+      dataSource:
+        file: ".rippflow/checkpoints/index.json"
+        watch: true
