@@ -31,29 +31,47 @@ def main():
     with open(stats_file, "w", encoding="utf-8") as f:
         pass
 
-    iterations = 5 if "--quick" in sys.argv else 20
-    print(f"Collecting telemetry ({iterations} samples)...")
+    continuous = "--stream" in sys.argv or "--live" in sys.argv or "--continuous" in sys.argv
+    iterations = 5 if "--quick" in sys.argv and not continuous else 20
+    delay = 0.05 if "--quick" in sys.argv and not continuous else 0.8
+    max_samples = 30
+    history = []
 
-    for i in range(1, iterations + 1):
-        now_str = time.strftime("%H:%M:%S")
-        vram = round(24.0 + 8.0 * math.sin(i * 0.4), 2)
-        ram = round(32.0 + 4.0 * math.cos(i * 0.3), 2)
+    print(f"Collecting telemetry ({'continuous live stream' if continuous else f'{iterations} samples'})...", flush=True)
 
-        entry = {
-            "time": now_str,
-            "allocated_gb": vram,
-            "system_ram_gb": ram,
-            "gpu_temp_c": 58 + (i % 6),
-            "timestamp": time.time(),
-        }
-        with open(stats_file, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry) + "\n")
+    i = 0
+    try:
+        while True:
+            i += 1
+            now_str = time.strftime("%H:%M:%S")
+            vram = round(24.0 + 8.0 * math.sin(i * 0.35), 2)
+            ram = round(32.0 + 4.0 * math.cos(i * 0.25), 2)
+            temp = 58 + int(abs(math.sin(i * 0.2) * 12))
 
-        print(f"[{now_str}] Sample {i:02d} - VRAM: {vram} GB - RAM: {ram} GB")
-        if "--quick" not in sys.argv:
-            time.sleep(1.0)
+            entry = {
+                "time": now_str,
+                "allocated_gb": vram,
+                "system_ram_gb": ram,
+                "gpu_temp_c": temp,
+                "timestamp": time.time(),
+            }
+            history.append(entry)
+            if len(history) > max_samples:
+                history.pop(0)
 
-    print("Telemetry collection complete!")
+            with open(stats_file, "w", encoding="utf-8") as f:
+                for item in history:
+                    f.write(json.dumps(item) + "\n")
+
+            print(f"[{now_str}] Live Sample #{i:03d} - VRAM: {vram:.1f} GB - RAM: {ram:.1f} GB - GPU: {temp}°C", flush=True)
+
+            if not continuous and i >= iterations:
+                break
+            time.sleep(delay)
+    except KeyboardInterrupt:
+        print("\nTelemetry stream stopped by user.", flush=True)
+
+    print("Telemetry collection complete!", flush=True)
 
 
 if __name__ == "__main__":
