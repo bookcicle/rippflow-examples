@@ -12,12 +12,14 @@ from pathlib import Path
 
 
 def main():
-    workspace = Path(os.getcwd())
-    telemetry_dir = workspace / ".rippflow" / "telemetry"
-    telemetry_dir.mkdir(parents=True, exist_ok=True)
-
-    stats_file = telemetry_dir / "stats.jsonl"
-    nodes_file = telemetry_dir / "nodes.json"
+    plugin_dir = Path(__file__).resolve().parent
+    telemetry_dirs = [
+        Path(os.getcwd()) / ".rippflow" / "telemetry",
+        plugin_dir / ".rippflow" / "telemetry",
+        Path.home() / ".rippflow" / "telemetry",
+    ]
+    seen = set()
+    telemetry_dirs = [d for d in telemetry_dirs if not (str(d) in seen or seen.add(str(d)))]
 
     # Seed nodes list
     nodes = [
@@ -25,11 +27,15 @@ def main():
         {"id": "node-aws-01", "name": "AWS EC2 g5.2xlarge (us-east-1)", "status": "online", "ping_ms": 28, "icon": "nvidia"},
         {"id": "node-lambda-02", "name": "Lambda Labs 8x A100 (us-west)", "status": "online", "ping_ms": 64, "icon": "cloud-node"},
     ]
-    with open(nodes_file, "w", encoding="utf-8") as f:
-        json.dump(nodes, f, indent=2)
-
-    with open(stats_file, "w", encoding="utf-8") as f:
-        pass
+    for d in telemetry_dirs:
+        try:
+            d.mkdir(parents=True, exist_ok=True)
+            with open(d / "nodes.json", "w", encoding="utf-8") as f:
+                json.dump(nodes, f, indent=2)
+            with open(d / "stats.jsonl", "w", encoding="utf-8") as f:
+                pass
+        except Exception:
+            pass
 
     continuous = "--stream" in sys.argv or "--live" in sys.argv or "--continuous" in sys.argv
     iterations = 5 if "--quick" in sys.argv and not continuous else 20
@@ -59,9 +65,13 @@ def main():
             if len(history) > max_samples:
                 history.pop(0)
 
-            with open(stats_file, "w", encoding="utf-8") as f:
-                for item in history:
-                    f.write(json.dumps(item) + "\n")
+            for d in telemetry_dirs:
+                try:
+                    with open(d / "stats.jsonl", "w", encoding="utf-8") as f:
+                        for item in history:
+                            f.write(json.dumps(item) + "\n")
+                except Exception:
+                    pass
 
             print(f"[{now_str}] Live Sample #{i:03d} - VRAM: {vram:.1f} GB - RAM: {ram:.1f} GB - GPU: {temp}°C", flush=True)
 
