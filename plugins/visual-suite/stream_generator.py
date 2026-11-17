@@ -81,16 +81,16 @@ def generate_samples(step: int):
         {"label": "Free Capacity", "value": vram_free},
     ]
 
-    # 6. Geo Map (World Map)
+    # 6. Geo Map (D3 World Map)
     geo_nodes = [
-        {"id": "us-east", "label": "Virginia (US-East)", "x": 0.26, "y": 0.35, "status": "healthy", "ping_ms": round(18.0 + random.uniform(-1, 2), 1)},
-        {"id": "us-west", "label": "Oregon (US-West)", "x": 0.15, "y": 0.30, "status": "healthy", "ping_ms": round(24.0 + random.uniform(-1, 2), 1)},
-        {"id": "sa-east", "label": "São Paulo (SA)", "x": 0.33, "y": 0.70, "status": "healthy", "ping_ms": round(112.0 + random.uniform(-3, 4), 1)},
-        {"id": "eu-west", "label": "Dublin (EU-West)", "x": 0.46, "y": 0.24, "status": "healthy", "ping_ms": round(72.0 + random.uniform(-2, 3), 1)},
-        {"id": "eu-central", "label": "Frankfurt (EU)", "x": 0.51, "y": 0.25, "status": "healthy", "ping_ms": round(65.0 + random.uniform(-2, 3), 1)},
-        {"id": "ap-se", "label": "Singapore (AP-SE)", "x": 0.77, "y": 0.56, "status": "healthy", "ping_ms": round(165.0 + random.uniform(-4, 5), 1)},
-        {"id": "ap-ne", "label": "Tokyo (AP-NE)", "x": 0.87, "y": 0.32, "status": "healthy", "ping_ms": round(138.0 + random.uniform(-3, 4), 1)},
-        {"id": "ap-se2", "label": "Sydney (AP-SE2)", "x": 0.88, "y": 0.76, "status": "healthy", "ping_ms": round(182.0 + random.uniform(-5, 6), 1)},
+        {"id": "us-east", "label": "Virginia (US-East)", "x": 0.283, "y": 0.304, "status": "healthy", "ping_ms": round(18.0 + random.uniform(-1, 2), 1)},
+        {"id": "us-west", "label": "Oregon (US-West)", "x": 0.165, "y": 0.261, "status": "healthy", "ping_ms": round(24.0 + random.uniform(-1, 2), 1)},
+        {"id": "sa-east", "label": "São Paulo (SA)", "x": 0.371, "y": 0.750, "status": "healthy", "ping_ms": round(112.0 + random.uniform(-3, 4), 1)},
+        {"id": "eu-west", "label": "Dublin (EU-West)", "x": 0.483, "y": 0.194, "status": "healthy", "ping_ms": round(72.0 + random.uniform(-2, 3), 1)},
+        {"id": "eu-central", "label": "Frankfurt (EU)", "x": 0.524, "y": 0.217, "status": "healthy", "ping_ms": round(65.0 + random.uniform(-2, 3), 1)},
+        {"id": "ap-se", "label": "Singapore (AP-SE)", "x": 0.788, "y": 0.570, "status": "healthy", "ping_ms": round(165.0 + random.uniform(-4, 5), 1)},
+        {"id": "ap-ne", "label": "Tokyo (AP-NE)", "x": 0.888, "y": 0.321, "status": "healthy", "ping_ms": round(138.0 + random.uniform(-3, 4), 1)},
+        {"id": "ap-se2", "label": "Sydney (AP-SE2)", "x": 0.920, "y": 0.825, "status": "healthy", "ping_ms": round(182.0 + random.uniform(-5, 6), 1)},
     ]
     geo_links = [
         {"from": "us-west", "to": "us-east", "latency_ms": round(42.0 + random.uniform(-2, 3), 1)},

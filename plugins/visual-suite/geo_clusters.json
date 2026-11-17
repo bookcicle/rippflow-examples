@@ -3,103 +3,103 @@
     {
       "id": "us-east",
       "label": "Virginia (US-East)",
-      "x": 0.26,
-      "y": 0.35,
+      "x": 0.283,
+      "y": 0.304,
       "status": "healthy",
-      "ping_ms": 18.4
+      "ping_ms": 17.4
     },
     {
       "id": "us-west",
       "label": "Oregon (US-West)",
-      "x": 0.15,
-      "y": 0.3,
+      "x": 0.165,
+      "y": 0.261,
       "status": "healthy",
-      "ping_ms": 24.8
+      "ping_ms": 23.1
     },
     {
       "id": "sa-east",
       "label": "S\u00e3o Paulo (SA)",
-      "x": 0.33,
-      "y": 0.7,
+      "x": 0.371,
+      "y": 0.75,
       "status": "healthy",
-      "ping_ms": 111.8
+      "ping_ms": 115.9
     },
     {
       "id": "eu-west",
       "label": "Dublin (EU-West)",
-      "x": 0.46,
-      "y": 0.24,
+      "x": 0.483,
+      "y": 0.194,
       "status": "healthy",
       "ping_ms": 73.7
     },
     {
       "id": "eu-central",
       "label": "Frankfurt (EU)",
-      "x": 0.51,
-      "y": 0.25,
+      "x": 0.524,
+      "y": 0.217,
       "status": "healthy",
-      "ping_ms": 63.1
+      "ping_ms": 63.5
     },
     {
       "id": "ap-se",
       "label": "Singapore (AP-SE)",
-      "x": 0.77,
-      "y": 0.56,
+      "x": 0.788,
+      "y": 0.57,
       "status": "healthy",
-      "ping_ms": 165.8
+      "ping_ms": 162.0
     },
     {
       "id": "ap-ne",
       "label": "Tokyo (AP-NE)",
-      "x": 0.87,
-      "y": 0.32,
+      "x": 0.888,
+      "y": 0.321,
       "status": "healthy",
-      "ping_ms": 141.8
+      "ping_ms": 139.9
     },
     {
       "id": "ap-se2",
       "label": "Sydney (AP-SE2)",
-      "x": 0.88,
-      "y": 0.76,
+      "x": 0.92,
+      "y": 0.825,
       "status": "healthy",
-      "ping_ms": 179.2
+      "ping_ms": 178.6
     }
   ],
   "links": [
     {
       "from": "us-west",
       "to": "us-east",
-      "latency_ms": 41.3
+      "latency_ms": 44.2
     },
     {
       "from": "us-east",
       "to": "eu-west",
-      "latency_ms": 69.8
+      "latency_ms": 71.6
     },
     {
       "from": "us-east",
       "to": "sa-east",
-      "latency_ms": 93.3
+      "latency_ms": 96.1
     },
     {
       "from": "eu-west",
       "to": "eu-central",
-      "latency_ms": 17.2
+      "latency_ms": 15.5
     },
     {
       "from": "eu-central",
       "to": "ap-se",
-      "latency_ms": 134.8
+      "latency_ms": 139.2
     },
     {
       "from": "ap-se",
       "to": "ap-ne",
-      "latency_ms": 51.7
+      "latency_ms": 52.5
     },
     {
       "from": "ap-se",
       "to": "ap-se2",
-      "latency_ms": 76.5
+      "latency_ms": 79.1
     }
   ]
 }
