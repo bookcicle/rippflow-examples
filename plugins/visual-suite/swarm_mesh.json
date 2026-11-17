@@ -19,7 +19,7 @@
     {
       "id": "code",
       "label": "Coder",
-      "status": "working",
+      "status": "idle",
       "role": "CodeGen",
       "x": 0.5,
       "y": 0.78
@@ -37,17 +37,17 @@
     {
       "from": "coord",
       "to": "res",
-      "label": "44 msg/s"
+      "label": "24 msg/s"
     },
     {
       "from": "res",
       "to": "code",
-      "label": "48 ctx/s"
+      "label": "77 ctx/s"
     },
     {
       "from": "code",
       "to": "ver",
-      "label": "23 patch/s"
+      "label": "17 patch/s"
     },
     {
       "from": "ver",

@@ -179,7 +179,24 @@ def generate_samples(step: int):
             "change": delta
         })
 
-    return candle, tokens, nodes, edges, bubbles, vram_segments, geo_nodes, geo_links, contour_matrix, sunburst_tree, horizontal_items, race_entries
+    # 11. US States Regional Nodes
+    us_nodes = [
+        {"id": "us-east-1", "label": "Virginia (US-East)", "lat": 38.0, "lon": -77.5, "status": "healthy", "ping_ms": round(11.0 + random.uniform(-1, 2), 1)},
+        {"id": "us-east-2", "label": "Ohio (US-East)", "lat": 40.0, "lon": -82.9, "status": "healthy", "ping_ms": round(17.0 + random.uniform(-1, 2), 1)},
+        {"id": "us-central", "label": "Iowa (Central)", "lat": 41.6, "lon": -93.6, "status": "healthy", "ping_ms": round(26.0 + random.uniform(-1, 2), 1)},
+        {"id": "us-south", "label": "Texas (South)", "lat": 32.8, "lon": -96.8, "status": "healthy", "ping_ms": round(31.0 + random.uniform(-2, 3), 1)},
+        {"id": "us-west-1", "label": "N. California (West)", "lat": 37.4, "lon": -121.9, "status": "healthy", "ping_ms": round(44.0 + random.uniform(-2, 3), 1)},
+        {"id": "us-west-2", "label": "Oregon (West)", "lat": 45.8, "lon": -119.3, "status": "healthy", "ping_ms": round(39.0 + random.uniform(-2, 3), 1)},
+    ]
+    us_links = [
+        {"from": "us-west-2", "to": "us-west-1", "latency_ms": round(14.0 + random.uniform(-1, 2), 1)},
+        {"from": "us-west-1", "to": "us-south", "latency_ms": round(34.0 + random.uniform(-2, 3), 1)},
+        {"from": "us-south", "to": "us-central", "latency_ms": round(21.0 + random.uniform(-1, 2), 1)},
+        {"from": "us-central", "to": "us-east-2", "latency_ms": round(18.0 + random.uniform(-1, 2), 1)},
+        {"from": "us-east-2", "to": "us-east-1", "latency_ms": round(11.0 + random.uniform(-1, 2), 1)},
+    ]
+
+    return candle, tokens, nodes, edges, bubbles, vram_segments, geo_nodes, geo_links, contour_matrix, sunburst_tree, horizontal_items, race_entries, us_nodes, us_links
 
 
 def run(continuous: bool = False):
@@ -189,6 +206,7 @@ def run(continuous: bool = False):
     bubble_file = BASE_DIR / "bubble_models.json"
     vram_file = BASE_DIR / "vram_donut.json"
     geo_file = BASE_DIR / "geo_clusters.json"
+    us_geo_file = BASE_DIR / "us_states_geo.json"
     contour_file = BASE_DIR / "contour_matrix.json"
     sunburst_file = BASE_DIR / "sunburst.json"
     hbar_file = BASE_DIR / "horizontal_bar.json"
@@ -197,12 +215,12 @@ def run(continuous: bool = False):
     # Pre-populate rolling candlesticks
     rolling_candles = []
     for s in range(16):
-        c, _, _, _, _, _, _, _, _, _, _, _ = generate_samples(s)
+        c, _, _, _, _, _, _, _, _, _, _, _, _, _ = generate_samples(s)
         rolling_candles.append(c)
 
     step = 16
     while True:
-        c, tokens, nodes, edges, bubbles, vram_segs, geo_nodes, geo_links, contour_mat, sunburst, h_items, race = generate_samples(step)
+        c, tokens, nodes, edges, bubbles, vram_segs, geo_nodes, geo_links, contour_mat, sunburst, h_items, race, u_nodes, u_links = generate_samples(step)
         rolling_candles.append(c)
         if len(rolling_candles) > 20:
             rolling_candles.pop(0)
@@ -232,6 +250,10 @@ def run(continuous: bool = False):
         # Write Geo Map JSON
         with open(geo_file, "w") as f:
             json.dump({"nodes": geo_nodes, "links": geo_links}, f, indent=2)
+
+        # Write US States Geo JSON
+        with open(us_geo_file, "w") as f:
+            json.dump({"nodes": u_nodes, "links": u_links}, f, indent=2)
 
         # Write Contour JSON
         with open(contour_file, "w") as f:

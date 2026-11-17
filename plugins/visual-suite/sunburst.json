@@ -5,21 +5,21 @@
     "children": [
       {
         "name": "Inference Engine",
-        "value": 43.5,
+        "value": 44.9,
         "children": [
           {
             "name": "Prefill Phase",
-            "value": 17.3
+            "value": 17.6
           },
           {
             "name": "Decode Phase",
-            "value": 23.3
+            "value": 24.9
           }
         ]
       },
       {
         "name": "Distributed Training",
-        "value": 37.7,
+        "value": 35.6,
         "children": [
           {
             "name": "Forward Pass",
@@ -37,7 +37,7 @@
       },
       {
         "name": "Memory Pool",
-        "value": 21.1,
+        "value": 21.8,
         "children": [
           {
             "name": "KV Cache",

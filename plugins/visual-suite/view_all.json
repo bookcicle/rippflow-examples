@@ -102,14 +102,50 @@
         "gap": 12,
         "children": [
           {
+            "type": "GeoMap",
+            "title": "Global Multi-Region Mesh",
+            "source": { "file": "geo_clusters.json" }
+          },
+          {
+            "type": "GeoMap",
+            "title": "US Continental State Topology",
+            "scope": "usa",
+            "granularity": "state",
+            "source": { "file": "us_states_geo.json" }
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
+            "type": "GeoMap",
+            "title": "California State Grid (State Focus)",
+            "scope": "CA",
+            "granularity": "state"
+          },
+          {
+            "type": "GeoMap",
+            "title": "Japan Edge Topology (Country Focus)",
+            "scope": "JP",
+            "granularity": "country"
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
             "type": "DonutChart",
             "title": "GPU VRAM Allocation",
             "source": { "file": "vram_donut.json" }
           },
           {
-            "type": "GeoMap",
-            "title": "Multi-Region Cluster Topology",
-            "source": { "file": "geo_clusters.json" }
+            "type": "Contour",
+            "title": "2D Loss Landscape Surface",
+            "source": { "file": "contour_matrix.json" }
           }
         ]
       },
@@ -117,31 +153,15 @@
         "type": "Row",
         "gap": 12,
         "children": [
-          {
-            "type": "Contour",
-            "title": "2D Loss Landscape Surface",
-            "source": { "file": "contour_matrix.json" }
-          },
           {
             "type": "Sunburst",
             "title": "Compute Hierarchy Partition",
             "source": { "file": "sunburst.json" }
-          }
-        ]
-      },
-      {
-        "type": "Row",
-        "gap": 12,
-        "children": [
+          },
           {
             "type": "HorizontalBar",
             "title": "Model Throughput Benchmarks",
             "source": { "file": "horizontal_bar.json" }
-          },
-          {
-            "type": "RaceChart",
-            "title": "Live Agent Token Race",
-            "source": { "file": "race_chart.json" }
           }
         ]
       },
@@ -149,6 +169,11 @@
         "type": "Row",
         "gap": 12,
         "children": [
+          {
+            "type": "RaceChart",
+            "title": "Live Agent Token Race",
+            "source": { "file": "race_chart.json" }
+          },
           {
             "type": "Table",
             "title": "Active Swarm Agent Workers",

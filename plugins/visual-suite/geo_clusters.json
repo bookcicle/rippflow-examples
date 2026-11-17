@@ -6,7 +6,7 @@
       "x": 0.283,
       "y": 0.304,
       "status": "healthy",
-      "ping_ms": 17.4
+      "ping_ms": 18.1
     },
     {
       "id": "us-west",
@@ -14,7 +14,7 @@
       "x": 0.165,
       "y": 0.261,
       "status": "healthy",
-      "ping_ms": 23.1
+      "ping_ms": 24.8
     },
     {
       "id": "sa-east",
@@ -22,7 +22,7 @@
       "x": 0.371,
       "y": 0.75,
       "status": "healthy",
-      "ping_ms": 115.9
+      "ping_ms": 113.7
     },
     {
       "id": "eu-west",
@@ -30,7 +30,7 @@
       "x": 0.483,
       "y": 0.194,
       "status": "healthy",
-      "ping_ms": 73.7
+      "ping_ms": 74.5
     },
     {
       "id": "eu-central",
@@ -38,7 +38,7 @@
       "x": 0.524,
       "y": 0.217,
       "status": "healthy",
-      "ping_ms": 63.5
+      "ping_ms": 65.9
     },
     {
       "id": "ap-se",
@@ -46,7 +46,7 @@
       "x": 0.788,
       "y": 0.57,
       "status": "healthy",
-      "ping_ms": 162.0
+      "ping_ms": 167.0
     },
     {
       "id": "ap-ne",
@@ -54,7 +54,7 @@
       "x": 0.888,
       "y": 0.321,
       "status": "healthy",
-      "ping_ms": 139.9
+      "ping_ms": 139.6
     },
     {
       "id": "ap-se2",
@@ -62,7 +62,7 @@
       "x": 0.92,
       "y": 0.825,
       "status": "healthy",
-      "ping_ms": 178.6
+      "ping_ms": 181.0
     }
   ],
   "links": [
@@ -74,32 +74,32 @@
     {
       "from": "us-east",
       "to": "eu-west",
-      "latency_ms": 71.6
+      "latency_ms": 67.4
     },
     {
       "from": "us-east",
       "to": "sa-east",
-      "latency_ms": 96.1
+      "latency_ms": 92.3
     },
     {
       "from": "eu-west",
       "to": "eu-central",
-      "latency_ms": 15.5
+      "latency_ms": 16.0
     },
     {
       "from": "eu-central",
       "to": "ap-se",
-      "latency_ms": 139.2
+      "latency_ms": 133.6
     },
     {
       "from": "ap-se",
       "to": "ap-ne",
-      "latency_ms": 52.5
+      "latency_ms": 53.9
     },
     {
       "from": "ap-se",
       "to": "ap-se2",
-      "latency_ms": 79.1
+      "latency_ms": 77.9
     }
   ]
 }

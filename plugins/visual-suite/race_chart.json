@@ -1,34 +1,34 @@
 {
-  "step": "Round 7 (T+34s)",
+  "step": "Round 109 (T+543s)",
   "entries": [
     {
-      "id": "3",
-      "label": "researcher-agent",
-      "value": 93.5,
+      "id": "2",
+      "label": "verifier-agent",
+      "value": 97.4,
       "change": 0
     },
     {
       "id": "1",
       "label": "coder-agent-1",
-      "value": 89.8,
+      "value": 91.3,
       "change": 0
     },
     {
       "id": "4",
       "label": "orchestrator",
-      "value": 88.5,
+      "value": 84.1,
       "change": 0
     },
     {
-      "id": "2",
-      "label": "verifier-agent",
-      "value": 87.7,
+      "id": "3",
+      "label": "researcher-agent",
+      "value": 84.0,
       "change": 0
     },
     {
       "id": "5",
       "label": "evaluator-qa",
-      "value": 83.4,
+      "value": 79.2,
       "change": 0
     }
   ]
