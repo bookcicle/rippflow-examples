@@ -1,5 +1,6 @@
 id: visual-suite
 name: "Visual Suite Showcase"
+type: ui
 binary: python3
 transport: cli
 invoke:

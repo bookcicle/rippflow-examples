@@ -1,5 +1,6 @@
 id: pipeline-dag
 name: "Pipeline DAG Visualizer"
+type: ui
 binary: python3
 transport: cli
 invoke:

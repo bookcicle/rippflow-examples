@@ -1,0 +1,61 @@
+{
+  "id": "sec-audit.policy",
+  "title": "Security Rules & Sandbox Policy",
+  "icon": "shield",
+  "layout": {
+    "type": "Container",
+    "padding": 16,
+    "gap": 16,
+    "children": [
+      {
+        "type": "Row",
+        "gap": 12,
+        "children": [
+          {
+            "type": "MetricCard",
+            "label": "Wasm Runtime",
+            "value": "Wasmtime WASI",
+            "trend": "Embedded · 0 Host Deps",
+            "status": "success"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Filesystem Cap",
+            "value": "Read-Only (.)",
+            "trend": "Writes Blocked",
+            "status": "success"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Network Policy",
+            "value": "Air-Gapped",
+            "trend": "0 Allowed Hosts",
+            "status": "success"
+          },
+          {
+            "type": "MetricCard",
+            "label": "Memory Limit",
+            "value": "64 MB",
+            "trend": "Capped Store"
+          }
+        ]
+      },
+      {
+        "type": "Table",
+        "title": "Static Audit Ruleset (wasm-sec-audit)",
+        "virtualized": true,
+        "sticky_header": true,
+        "columns": ["Rule ID", "Severity", "Target", "Description"],
+        "rows": [
+          ["aws-access-key", "HIGH", "Source & Configs", "Detects AKIA* AWS Access Key IDs (redacted in output)"],
+          ["github-token", "HIGH", "Source & Configs", "Detects ghp_, github_pat_, gho_, and ghs_ tokens"],
+          ["slack-token", "HIGH", "Source & Configs", "Detects xoxb-, xoxp-, and xoxa- Slack bot/user tokens"],
+          ["llm-api-key", "HIGH", "Source & Configs", "Detects sk-ant-* and sk-proj-* LLM provider keys"],
+          ["private-key-pem", "HIGH", "Keys & Certs", "Detects -----BEGIN ... PRIVATE KEY----- PEM headers"],
+          ["dotenv-file", "MEDIUM", "Workspace Root", "Flags non-example .env files present in the workspace"],
+          ["manifest-hygiene", "INFO", "Cargo/NPM/Python", "Checks for wildcard '*' versions, unpinned git deps, and missing license"]
+        ]
+      }
+    ]
+  }
+}
