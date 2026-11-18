@@ -1,0 +1,14 @@
+id: fluent-emoji-icons
+name: Fluent Emoji Flat Icons
+type: ui
+transport: cli
+doctor:
+  display_name: Microsoft Fluent Emoji Flat Icon Pack
+  official_url: https://github.com/microsoft/fluentui-emoji
+  guidance: "Overrides Studio toolbar, file tree, navigation, and window icons with playful, bubbly full-color Microsoft Fluent Emoji Flat SVGs (MIT)."
+contributes:
+  iconPacks:
+    - id: fluent-emoji-icons
+      name: Fluent Emoji Flat (Color)
+      path: icons/
+      multicolor: true

@@ -236,6 +236,37 @@ class TestManifestValidation(unittest.TestCase):
         self.assertTrue((icons_dir / "nvidia.svg").is_file())
         self.assertTrue((icons_dir / "cloud-node.svg").is_file())
 
+    def test_bubbly_and_multicolor_icon_packs(self):
+        packs = [
+            ("solar-icons", False),
+            ("iconpark-icons", True),
+            ("fluent-emoji-icons", True),
+        ]
+        for pack_id, expect_multicolor in packs:
+            plugin_dir = self.plugins_dir / pack_id
+            manifest_path = plugin_dir / f"{pack_id}.yaml"
+            self.assertTrue(manifest_path.is_file(), f"Missing manifest: {manifest_path}")
+            spec = parse_manifest_file(str(manifest_path))
+            self.assertEqual(spec.get("id"), pack_id)
+            self.assertEqual(spec.get("type"), "ui")
+
+            contributes = spec.get("contributes", {})
+            icon_packs = contributes.get("iconPacks", contributes.get("icon_packs", []))
+            self.assertEqual(len(icon_packs), 1)
+            self.assertEqual(icon_packs[0].get("id"), pack_id)
+            if expect_multicolor:
+                self.assertTrue(icon_packs[0].get("multicolor"), f"{pack_id} should set multicolor: true")
+
+            icons_dir = plugin_dir / icon_packs[0].get("path")
+            self.assertTrue(icons_dir.is_dir(), f"Missing icons dir: {icons_dir}")
+            svg_files = list(icons_dir.glob("*.svg"))
+            self.assertGreaterEqual(len(svg_files), 85, f"{pack_id} has too few SVGs: {len(svg_files)}")
+            for key in ["settings.svg", "folder.svg", "folder-open.svg", "agents-icon.svg", "file-rs.svg", "file-py.svg"]:
+                content = (icons_dir / key).read_text(encoding="utf-8")
+                self.assertIn("<svg", content)
+                self.assertIn("</svg>", content)
+            self.assertTrue((plugin_dir / "LICENSE").is_file(), f"Missing LICENSE for {pack_id}")
+
 
 class TestPyRepoAnalystExecution(unittest.TestCase):
     """Tests plugins/py-repo-analyst/agent.py over stdin/stdout."""
