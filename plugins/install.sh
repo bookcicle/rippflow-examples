@@ -98,6 +98,16 @@ if [[ -f "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.wasm" ]]; then
     "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.yaml" > "${TARGET_DIR}/wasm-trace-lens.yaml"
 fi
 
+# 5b. Install Neon Studio Icons (Icon Pack Plugin)
+if [[ -d "${SCRIPT_DIR}/neon-icons/icons" ]]; then
+  echo "-> Installing 'neon-icons' icon pack plugin..."
+  mkdir -p "${TARGET_DIR}/neon-icons/icons"
+  cp "${SCRIPT_DIR}/neon-icons/icons/"*.svg "${TARGET_DIR}/neon-icons/icons/"
+  NEON_ICONS_ABS="${TARGET_DIR}/neon-icons/icons"
+  sed "s|path: icons/|path: \"${NEON_ICONS_ABS}\"|" \
+    "${SCRIPT_DIR}/neon-icons/neon-icons.yaml" > "${TARGET_DIR}/neon-icons.yaml"
+fi
+
 # 6. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
 if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${HOME}" ]]; then
   echo "-> Mirroring manifests into ${AGENTS_DIR}..."
@@ -111,6 +121,9 @@ if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${
   if [[ -f "${TARGET_DIR}/wasm-trace-lens.yaml" ]]; then
     cp "${TARGET_DIR}/wasm-trace-lens.yaml" "${AGENTS_DIR}/wasm-trace-lens.yaml"
   fi
+  if [[ -f "${TARGET_DIR}/neon-icons.yaml" ]]; then
+    cp "${TARGET_DIR}/neon-icons.yaml" "${AGENTS_DIR}/neon-icons.yaml"
+  fi
 fi
 
 echo ""
@@ -123,6 +136,9 @@ if [[ -f "${TARGET_DIR}/wasm-sec-audit.yaml" ]]; then
 fi
 if [[ -f "${TARGET_DIR}/wasm-trace-lens.yaml" ]]; then
   echo "  5. wasm-trace-lens     -> ${TARGET_DIR}/wasm-trace-lens.yaml"
+fi
+if [[ -f "${TARGET_DIR}/neon-icons.yaml" ]]; then
+  echo "  6. neon-icons          -> ${TARGET_DIR}/neon-icons.yaml"
 fi
 echo ""
 echo "To use in Rippflow Studio:"

@@ -1,0 +1,13 @@
+id: neon-icons
+name: Neon Studio Icons
+type: ui
+transport: cli
+doctor:
+  display_name: Neon Studio Icon Pack
+  official_url: https://rippflow.com
+  guidance: "Replaces Studio toolbar, navigation, file, and window icons with crisp geometric neon-style SVG icons."
+contributes:
+  iconPacks:
+    - id: neon-icons
+      name: Neon Studio Icons
+      path: icons/

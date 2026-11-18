@@ -19,6 +19,7 @@ This directory contains three working example chat-agent plugins demonstrating R
 | `ds-evals` | `cli` | `python3` | YAML (`ds-evals.yaml`) | Declarative UI | Data science model evaluation studio: live loss curves (`LineChart`), confusion matrix (`ConfusionMatrix`), and checkpoints drawer (`tree`). |
 | `pipeline-dag` | `cli` | `python3` | YAML (`pipeline-dag.yaml`) | Declarative UI | Pipeline and workflow DAG visualizer: interactive node graph (`DagFlow`) and pipeline history drawer. |
 | `cluster-pulse` | `cli` | `python3` | YAML (`cluster-pulse.yaml`) | Declarative UI + Icons | Real-time GPU & compute telemetry tab, compute nodes drawer, and custom SVG hardware icon pack (`icons/`). |
+| `neon-icons` | `cli` | — | YAML (`neon-icons.yaml`) | Icon Pack (`ui`) | Studio-wide SVG icon pack overriding 52 toolbar, file tree, navigation, and window control icons. |
 
 ---
 
