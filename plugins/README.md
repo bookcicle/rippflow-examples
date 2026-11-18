@@ -20,6 +20,8 @@ This directory contains three working example chat-agent plugins demonstrating R
 | `pipeline-dag` | `cli` | `python3` | YAML (`pipeline-dag.yaml`) | Declarative UI | Pipeline and workflow DAG visualizer: interactive node graph (`DagFlow`) and pipeline history drawer. |
 | `cluster-pulse` | `cli` | `python3` | YAML (`cluster-pulse.yaml`) | Declarative UI + Icons | Real-time GPU & compute telemetry tab, compute nodes drawer, and custom SVG hardware icon pack (`icons/`). |
 | `neon-icons` | `cli` | — | YAML (`neon-icons.yaml`) | Icon Pack (`ui`) | Studio-wide SVG icon pack overriding 52 toolbar, file tree, navigation, and window control icons. |
+| `lucide-icons` | `cli` | — | YAML (`lucide-icons.yaml`) | Icon Pack (`ui`) | Open-source Lucide icon pack (ISC License) covering 68 Studio UI, file, navigation, and hardware icons. |
+| `fontawesome-icons` | `cli` | — | YAML (`fontawesome-icons.yaml`) | Icon Pack (`ui`) | Open-source Font Awesome Free 6.x icon pack (CC BY 4.0 / MIT) covering 76 Studio UI and brand icons. |
 
 ---
 

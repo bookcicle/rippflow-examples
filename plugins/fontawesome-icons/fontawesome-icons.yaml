@@ -1,0 +1,13 @@
+id: fontawesome-icons
+name: Font Awesome Free Icons
+type: ui
+transport: cli
+doctor:
+  display_name: Font Awesome Free Icon Pack
+  official_url: https://fontawesome.com
+  guidance: "Overrides Studio toolbar, file tree, brand, and window icons using Font Awesome Free 6.x SVG icons (CC BY 4.0 / MIT)."
+contributes:
+  iconPacks:
+    - id: fontawesome-icons
+      name: Font Awesome Free (OSS)
+      path: icons/
