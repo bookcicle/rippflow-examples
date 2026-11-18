@@ -610,6 +610,24 @@ class TestInstallScript(unittest.TestCase):
             self.assertTrue((agents_dir / "ollama.yaml").is_file(), "Missing mirrored ollama.yaml")
             self.assertTrue((agents_dir / "py-repo-analyst.yaml").is_file(), "Missing mirrored py-repo-analyst.yaml")
             self.assertTrue((agents_dir / "js-workspace-helper.json").is_file(), "Missing mirrored js-workspace-helper.json")
+            self.assertTrue((agents_dir / "wasm-sec-audit.yaml").is_file(), "Missing mirrored wasm-sec-audit.yaml")
+            self.assertTrue((dest / "wasm-sec-audit" / "wasm-sec-audit.wasm").is_file(), "Missing installed wasm-sec-audit.wasm")
+
+    def test_wasm_sec_audit_manifest_and_binary(self):
+        plugin_dir = Path(__file__).resolve().parent / "wasm-sec-audit"
+        manifest_path = plugin_dir / "wasm-sec-audit.yaml"
+        wasm_path = plugin_dir / "wasm-sec-audit.wasm"
+        self.assertTrue(manifest_path.is_file(), f"Missing manifest: {manifest_path}")
+        self.assertTrue(wasm_path.is_file(), f"Missing wasm module: {wasm_path}")
+
+        with open(wasm_path, "rb") as f:
+            magic = f.read(8)
+        self.assertEqual(magic, b"\x00asm\x01\x00\x00\x00", "Invalid WebAssembly binary magic header")
+
+        spec = parse_manifest_file(str(manifest_path))
+        self.assertEqual(spec.get("id"), "wasm-sec-audit")
+        self.assertEqual(spec.get("transport"), "wasm")
+        self.assertEqual(spec.get("wasm", {}).get("module"), "wasm-sec-audit.wasm")
 
 
 if __name__ == "__main__":

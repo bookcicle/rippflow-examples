@@ -75,13 +75,26 @@ with open(dst_manifest, 'w', encoding='utf-8') as f:
   "${TARGET_DIR}/js-workspace-helper.json" \
   "${JS_SCRIPT_ABS}"
 
-# 4. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
+# 4. Install Wasm Security & Dependency Auditor (WASI transport)
+if [[ -f "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.wasm" ]]; then
+  echo "-> Installing 'wasm-sec-audit' plugin..."
+  mkdir -p "${TARGET_DIR}/wasm-sec-audit"
+  cp "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.wasm" "${TARGET_DIR}/wasm-sec-audit/wasm-sec-audit.wasm"
+  WASM_MOD_ABS="${TARGET_DIR}/wasm-sec-audit/wasm-sec-audit.wasm"
+  sed "s|module: wasm-sec-audit.wasm|module: \"${WASM_MOD_ABS}\"|" \
+    "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.yaml" > "${TARGET_DIR}/wasm-sec-audit.yaml"
+fi
+
+# 5. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
 if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${HOME}" ]]; then
   echo "-> Mirroring manifests into ${AGENTS_DIR}..."
   mkdir -p "${AGENTS_DIR}"
   cp "${TARGET_DIR}/ollama.yaml" "${AGENTS_DIR}/ollama.yaml"
   cp "${TARGET_DIR}/py-repo-analyst.yaml" "${AGENTS_DIR}/py-repo-analyst.yaml"
   cp "${TARGET_DIR}/js-workspace-helper.json" "${AGENTS_DIR}/js-workspace-helper.json"
+  if [[ -f "${TARGET_DIR}/wasm-sec-audit.yaml" ]]; then
+    cp "${TARGET_DIR}/wasm-sec-audit.yaml" "${AGENTS_DIR}/wasm-sec-audit.yaml"
+  fi
 fi
 
 echo ""
@@ -89,6 +102,9 @@ echo "✓ Successfully installed plugins:"
 echo "  1. ollama              -> ${TARGET_DIR}/ollama.yaml"
 echo "  2. py-repo-analyst     -> ${TARGET_DIR}/py-repo-analyst.yaml"
 echo "  3. js-workspace-helper -> ${TARGET_DIR}/js-workspace-helper.json"
+if [[ -f "${TARGET_DIR}/wasm-sec-audit.yaml" ]]; then
+  echo "  4. wasm-sec-audit      -> ${TARGET_DIR}/wasm-sec-audit.yaml"
+fi
 echo ""
 echo "To use in Rippflow Studio:"
 echo "  - Ensure RIPPFLOW_AGENT_PLUGINS_DIR=\"${TARGET_DIR}\" (or use default ~/.rippflow/agents)"

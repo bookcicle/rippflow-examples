@@ -1,0 +1,22 @@
+id: wasm-sec-audit
+name: Wasm Security & Dependency Auditor
+binary: ""
+transport: wasm
+parser: json_lines
+is_llm_agent: false
+
+wasm:
+  module: wasm-sec-audit.wasm
+  memory_limit_mb: 64
+  permissions:
+    filesystem:
+      read: ["."]
+      write: []
+    network:
+      allowed_hosts: []
+    env: []
+
+doctor:
+  display_name: Wasm Security & Dependency Auditor
+  ready_detail: Embedded WASI sandbox ready (no host runtime required)
+  missing_detail: Build wasm-sec-audit.wasm via cargo build --target wasm32-wasip1 --release

@@ -1,0 +1,12 @@
+[package]
+name = "wasm-sec-audit"
+version = "0.1.0"
+edition = "2021"
+description = "Air-gapped WASI security & dependency auditor plugin for Rippflow"
+
+[workspace]
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
