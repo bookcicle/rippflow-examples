@@ -22,6 +22,7 @@ This directory contains three working example chat-agent plugins demonstrating R
 | `neon-icons` | `cli` | — | YAML (`neon-icons.yaml`) | Icon Pack (`ui`) | Studio-wide SVG icon pack overriding 52 toolbar, file tree, navigation, and window control icons. |
 | `lucide-icons` | `cli` | — | YAML (`lucide-icons.yaml`) | Icon Pack (`ui`) | Open-source Lucide icon pack (ISC License) covering 68 Studio UI, file, navigation, and hardware icons. |
 | `fontawesome-icons` | `cli` | — | YAML (`fontawesome-icons.yaml`) | Icon Pack (`ui`) | Open-source Font Awesome Free 6.x icon pack (CC BY 4.0 / MIT) covering 76 Studio UI and brand icons. |
+| `local-ports` | `cli` | `python3` | YAML (`local-ports.yaml`) | Drawer + Dynamic UI | Sidebar drawer listing active TCP ports & Docker containers; clicking any item opens a live Declarative UI tab. |
 
 ---
 
