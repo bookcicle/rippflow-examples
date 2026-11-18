@@ -223,10 +223,11 @@ def render_overview_view():
         )
 
     spec = {
+        "version": "rippflow/ui-v1",
         "id": "local-ports.overview",
         "title": "Ports & Containers",
         "icon": "network",
-        "root": {
+        "layout": {
             "type": "Container",
             "gap": 16,
             "padding": 16,
@@ -259,10 +260,11 @@ def render_port_view(tab_id):
             pass
 
     spec = {
+        "version": "rippflow/ui-v1",
         "id": f"local-ports.port.{port}",
         "title": f"Port :{port} ({proc})",
         "icon": "network",
-        "root": {
+        "layout": {
             "type": "Container",
             "gap": 16,
             "padding": 16,
@@ -323,10 +325,11 @@ def render_container_view(tab_id):
             log_rows.append(["!", str(exc)])
 
     spec = {
+        "version": "rippflow/ui-v1",
         "id": f"local-ports.container.{cname}",
         "title": f"Container: {cname}",
         "icon": "cpu",
-        "root": {
+        "layout": {
             "type": "Container",
             "gap": 16,
             "padding": 16,
