@@ -1,0 +1,13 @@
+id: material-icons
+name: Material Design Icons
+type: ui
+transport: cli
+doctor:
+  display_name: Google Material Design Icon Pack
+  official_url: https://fonts.google.com/icons
+  guidance: "Overrides Studio toolbar, file tree, navigation, brand, and window icons using Google Material Design SVG icons (Apache 2.0)."
+contributes:
+  iconPacks:
+    - id: material-icons
+      name: Material Design Icons (OSS)
+      path: icons/

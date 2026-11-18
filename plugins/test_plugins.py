@@ -266,6 +266,58 @@ class TestManifestValidation(unittest.TestCase):
                 self.assertIn("</svg>", content)
             self.assertTrue((plugin_dir / "LICENSE").is_file(), f"Missing LICENSE for {pack_id}")
 
+    def test_material_icons_manifest_and_assets(self):
+        plugin_dir = self.plugins_dir / "material-icons"
+        manifest_path = plugin_dir / "material-icons.yaml"
+        self.assertTrue(manifest_path.is_file(), f"Missing manifest: {manifest_path}")
+
+        spec = parse_manifest_file(str(manifest_path))
+        self.assertEqual(spec.get("id"), "material-icons")
+        self.assertEqual(spec.get("name"), "Material Design Icons")
+        self.assertEqual(spec.get("type"), "ui")
+
+        contributes = spec.get("contributes", {})
+        icon_packs = contributes.get("iconPacks", contributes.get("icon_packs", []))
+        self.assertEqual(len(icon_packs), 1)
+        self.assertEqual(icon_packs[0].get("id"), "material-icons")
+
+        icons_dir = plugin_dir / icon_packs[0].get("path")
+        self.assertTrue(icons_dir.is_dir(), f"Missing icons dir: {icons_dir}")
+
+        # Check key icons exist and are valid SVGs
+        expected_icons = [
+            "settings.svg",
+            "search.svg",
+            "folder.svg",
+            "folder-open.svg",
+            "copy.svg",
+            "delete.svg",
+            "agents-icon.svg",
+            "threads-icon.svg",
+            "square-terminal.svg",
+            "git-branch.svg",
+            "incognito-glasses.svg",
+            "secrets-vault.svg",
+            "preview-sparkle.svg",
+            "file.svg",
+            "file-py.svg",
+            "file-rs.svg",
+            "file-js.svg",
+            "file-json.svg",
+            "file-yaml.svg",
+        ]
+        for icon in expected_icons:
+            icon_file = icons_dir / icon
+            self.assertTrue(icon_file.is_file(), f"Missing icon: {icon}")
+            content = icon_file.read_text(encoding="utf-8")
+            self.assertIn("<svg", content)
+            self.assertIn("</svg>", content)
+            self.assertIn('viewBox="0 0 24 24"', content)
+
+        license_file = plugin_dir / "LICENSE"
+        self.assertTrue(license_file.is_file(), f"Missing LICENSE file: {license_file}")
+        self.assertIn("Apache License", license_file.read_text(encoding="utf-8"))
+
 
 class TestPyRepoAnalystExecution(unittest.TestCase):
     """Tests plugins/py-repo-analyst/agent.py over stdin/stdout."""
@@ -645,6 +697,9 @@ class TestInstallScript(unittest.TestCase):
             self.assertTrue((dest / "wasm-sec-audit" / "static_overview.json").is_file(), "Missing installed static_overview.json")
             self.assertTrue((agents_dir / "wasm-trace-lens.yaml").is_file(), "Missing mirrored wasm-trace-lens.yaml")
             self.assertTrue((dest / "wasm-trace-lens" / "wasm-trace-lens.wasm").is_file(), "Missing installed wasm-trace-lens.wasm")
+            self.assertTrue((agents_dir / "material-icons.yaml").is_file(), "Missing mirrored material-icons.yaml")
+            self.assertTrue((dest / "material-icons" / "icons" / "settings.svg").is_file(), "Missing installed material-icons settings.svg")
+            self.assertTrue((dest / "material-icons" / "LICENSE").is_file(), "Missing installed material-icons LICENSE")
 
     def test_wasm_sec_audit_manifest_and_binary(self):
         plugin_dir = Path(__file__).resolve().parent / "wasm-sec-audit"
