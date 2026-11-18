@@ -239,7 +239,6 @@ class TestManifestValidation(unittest.TestCase):
     def test_bubbly_and_multicolor_icon_packs(self):
         packs = [
             ("solar-icons", False),
-            ("iconpark-icons", True),
             ("fluent-emoji-icons", True),
         ]
         for pack_id, expect_multicolor in packs:

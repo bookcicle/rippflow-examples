@@ -141,8 +141,8 @@ if [[ -f "${SCRIPT_DIR}/local-ports/local_ports.py" ]]; then
     "${SCRIPT_DIR}/local-ports/local-ports.yaml" > "${TARGET_DIR}/local-ports.yaml"
 fi
 
-# 5f. Install Solar Bold Duotone, IconPark Multi-Color, and Fluent Emoji Flat Icon Packs
-for PACK in solar-icons iconpark-icons fluent-emoji-icons; do
+# 5f. Install Solar Bold Duotone and Fluent Emoji Flat Icon Packs
+for PACK in solar-icons fluent-emoji-icons; do
   if [[ -d "${SCRIPT_DIR}/${PACK}/icons" ]]; then
     echo "-> Installing '${PACK}' icon pack plugin..."
     mkdir -p "${TARGET_DIR}/${PACK}/icons"
@@ -181,7 +181,7 @@ if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${
   if [[ -f "${TARGET_DIR}/local-ports.yaml" ]]; then
     cp "${TARGET_DIR}/local-ports.yaml" "${AGENTS_DIR}/local-ports.yaml"
   fi
-  for PACK in solar-icons iconpark-icons fluent-emoji-icons; do
+  for PACK in solar-icons fluent-emoji-icons; do
     if [[ -f "${TARGET_DIR}/${PACK}.yaml" ]]; then
       cp "${TARGET_DIR}/${PACK}.yaml" "${AGENTS_DIR}/${PACK}.yaml"
     fi
@@ -211,11 +211,8 @@ fi
 if [[ -f "${TARGET_DIR}/solar-icons.yaml" ]]; then
   echo "  9. solar-icons         -> ${TARGET_DIR}/solar-icons.yaml"
 fi
-if [[ -f "${TARGET_DIR}/iconpark-icons.yaml" ]]; then
-  echo " 10. iconpark-icons      -> ${TARGET_DIR}/iconpark-icons.yaml"
-fi
 if [[ -f "${TARGET_DIR}/fluent-emoji-icons.yaml" ]]; then
-  echo " 11. fluent-emoji-icons  -> ${TARGET_DIR}/fluent-emoji-icons.yaml"
+  echo " 10. fluent-emoji-icons  -> ${TARGET_DIR}/fluent-emoji-icons.yaml"
 fi
 echo ""
 echo "To use in Rippflow Studio:"
