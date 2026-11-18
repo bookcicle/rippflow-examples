@@ -3,47 +3,48 @@
   "title": "Security Rules & Sandbox Policy",
   "icon": "shield",
   "layout": {
-    "type": "container",
+    "type": "Container",
     "padding": 16,
     "gap": 16,
     "children": [
       {
-        "type": "row",
+        "type": "Row",
         "gap": 12,
         "children": [
           {
-            "type": "metric_card",
-            "title": "Wasm Runtime",
+            "type": "MetricCard",
+            "label": "Wasm Runtime",
             "value": "Wasmtime WASI",
-            "delta": "Embedded · 0 Host Deps",
-            "trend": "up"
+            "trend": "Embedded · 0 Host Deps",
+            "status": "ok"
           },
           {
-            "type": "metric_card",
-            "title": "Filesystem Cap",
+            "type": "MetricCard",
+            "label": "Filesystem Cap",
             "value": "Read-Only (.)",
-            "delta": "Writes Blocked",
-            "trend": "neutral"
+            "trend": "Writes Blocked",
+            "status": "ok"
           },
           {
-            "type": "metric_card",
-            "title": "Network Policy",
+            "type": "MetricCard",
+            "label": "Network Policy",
             "value": "Air-Gapped",
-            "delta": "0 Allowed Hosts",
-            "trend": "up"
+            "trend": "0 Allowed Hosts",
+            "status": "ok"
           },
           {
-            "type": "metric_card",
-            "title": "Memory Limit",
+            "type": "MetricCard",
+            "label": "Memory Limit",
             "value": "64 MB",
-            "delta": "Capped Store",
-            "trend": "neutral"
+            "trend": "Capped Store"
           }
         ]
       },
       {
-        "type": "virtualized_table",
+        "type": "Table",
         "title": "Static Audit Ruleset (wasm-sec-audit)",
+        "virtualized": true,
+        "sticky_header": true,
         "columns": ["Rule ID", "Severity", "Target", "Description"],
         "rows": [
           ["aws-access-key", "HIGH", "Source & Configs", "Detects AKIA* AWS Access Key IDs (redacted in output)"],

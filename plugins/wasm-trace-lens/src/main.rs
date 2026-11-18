@@ -178,54 +178,55 @@ fn render_dynamic_ui_json(
   "title": "Live Workspace Telemetry (Dynamic Wasm)",
   "icon": "activity",
   "layout": {{
-    "type": "container",
+    "type": "Container",
     "padding": 16,
     "gap": 16,
     "children": [
       {{
-        "type": "row",
+        "type": "Row",
         "gap": 12,
         "children": [
           {{
-            "type": "metric_card",
-            "title": "Source Files",
+            "type": "MetricCard",
+            "label": "Source Files",
             "value": "{total_files}",
-            "delta": "{}",
-            "trend": "neutral"
+            "trend": "{}"
           }},
           {{
-            "type": "metric_card",
-            "title": "Lines of Code",
+            "type": "MetricCard",
+            "label": "Lines of Code",
             "value": "{total_lines}",
-            "delta": "{lang_count} languages",
-            "trend": "up"
+            "trend": "{lang_count} languages",
+            "status": "ok"
           }},
           {{
-            "type": "metric_card",
-            "title": "Wasm Scan Latency",
+            "type": "MetricCard",
+            "label": "Wasm Scan Latency",
             "value": "{elapsed_ms}ms",
-            "delta": "In-Process WASI",
-            "trend": "up"
+            "trend": "In-Process WASI",
+            "status": "ok"
           }},
           {{
-            "type": "metric_card",
-            "title": "Sandbox Mode",
+            "type": "MetricCard",
+            "label": "Sandbox Mode",
             "value": "Read-Only",
-            "delta": "Air-Gapped",
-            "trend": "neutral"
+            "trend": "Air-Gapped",
+            "status": "ok"
           }}
         ]
       }},
       {{
-        "type": "bar_chart",
+        "type": "BarChart",
         "title": "Files by Language",
         "labels": [{}],
         "values": [{}],
         "color": "#5ef0bd"
       }},
       {{
-        "type": "virtualized_table",
+        "type": "Table",
         "title": "Largest Workspace Files",
+        "virtualized": true,
+        "sticky_header": true,
         "columns": ["File", "Language", "Lines", "Size (KB)"],
         "rows": [{}]
       }}
