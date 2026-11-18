@@ -1,5 +1,6 @@
 id: wasm-sec-audit
 name: Wasm Security & Dependency Auditor
+type: tool
 binary: ""
 transport: wasm
 parser: json_lines
