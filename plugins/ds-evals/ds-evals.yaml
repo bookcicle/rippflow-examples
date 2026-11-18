@@ -1,5 +1,6 @@
 id: ds-evals
 name: "Model Training & Evaluation Studio"
+type: ui
 binary: python3
 transport: cli
 invoke:
