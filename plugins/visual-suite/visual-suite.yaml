@@ -1,7 +1,8 @@
 id: visual-suite
 name: "Visual Suite Showcase"
-binary: python3
-transport: cli
+type: ui
+binary: ""
+transport: declarative
 invoke:
   args:
     - stream_generator.py
