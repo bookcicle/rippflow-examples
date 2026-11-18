@@ -16,21 +16,21 @@
             "label": "Wasm Runtime",
             "value": "Wasmtime WASI",
             "trend": "Embedded · 0 Host Deps",
-            "status": "ok"
+            "status": "success"
           },
           {
             "type": "MetricCard",
             "label": "Filesystem Cap",
             "value": "Read-Only (.)",
             "trend": "Writes Blocked",
-            "status": "ok"
+            "status": "success"
           },
           {
             "type": "MetricCard",
             "label": "Network Policy",
             "value": "Air-Gapped",
             "trend": "0 Allowed Hosts",
-            "status": "ok"
+            "status": "success"
           },
           {
             "type": "MetricCard",

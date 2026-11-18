@@ -60,10 +60,11 @@ fn extract_json_str(json: &str, key: &str) -> Option<String> {
 }
 
 fn should_skip_dir(name: &str) -> bool {
-    matches!(
-        name,
-        ".git" | "target" | "node_modules" | ".venv" | "venv" | "dist" | "build" | "__pycache__"
-    )
+    name.starts_with('.')
+        || matches!(
+            name,
+            "target" | "node_modules" | "venv" | "dist" | "build" | "__pycache__" | "Library"
+        )
 }
 
 fn detect_language(name: &str) -> Option<&'static str> {
@@ -93,14 +94,14 @@ fn walk_workspace(
     lang_counts: &mut BTreeMap<&'static str, usize>,
     files: &mut Vec<FileStat>,
 ) {
-    if depth > 6 || files.len() >= 1500 {
+    if depth > 4 || files.len() >= 400 {
         return;
     }
     let Ok(entries) = fs::read_dir(dir) else {
         return;
     };
     for entry in entries.filter_map(|e| e.ok()) {
-        if files.len() >= 1500 {
+        if files.len() >= 400 {
             break;
         }
         let name = entry.file_name().to_string_lossy().to_string();
@@ -197,21 +198,21 @@ fn render_dynamic_ui_json(
             "label": "Lines of Code",
             "value": "{total_lines}",
             "trend": "{lang_count} languages",
-            "status": "ok"
+            "status": "success"
           }},
           {{
             "type": "MetricCard",
             "label": "Wasm Scan Latency",
             "value": "{elapsed_ms}ms",
             "trend": "In-Process WASI",
-            "status": "ok"
+            "status": "success"
           }},
           {{
             "type": "MetricCard",
             "label": "Sandbox Mode",
             "value": "Read-Only",
             "trend": "Air-Gapped",
-            "status": "ok"
+            "status": "success"
           }}
         ]
       }},
