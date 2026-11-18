@@ -1,0 +1,13 @@
+id: lucide-icons
+name: Lucide Studio Icons
+type: ui
+transport: cli
+doctor:
+  display_name: Lucide Open-Source Icon Pack
+  official_url: https://lucide.dev
+  guidance: "Overrides Studio toolbar, file tree, navigation, and window icons using official Lucide open-source SVG icons (ISC License)."
+contributes:
+  iconPacks:
+    - id: lucide-icons
+      name: Lucide Icons (OSS)
+      path: icons/

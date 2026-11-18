@@ -98,6 +98,38 @@ if [[ -f "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.wasm" ]]; then
     "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.yaml" > "${TARGET_DIR}/wasm-trace-lens.yaml"
 fi
 
+# 5b. Install Neon Studio Icons (Icon Pack Plugin)
+if [[ -d "${SCRIPT_DIR}/neon-icons/icons" ]]; then
+  echo "-> Installing 'neon-icons' icon pack plugin..."
+  mkdir -p "${TARGET_DIR}/neon-icons/icons"
+  cp "${SCRIPT_DIR}/neon-icons/icons/"*.svg "${TARGET_DIR}/neon-icons/icons/"
+  NEON_ICONS_ABS="${TARGET_DIR}/neon-icons/icons"
+  sed "s|path: icons/|path: \"${NEON_ICONS_ABS}\"|" \
+    "${SCRIPT_DIR}/neon-icons/neon-icons.yaml" > "${TARGET_DIR}/neon-icons.yaml"
+fi
+
+# 5c. Install Lucide OSS Icon Pack Plugin
+if [[ -d "${SCRIPT_DIR}/lucide-icons/icons" ]]; then
+  echo "-> Installing 'lucide-icons' icon pack plugin..."
+  mkdir -p "${TARGET_DIR}/lucide-icons/icons"
+  cp "${SCRIPT_DIR}/lucide-icons/icons/"*.svg "${TARGET_DIR}/lucide-icons/icons/"
+  cp "${SCRIPT_DIR}/lucide-icons/LICENSE" "${TARGET_DIR}/lucide-icons/LICENSE"
+  LUCIDE_ICONS_ABS="${TARGET_DIR}/lucide-icons/icons"
+  sed "s|path: icons/|path: \"${LUCIDE_ICONS_ABS}\"|" \
+    "${SCRIPT_DIR}/lucide-icons/lucide-icons.yaml" > "${TARGET_DIR}/lucide-icons.yaml"
+fi
+
+# 5d. Install Font Awesome Free OSS Icon Pack Plugin
+if [[ -d "${SCRIPT_DIR}/fontawesome-icons/icons" ]]; then
+  echo "-> Installing 'fontawesome-icons' icon pack plugin..."
+  mkdir -p "${TARGET_DIR}/fontawesome-icons/icons"
+  cp "${SCRIPT_DIR}/fontawesome-icons/icons/"*.svg "${TARGET_DIR}/fontawesome-icons/icons/"
+  cp "${SCRIPT_DIR}/fontawesome-icons/LICENSE.txt" "${TARGET_DIR}/fontawesome-icons/LICENSE.txt"
+  FA_ICONS_ABS="${TARGET_DIR}/fontawesome-icons/icons"
+  sed "s|path: icons/|path: \"${FA_ICONS_ABS}\"|" \
+    "${SCRIPT_DIR}/fontawesome-icons/fontawesome-icons.yaml" > "${TARGET_DIR}/fontawesome-icons.yaml"
+fi
+
 # 6. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
 if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${HOME}" ]]; then
   echo "-> Mirroring manifests into ${AGENTS_DIR}..."
@@ -111,6 +143,15 @@ if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${
   if [[ -f "${TARGET_DIR}/wasm-trace-lens.yaml" ]]; then
     cp "${TARGET_DIR}/wasm-trace-lens.yaml" "${AGENTS_DIR}/wasm-trace-lens.yaml"
   fi
+  if [[ -f "${TARGET_DIR}/neon-icons.yaml" ]]; then
+    cp "${TARGET_DIR}/neon-icons.yaml" "${AGENTS_DIR}/neon-icons.yaml"
+  fi
+  if [[ -f "${TARGET_DIR}/lucide-icons.yaml" ]]; then
+    cp "${TARGET_DIR}/lucide-icons.yaml" "${AGENTS_DIR}/lucide-icons.yaml"
+  fi
+  if [[ -f "${TARGET_DIR}/fontawesome-icons.yaml" ]]; then
+    cp "${TARGET_DIR}/fontawesome-icons.yaml" "${AGENTS_DIR}/fontawesome-icons.yaml"
+  fi
 fi
 
 echo ""
@@ -123,6 +164,15 @@ if [[ -f "${TARGET_DIR}/wasm-sec-audit.yaml" ]]; then
 fi
 if [[ -f "${TARGET_DIR}/wasm-trace-lens.yaml" ]]; then
   echo "  5. wasm-trace-lens     -> ${TARGET_DIR}/wasm-trace-lens.yaml"
+fi
+if [[ -f "${TARGET_DIR}/neon-icons.yaml" ]]; then
+  echo "  6. neon-icons          -> ${TARGET_DIR}/neon-icons.yaml"
+fi
+if [[ -f "${TARGET_DIR}/lucide-icons.yaml" ]]; then
+  echo "  7. lucide-icons        -> ${TARGET_DIR}/lucide-icons.yaml"
+fi
+if [[ -f "${TARGET_DIR}/fontawesome-icons.yaml" ]]; then
+  echo "  8. fontawesome-icons   -> ${TARGET_DIR}/fontawesome-icons.yaml"
 fi
 echo ""
 echo "To use in Rippflow Studio:"
