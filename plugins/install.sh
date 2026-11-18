@@ -130,6 +130,17 @@ if [[ -d "${SCRIPT_DIR}/fontawesome-icons/icons" ]]; then
     "${SCRIPT_DIR}/fontawesome-icons/fontawesome-icons.yaml" > "${TARGET_DIR}/fontawesome-icons.yaml"
 fi
 
+# 5e. Install Local Ports & Containers Drawer + Dynamic Tabs Plugin
+if [[ -f "${SCRIPT_DIR}/local-ports/local_ports.py" ]]; then
+  echo "-> Installing 'local-ports' drawer plugin..."
+  mkdir -p "${TARGET_DIR}/local-ports"
+  cp "${SCRIPT_DIR}/local-ports/local_ports.py" "${TARGET_DIR}/local-ports/local_ports.py"
+  chmod +x "${TARGET_DIR}/local-ports/local_ports.py"
+  LOCAL_PORTS_ABS="${TARGET_DIR}/local-ports/local_ports.py"
+  sed "s|local_ports.py|${LOCAL_PORTS_ABS}|g" \
+    "${SCRIPT_DIR}/local-ports/local-ports.yaml" > "${TARGET_DIR}/local-ports.yaml"
+fi
+
 # 6. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
 if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${HOME}" ]]; then
   echo "-> Mirroring manifests into ${AGENTS_DIR}..."
@@ -151,6 +162,9 @@ if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${
   fi
   if [[ -f "${TARGET_DIR}/fontawesome-icons.yaml" ]]; then
     cp "${TARGET_DIR}/fontawesome-icons.yaml" "${AGENTS_DIR}/fontawesome-icons.yaml"
+  fi
+  if [[ -f "${TARGET_DIR}/local-ports.yaml" ]]; then
+    cp "${TARGET_DIR}/local-ports.yaml" "${AGENTS_DIR}/local-ports.yaml"
   fi
 fi
 

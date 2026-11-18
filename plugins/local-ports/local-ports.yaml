@@ -1,0 +1,26 @@
+id: local-ports
+name: Local Ports & Containers
+type: ui
+binary: python3
+transport: cli
+invoke:
+  args:
+    - local_ports.py
+doctor:
+  display_name: Local Ports & Containers Drawer
+  official_url: https://rippflow.com
+  guidance: "Inspects listening TCP ports and Docker containers in a sidebar drawer and opens live Declarative UI tabs."
+contributes:
+  tabs:
+    - id: local-ports.overview
+      title: Ports & Containers
+      icon: network
+      view: plugin://local-ports/overview
+  drawers:
+    - id: local-ports.drawer
+      title: Local Ports & Containers
+      icon: network
+      type: list
+      view: plugin://local-ports/overview
+      dataSource:
+        command: "python3 local_ports.py --drawer"
