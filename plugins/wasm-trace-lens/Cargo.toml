@@ -1,0 +1,12 @@
+[package]
+name = "wasm-trace-lens"
+version = "0.1.0"
+edition = "2021"
+description = "Dynamic WASI UI & Workspace Telemetry plugin for Rippflow Studio"
+
+[workspace]
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

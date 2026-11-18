@@ -1,0 +1,27 @@
+id: wasm-trace-lens
+name: Wasm Live Workspace Telemetry
+type: ui
+binary: ""
+transport: wasm
+parser: json_lines
+
+wasm:
+  module: wasm-trace-lens.wasm
+  memory_limit_mb: 64
+  permissions:
+    filesystem:
+      read: ["."]
+      write: []
+    network:
+      allowed_hosts: []
+
+doctor:
+  display_name: Wasm Live Workspace Telemetry
+  ready_detail: Dynamic WASI UI provider ready (no background daemon required)
+  missing_detail: Build wasm-trace-lens.wasm via ./build.sh
+
+contributes:
+  tabs:
+    - id: trace.dashboard
+      title: Live Workspace Telemetry (Dynamic Wasm)
+      icon: activity

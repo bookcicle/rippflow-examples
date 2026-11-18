@@ -21,3 +21,10 @@ doctor:
   display_name: Wasm Security & Dependency Auditor
   ready_detail: Embedded WASI sandbox ready (no host runtime required)
   missing_detail: Build wasm-sec-audit.wasm via cargo build --target wasm32-wasip1 --release
+
+contributes:
+  tabs:
+    - id: sec-audit.policy
+      title: Security Rules (Static Tab)
+      icon: shield
+      view: static_overview.json

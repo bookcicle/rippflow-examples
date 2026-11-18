@@ -75,17 +75,30 @@ with open(dst_manifest, 'w', encoding='utf-8') as f:
   "${TARGET_DIR}/js-workspace-helper.json" \
   "${JS_SCRIPT_ABS}"
 
-# 4. Install Wasm Security & Dependency Auditor (WASI transport)
+# 4. Install Wasm Security & Dependency Auditor (WASI transport + Static UI Tab)
 if [[ -f "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.wasm" ]]; then
   echo "-> Installing 'wasm-sec-audit' plugin..."
   mkdir -p "${TARGET_DIR}/wasm-sec-audit"
   cp "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.wasm" "${TARGET_DIR}/wasm-sec-audit/wasm-sec-audit.wasm"
+  cp "${SCRIPT_DIR}/wasm-sec-audit/static_overview.json" "${TARGET_DIR}/wasm-sec-audit/static_overview.json"
   WASM_MOD_ABS="${TARGET_DIR}/wasm-sec-audit/wasm-sec-audit.wasm"
-  sed "s|module: wasm-sec-audit.wasm|module: \"${WASM_MOD_ABS}\"|" \
+  WASM_VIEW_ABS="${TARGET_DIR}/wasm-sec-audit/static_overview.json"
+  sed -e "s|module: wasm-sec-audit.wasm|module: \"${WASM_MOD_ABS}\"|" \
+      -e "s|view: static_overview.json|view: \"${WASM_VIEW_ABS}\"|" \
     "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.yaml" > "${TARGET_DIR}/wasm-sec-audit.yaml"
 fi
 
-# 5. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
+# 5. Install Wasm Live Workspace Telemetry (Dynamic WASI UI Tab)
+if [[ -f "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.wasm" ]]; then
+  echo "-> Installing 'wasm-trace-lens' plugin..."
+  mkdir -p "${TARGET_DIR}/wasm-trace-lens"
+  cp "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.wasm" "${TARGET_DIR}/wasm-trace-lens/wasm-trace-lens.wasm"
+  WASM_TRACE_ABS="${TARGET_DIR}/wasm-trace-lens/wasm-trace-lens.wasm"
+  sed "s|module: wasm-trace-lens.wasm|module: \"${WASM_TRACE_ABS}\"|" \
+    "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.yaml" > "${TARGET_DIR}/wasm-trace-lens.yaml"
+fi
+
+# 6. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
 if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${HOME}" ]]; then
   echo "-> Mirroring manifests into ${AGENTS_DIR}..."
   mkdir -p "${AGENTS_DIR}"
@@ -94,6 +107,9 @@ if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${
   cp "${TARGET_DIR}/js-workspace-helper.json" "${AGENTS_DIR}/js-workspace-helper.json"
   if [[ -f "${TARGET_DIR}/wasm-sec-audit.yaml" ]]; then
     cp "${TARGET_DIR}/wasm-sec-audit.yaml" "${AGENTS_DIR}/wasm-sec-audit.yaml"
+  fi
+  if [[ -f "${TARGET_DIR}/wasm-trace-lens.yaml" ]]; then
+    cp "${TARGET_DIR}/wasm-trace-lens.yaml" "${AGENTS_DIR}/wasm-trace-lens.yaml"
   fi
 fi
 
@@ -104,6 +120,9 @@ echo "  2. py-repo-analyst     -> ${TARGET_DIR}/py-repo-analyst.yaml"
 echo "  3. js-workspace-helper -> ${TARGET_DIR}/js-workspace-helper.json"
 if [[ -f "${TARGET_DIR}/wasm-sec-audit.yaml" ]]; then
   echo "  4. wasm-sec-audit      -> ${TARGET_DIR}/wasm-sec-audit.yaml"
+fi
+if [[ -f "${TARGET_DIR}/wasm-trace-lens.yaml" ]]; then
+  echo "  5. wasm-trace-lens     -> ${TARGET_DIR}/wasm-trace-lens.yaml"
 fi
 echo ""
 echo "To use in Rippflow Studio:"
