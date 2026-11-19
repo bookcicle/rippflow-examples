@@ -1,0 +1,27 @@
+id: doc-viewer
+name: Document Viewer (PDF / DOCX / PPTX)
+type: ui
+binary: python3
+transport: stdio
+invoke:
+  args:
+    - doc_viewer.py
+doctor:
+  display_name: Document Viewer (PDF / DOCX / PPTX)
+  official_url: https://rippflow.com
+  guidance: "Renders PDF documents, Word (.docx) files, and PowerPoint (.pptx) decks natively inside Rippflow Studio."
+contributes:
+  fileHandlers:
+    - id: doc-viewer.documents
+      displayName: Document Viewer (PDF / DOCX / PPTX)
+      extensions:
+        - pdf
+        - docx
+        - pptx
+      mimeTypes:
+        - application/pdf
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation
+      icon: file
+      priority: default
+      mode: readonly

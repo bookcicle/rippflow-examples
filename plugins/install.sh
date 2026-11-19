@@ -156,6 +156,17 @@ for PACK in solar-icons fluent-emoji-icons material-icons; do
   fi
 done
 
+# 5d. Install Document Viewer Filetype Handler Plugin (PDF / DOCX / PPTX)
+if [[ -f "${SCRIPT_DIR}/doc-viewer/doc_viewer.py" ]]; then
+  echo "-> Installing 'doc-viewer' filetype handler plugin..."
+  mkdir -p "${TARGET_DIR}/doc-viewer"
+  cp "${SCRIPT_DIR}/doc-viewer/doc_viewer.py" "${TARGET_DIR}/doc-viewer/doc_viewer.py"
+  chmod +x "${TARGET_DIR}/doc-viewer/doc_viewer.py"
+  DOC_VIEWER_ABS="${TARGET_DIR}/doc-viewer/doc_viewer.py"
+  sed "s|- doc_viewer.py|- \"${DOC_VIEWER_ABS}\"|" \
+    "${SCRIPT_DIR}/doc-viewer/doc-viewer.yaml" > "${TARGET_DIR}/doc-viewer.yaml"
+fi
+
 # 6. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
 if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${HOME}" ]]; then
   echo "-> Mirroring manifests into ${AGENTS_DIR}..."
@@ -180,6 +191,9 @@ if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${
   fi
   if [[ -f "${TARGET_DIR}/local-ports.yaml" ]]; then
     cp "${TARGET_DIR}/local-ports.yaml" "${AGENTS_DIR}/local-ports.yaml"
+  fi
+  if [[ -f "${TARGET_DIR}/doc-viewer.yaml" ]]; then
+    cp "${TARGET_DIR}/doc-viewer.yaml" "${AGENTS_DIR}/doc-viewer.yaml"
   fi
   for PACK in solar-icons fluent-emoji-icons material-icons; do
     if [[ -f "${TARGET_DIR}/${PACK}.yaml" ]]; then

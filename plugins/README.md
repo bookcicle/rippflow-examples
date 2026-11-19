@@ -26,6 +26,7 @@ This directory contains three working example chat-agent plugins demonstrating R
 | `fluent-emoji-icons` | `cli` | — | YAML (`fluent-emoji-icons.yaml`) | Color Icon Pack (`ui`) | Playful, bubbly full-color Microsoft Fluent Emoji Flat pack (MIT, `multicolor: true`) covering 91 Studio UI, file, and brand icons. |
 | `material-icons` | `cli` | — | YAML (`material-icons.yaml`) | Icon Pack (`ui`) | Official Google Material Design icon pack (Apache 2.0) covering 91 Studio UI, toolbar, file tree, brand, and navigation icons. |
 | `local-ports` | `cli` | `python3` | YAML (`local-ports.yaml`) | Drawer + Dynamic UI | Sidebar drawer listing active TCP ports & Docker containers; clicking any item opens a live Declarative UI tab. |
+| `doc-viewer` | `stdio` | `python3` | YAML (`doc-viewer.yaml`) | Filetype Handler (`ui`) | In-app filetype handler for `.pdf`, `.docx`, and `.pptx` files using Tier 1 (`Toolbar`, `Pager`, `Markdown`, `Table`, `Image`) and Tier 2 (`Canvas`) Declarative UI nodes. |
 
 ---
 
