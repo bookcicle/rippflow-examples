@@ -24,6 +24,7 @@ This directory contains three working example chat-agent plugins demonstrating R
 | `fontawesome-icons` | `cli` | — | YAML (`fontawesome-icons.yaml`) | Icon Pack (`ui`) | Open-source Font Awesome Free 6.x icon pack (CC BY 4.0 / MIT) covering 76 Studio UI and brand icons. |
 | `solar-icons` | `cli` | — | YAML (`solar-icons.yaml`) | Icon Pack (`ui`) | Bubbly, rounded Solar Bold Duotone icon pack (CC BY 4.0) covering 91 Studio UI, file, navigation, and brand icons. |
 | `fluent-emoji-icons` | `cli` | — | YAML (`fluent-emoji-icons.yaml`) | Color Icon Pack (`ui`) | Playful, bubbly full-color Microsoft Fluent Emoji Flat pack (MIT, `multicolor: true`) covering 91 Studio UI, file, and brand icons. |
+| `material-icons` | `cli` | — | YAML (`material-icons.yaml`) | Icon Pack (`ui`) | Official Google Material Design icon pack (Apache 2.0) covering 91 Studio UI, toolbar, file tree, brand, and navigation icons. |
 | `local-ports` | `cli` | `python3` | YAML (`local-ports.yaml`) | Drawer + Dynamic UI | Sidebar drawer listing active TCP ports & Docker containers; clicking any item opens a live Declarative UI tab. |
 
 ---
