@@ -63,18 +63,79 @@ def make_rgba_banner(width: int, height: int, accent_rgb: tuple, bg_rgb: tuple) 
     return base64.b64encode(bytes(buf)).decode("ascii")
 
 
+MAX_ZIP_ENTRY_BYTES = 16 * 1024 * 1024
+MAX_ZIP_TOTAL_UNCOMPRESSED_BYTES = 64 * 1024 * 1024
+MAX_PDF_READ_BYTES = 64 * 1024 * 1024
+
+
+def validate_zip_archive(zf: zipfile.ZipFile) -> None:
+    total_uncompressed = 0
+    for info in zf.infolist():
+        if info.file_size < 0 or info.file_size > MAX_ZIP_ENTRY_BYTES:
+            raise ValueError(
+                f"ZIP entry '{info.filename}' exceeds {MAX_ZIP_ENTRY_BYTES} byte limit"
+            )
+        total_uncompressed += info.file_size
+        if total_uncompressed > MAX_ZIP_TOTAL_UNCOMPRESSED_BYTES:
+            raise ValueError(
+                f"Archive uncompressed size exceeds {MAX_ZIP_TOTAL_UNCOMPRESSED_BYTES} byte limit"
+            )
+
+
+def safe_zip_read(
+    zf: zipfile.ZipFile, name: str, max_bytes: int = MAX_ZIP_ENTRY_BYTES
+) -> bytes:
+    info = zf.getinfo(name)
+    if info.file_size < 0 or info.file_size > max_bytes:
+        raise ValueError(f"ZIP entry '{name}' exceeds {max_bytes} byte limit")
+    with zf.open(info, "r") as member:
+        data = member.read(max_bytes + 1)
+    if len(data) > max_bytes:
+        raise ValueError(
+            f"ZIP entry '{name}' decompressed past {max_bytes} byte limit"
+        )
+    return data
+
+
+def safe_parse_xml(xml_bytes: bytes) -> ET.Element:
+    upper = xml_bytes.upper()
+    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
+        raise ValueError("XML DTD and entity declarations are forbidden")
+    return ET.fromstring(xml_bytes)
+
+
+def get_private_cache_dir() -> Path:
+    xdg_cache = os.environ.get("XDG_CACHE_HOME", "").strip()
+    if xdg_cache:
+        base = Path(xdg_cache)
+    else:
+        home = Path.home()
+        base = (
+            home / "Library" / "Caches"
+            if sys.platform == "darwin"
+            else home / ".cache"
+        )
+    cache_dir = base / "rippflow" / "doc-viewer"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    if cache_dir.is_symlink():
+        raise ValueError("Refusing symlinked doc-viewer cache directory")
+    try:
+        os.chmod(cache_dir, 0o700)
+    except OSError:
+        pass
+    return cache_dir
+
+
 def parse_ooxml_core_props(zf: zipfile.ZipFile) -> dict:
     props = {}
     if "docProps/core.xml" not in zf.namelist():
         return props
-    try:
-        root = ET.fromstring(zf.read("docProps/core.xml"))
-        for elem in root:
-            tag = elem.tag.split("}", 1)[-1]
-            if elem.text and elem.text.strip():
-                props[tag] = elem.text.strip()
-    except Exception:
-        pass
+    raw_xml = safe_zip_read(zf, "docProps/core.xml", max_bytes=2 * 1024 * 1024)
+    root = safe_parse_xml(raw_xml)
+    for elem in root:
+        tag = elem.tag.split("}", 1)[-1]
+        if elem.text and elem.text.strip():
+            props[tag] = elem.text.strip()
     return props
 
 
@@ -84,21 +145,26 @@ def convert_office_to_pdf_cached(file_path: Path) -> Path | None:
     if not soffice or not file_path.is_file():
         return None
     try:
-        # Only invoke LibreOffice on full OOXML packages containing [Content_Types].xml
+        # Only invoke LibreOffice on validated OOXML packages containing [Content_Types].xml
         with zipfile.ZipFile(file_path, "r") as zf:
+            validate_zip_archive(zf)
             if "[Content_Types].xml" not in zf.namelist():
                 return None
     except Exception:
         return None
     try:
-        st = file_path.stat()
+        resolved_input = file_path.resolve()
+        st = resolved_input.stat()
         key = hashlib.sha256(
-            f"{file_path.resolve()}:{st.st_mtime_ns}:{st.st_size}".encode("utf-8")
+            f"{resolved_input}:{st.st_mtime_ns}:{st.st_size}".encode("utf-8")
         ).hexdigest()[:24]
-        cache_dir = Path(tempfile.gettempdir()) / "rippflow-doc-viewer-cache"
-        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir = get_private_cache_dir()
         cached_pdf = cache_dir / f"{key}.pdf"
-        if cached_pdf.is_file() and cached_pdf.stat().st_size > 0:
+        if (
+            cached_pdf.is_file()
+            and not cached_pdf.is_symlink()
+            and cached_pdf.stat().st_size > 0
+        ):
             return cached_pdf
 
         with tempfile.TemporaryDirectory(prefix="rippflow-soffice-") as tmp:
@@ -114,7 +180,7 @@ def convert_office_to_pdf_cached(file_path: Path) -> Path | None:
                     "pdf",
                     "--outdir",
                     str(tmp_dir),
-                    str(file_path),
+                    str(resolved_input),
                 ],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
@@ -123,8 +189,12 @@ def convert_office_to_pdf_cached(file_path: Path) -> Path | None:
             )
             if res.returncode == 0:
                 pdfs = sorted(tmp_dir.glob("*.pdf"))
-                if pdfs and pdfs[0].stat().st_size > 0:
+                if pdfs and pdfs[0].stat().st_size > 0 and not cached_pdf.exists():
                     shutil.copyfile(pdfs[0], cached_pdf)
+                    try:
+                        os.chmod(cached_pdf, 0o600)
+                    except OSError:
+                        pass
                     return cached_pdf
     except Exception:
         pass
@@ -389,9 +459,10 @@ def render_docx(file_path: Path, state: dict, event: str, payload: dict) -> dict
     props = {}
 
     with zipfile.ZipFile(file_path, "r") as zf:
+        validate_zip_archive(zf)
         props = parse_ooxml_core_props(zf)
         if "word/document.xml" in zf.namelist():
-            root = ET.fromstring(zf.read("word/document.xml"))
+            root = safe_parse_xml(safe_zip_read(zf, "word/document.xml"))
             ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
             body = root.find("w:body", ns)
             if body is not None:
@@ -443,12 +514,14 @@ def render_docx(file_path: Path, state: dict, event: str, payload: dict) -> dict
             if name.startswith("word/media/") and len(images) < 4:
                 ext = Path(name).suffix.lower()
                 if ext in (".png", ".jpg", ".jpeg", ".webp", ".gif"):
-                    raw = zf.read(name)
-                    if len(raw) <= 2 * 1024 * 1024:
-                        mime = "image/jpeg" if ext in (".jpg", ".jpeg") else f"image/{ext[1:]}"
-                        images.append(
-                            (Path(name).name, mime, base64.b64encode(raw).decode("ascii"))
-                        )
+                    try:
+                        raw = safe_zip_read(zf, name, max_bytes=2 * 1024 * 1024)
+                    except ValueError:
+                        continue
+                    mime = "image/jpeg" if ext in (".jpg", ".jpeg") else f"image/{ext[1:]}"
+                    images.append(
+                        (Path(name).name, mime, base64.b64encode(raw).decode("ascii"))
+                    )
 
     word_count = sum(len(p.split()) for p in paragraphs)
     md_body = "\n\n".join(paragraphs) if paragraphs else "_No text paragraphs found in document._"
@@ -637,6 +710,7 @@ def extract_pptx_slides(file_path: Path):
     slides = []
     props = {}
     with zipfile.ZipFile(file_path, "r") as zf:
+        validate_zip_archive(zf)
         props = parse_ooxml_core_props(zf)
         slide_names = [
             n
@@ -647,7 +721,7 @@ def extract_pptx_slides(file_path: Path):
 
         a_ns = "http://schemas.openxmlformats.org/drawingml/2006/main"
         for idx, name in enumerate(slide_names, 1):
-            root = ET.fromstring(zf.read(name))
+            root = safe_parse_xml(safe_zip_read(zf, name))
             lines = []
             for p in root.findall(f".//{{{a_ns}}}p"):
                 runs = [
@@ -664,16 +738,15 @@ def extract_pptx_slides(file_path: Path):
             notes_text = ""
             notes_name = f"ppt/notesSlides/notesSlide{idx}.xml"
             if notes_name in zf.namelist():
-                try:
-                    nroot = ET.fromstring(zf.read(notes_name))
-                    nlines = [
-                        t.text.strip()
-                        for t in nroot.findall(f".//{{{a_ns}}}t")
-                        if t.text and t.text.strip() and not t.text.strip().isdigit()
-                    ]
-                    notes_text = "\n".join(nlines)
-                except Exception:
-                    pass
+                nroot = safe_parse_xml(
+                    safe_zip_read(zf, notes_name, max_bytes=4 * 1024 * 1024)
+                )
+                nlines = [
+                    t.text.strip()
+                    for t in nroot.findall(f".//{{{a_ns}}}t")
+                    if t.text and t.text.strip() and not t.text.strip().isdigit()
+                ]
+                notes_text = "\n".join(nlines)
 
             slides.append({"index": idx, "title": title, "bullets": body, "notes": notes_text})
     return slides, props
@@ -871,7 +944,9 @@ def render_pptx(file_path: Path, state: dict, event: str, payload: dict) -> dict
 # PDF Handler
 # ---------------------------------------------------------------------------
 def inspect_pdf(file_path: Path) -> dict:
-    raw = file_path.read_bytes()
+    total_size = file_path.stat().st_size if file_path.exists() else 0
+    with file_path.open("rb") as f:
+        raw = f.read(MAX_PDF_READ_BYTES)
     header = raw[:32].decode("latin-1", errors="ignore")
     m_ver = re.search(r"%PDF-(\d+\.\d+)", header)
     version = m_ver.group(1) if m_ver else "1.4"
@@ -892,7 +967,7 @@ def inspect_pdf(file_path: Path) -> dict:
         "version": version,
         "page_count": page_count,
         "encrypted": encrypted,
-        "byte_size": len(raw),
+        "byte_size": total_size,
         "text_preview": "\n".join(text_chunks) if text_chunks else "_No uncompressed literal text found in PDF._",
     }
 
@@ -955,7 +1030,8 @@ function run(argv) {
 
 def rasterize_pdf_page_png_b64(file_path: Path, page: int) -> dict | None:
     """Renders any PDF page to base64 PNG via macOS PDFKit, pdftoppm, or qlmanage."""
-    pdfkit = rasterize_pdf_page_macos_pdfkit(file_path, page)
+    resolved_pdf = file_path.resolve()
+    pdfkit = rasterize_pdf_page_macos_pdfkit(resolved_pdf, page)
     if pdfkit:
         return pdfkit
     with tempfile.TemporaryDirectory(prefix="rippflow-doc-pdf-") as tmp:
@@ -963,7 +1039,7 @@ def rasterize_pdf_page_png_b64(file_path: Path, page: int) -> dict | None:
         if shutil.which("pdftoppm"):
             try:
                 res = subprocess.run(
-                    ["pdftoppm", "-png", "-r", "150", "-f", str(page), "-l", str(page), str(file_path), str(out_prefix)],
+                    ["pdftoppm", "-png", "-r", "150", "-f", str(page), "-l", str(page), "--", str(resolved_pdf), str(out_prefix)],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     timeout=5,
@@ -978,7 +1054,7 @@ def rasterize_pdf_page_png_b64(file_path: Path, page: int) -> dict | None:
         if page == 1 and sys.platform == "darwin" and shutil.which("qlmanage"):
             try:
                 res = subprocess.run(
-                    ["qlmanage", "-t", "-s", "1200", "-o", tmp, str(file_path)],
+                    ["qlmanage", "-t", "-s", "1200", "-o", tmp, "--", str(resolved_pdf)],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     timeout=3,
@@ -1140,14 +1216,18 @@ def main() -> int:
     payload = req.get("payload") or {}
     ext = file_path.suffix.lower().lstrip(".")
 
-    if ext == "docx":
-        spec = render_docx(file_path, state, event, payload)
-    elif ext == "pptx":
-        spec = render_pptx(file_path, state, event, payload)
-    elif ext == "pdf":
-        spec = render_pdf(file_path, state, event, payload)
-    else:
-        print(json.dumps({"error": f"Unsupported extension: .{ext}"}), file=sys.stderr)
+    try:
+        if ext == "docx":
+            spec = render_docx(file_path, state, event, payload)
+        elif ext == "pptx":
+            spec = render_pptx(file_path, state, event, payload)
+        elif ext == "pdf":
+            spec = render_pdf(file_path, state, event, payload)
+        else:
+            print(json.dumps({"error": f"Unsupported extension: .{ext}"}), file=sys.stderr)
+            return 1
+    except (ValueError, zipfile.BadZipFile, ET.ParseError) as exc:
+        print(json.dumps({"error": f"Document rejected: {exc}"}), file=sys.stderr)
         return 1
 
     sys.stdout.write(json.dumps(spec) + "\n")
