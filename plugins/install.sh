@@ -12,12 +12,60 @@ TARGET_INPUT="${1:-${RIPPFLOW_AGENT_PLUGINS_DIR:-$HOME/.rippflow/plugins}}"
 
 # Canonicalize destination directory to guarantee absolute paths
 mkdir -p "${TARGET_INPUT}"
+chmod 700 "${TARGET_INPUT}"
 TARGET_DIR="$(cd "${TARGET_INPUT}" && pwd -P)"
 
 # Canonicalize agents mirror directory
 AGENTS_INPUT="${HOME:-/tmp}/.rippflow/agents"
 mkdir -p "${AGENTS_INPUT}"
+chmod 700 "${AGENTS_INPUT}"
 AGENTS_DIR="$(cd "${AGENTS_INPUT}" && pwd -P)"
+
+# Safe argv-based YAML path rewriter (avoids sed delimiter/&/quote injection)
+rewrite_yaml_manifest() {
+  python3 - "$@" <<'PY'
+import os, sys
+
+src_manifest = sys.argv[1]
+dst_manifest = sys.argv[2]
+pairs = sys.argv[3:]
+if len(pairs) % 2 != 0:
+    raise SystemExit("Expected even number of target/replacement arguments")
+
+with open(src_manifest, "r", encoding="utf-8") as f:
+    lines = f.read().splitlines()
+
+def yaml_quote(val: str) -> str:
+    escaped = val.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
+
+out_lines = []
+for line in lines:
+    stripped = line.strip()
+    replaced = False
+    for i in range(0, len(pairs), 2):
+        needle, abs_path = pairs[i], pairs[i + 1]
+        if stripped == f"- {needle}" or stripped == f'- "{needle}"':
+            indent = line[: line.find("-")]
+            out_lines.append(f"{indent}- {yaml_quote(abs_path)}")
+            replaced = True
+            break
+        if ":" in stripped:
+            key, val = stripped.split(":", 1)
+            val_clean = val.strip().strip('"').strip("'")
+            if f"{key.strip()}: {val_clean}" == needle:
+                indent = line[: len(line) - len(line.lstrip())]
+                out_lines.append(f"{indent}{key.strip()}: {yaml_quote(abs_path)}")
+                replaced = True
+                break
+    if not replaced:
+        out_lines.append(line)
+
+with open(dst_manifest, "w", encoding="utf-8") as f:
+    f.write("\n".join(out_lines) + "\n")
+os.chmod(dst_manifest, 0o600)
+PY
+}
 
 echo "=== Installing Rippflow Example Agent Plugins ==="
 echo "Source:      ${SCRIPT_DIR}"
@@ -29,6 +77,7 @@ mkdir -p "${TARGET_DIR}/js-workspace-helper"
 # 1. Install Ollama (CLI transport, zero-code manifest)
 echo "-> Installing 'ollama' plugin manifest..."
 cp "${SCRIPT_DIR}/ollama/ollama.yaml" "${TARGET_DIR}/ollama.yaml"
+chmod 600 "${TARGET_DIR}/ollama.yaml"
 
 # 2. Install Python Repo Analyst (Python stdio transport)
 echo "-> Installing 'py-repo-analyst' plugin..."
@@ -36,25 +85,10 @@ cp "${SCRIPT_DIR}/py-repo-analyst/agent.py" "${TARGET_DIR}/py-repo-analyst/agent
 chmod +x "${TARGET_DIR}/py-repo-analyst/agent.py"
 
 PY_SCRIPT_ABS="${TARGET_DIR}/py-repo-analyst/agent.py"
-python3 -c "
-import sys
-src_manifest, dst_manifest, script_abs = sys.argv[1], sys.argv[2], sys.argv[3]
-with open(src_manifest, 'r', encoding='utf-8') as f:
-    lines = f.read().splitlines()
-new_lines = []
-for line in lines:
-    trimmed = line.strip()
-    if trimmed.startswith('- ') and ('agent.py' in trimmed):
-        indent = line[:line.find('-')]
-        escaped = script_abs.replace('\\\\', '\\\\\\\\').replace('\"', '\\\\\"')
-        new_lines.append(f'{indent}- \"{escaped}\"')
-    else:
-        new_lines.append(line)
-with open(dst_manifest, 'w', encoding='utf-8') as f:
-    f.write('\n'.join(new_lines) + '\n')
-" "${SCRIPT_DIR}/py-repo-analyst/py-repo-analyst.yaml" \
+rewrite_yaml_manifest \
+  "${SCRIPT_DIR}/py-repo-analyst/py-repo-analyst.yaml" \
   "${TARGET_DIR}/py-repo-analyst.yaml" \
-  "${PY_SCRIPT_ABS}"
+  "agent.py" "${PY_SCRIPT_ABS}"
 
 # 3. Install JavaScript Workspace Helper (Node.js stdio transport)
 echo "-> Installing 'js-workspace-helper' plugin..."
@@ -63,7 +97,7 @@ chmod +x "${TARGET_DIR}/js-workspace-helper/agent.js"
 
 JS_SCRIPT_ABS="${TARGET_DIR}/js-workspace-helper/agent.js"
 python3 -c "
-import json, sys
+import json, os, sys
 src_manifest, dst_manifest, script_abs = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(src_manifest, 'r', encoding='utf-8') as f:
     spec = json.load(f)
@@ -71,6 +105,7 @@ spec['invoke']['args'] = [script_abs]
 with open(dst_manifest, 'w', encoding='utf-8') as f:
     json.dump(spec, f, indent=2)
     f.write('\n')
+os.chmod(dst_manifest, 0o600)
 " "${SCRIPT_DIR}/js-workspace-helper/js-workspace-helper.json" \
   "${TARGET_DIR}/js-workspace-helper.json" \
   "${JS_SCRIPT_ABS}"
@@ -83,9 +118,11 @@ if [[ -f "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.wasm" ]]; then
   cp "${SCRIPT_DIR}/wasm-sec-audit/static_overview.json" "${TARGET_DIR}/wasm-sec-audit/static_overview.json"
   WASM_MOD_ABS="${TARGET_DIR}/wasm-sec-audit/wasm-sec-audit.wasm"
   WASM_VIEW_ABS="${TARGET_DIR}/wasm-sec-audit/static_overview.json"
-  sed -e "s|module: wasm-sec-audit.wasm|module: \"${WASM_MOD_ABS}\"|" \
-      -e "s|view: static_overview.json|view: \"${WASM_VIEW_ABS}\"|" \
-    "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.yaml" > "${TARGET_DIR}/wasm-sec-audit.yaml"
+  rewrite_yaml_manifest \
+    "${SCRIPT_DIR}/wasm-sec-audit/wasm-sec-audit.yaml" \
+    "${TARGET_DIR}/wasm-sec-audit.yaml" \
+    "module: wasm-sec-audit.wasm" "${WASM_MOD_ABS}" \
+    "view: static_overview.json" "${WASM_VIEW_ABS}"
 fi
 
 # 5. Install Wasm Live Workspace Telemetry (Dynamic WASI UI Tab)
@@ -94,8 +131,10 @@ if [[ -f "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.wasm" ]]; then
   mkdir -p "${TARGET_DIR}/wasm-trace-lens"
   cp "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.wasm" "${TARGET_DIR}/wasm-trace-lens/wasm-trace-lens.wasm"
   WASM_TRACE_ABS="${TARGET_DIR}/wasm-trace-lens/wasm-trace-lens.wasm"
-  sed "s|module: wasm-trace-lens.wasm|module: \"${WASM_TRACE_ABS}\"|" \
-    "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.yaml" > "${TARGET_DIR}/wasm-trace-lens.yaml"
+  rewrite_yaml_manifest \
+    "${SCRIPT_DIR}/wasm-trace-lens/wasm-trace-lens.yaml" \
+    "${TARGET_DIR}/wasm-trace-lens.yaml" \
+    "module: wasm-trace-lens.wasm" "${WASM_TRACE_ABS}"
 fi
 
 # 5b. Install Neon Studio Icons (Icon Pack Plugin)
@@ -104,8 +143,10 @@ if [[ -d "${SCRIPT_DIR}/neon-icons/icons" ]]; then
   mkdir -p "${TARGET_DIR}/neon-icons/icons"
   cp "${SCRIPT_DIR}/neon-icons/icons/"*.svg "${TARGET_DIR}/neon-icons/icons/"
   NEON_ICONS_ABS="${TARGET_DIR}/neon-icons/icons"
-  sed "s|path: icons/|path: \"${NEON_ICONS_ABS}\"|" \
-    "${SCRIPT_DIR}/neon-icons/neon-icons.yaml" > "${TARGET_DIR}/neon-icons.yaml"
+  rewrite_yaml_manifest \
+    "${SCRIPT_DIR}/neon-icons/neon-icons.yaml" \
+    "${TARGET_DIR}/neon-icons.yaml" \
+    "path: icons/" "${NEON_ICONS_ABS}"
 fi
 
 # 5c. Install Lucide OSS Icon Pack Plugin
@@ -115,8 +156,10 @@ if [[ -d "${SCRIPT_DIR}/lucide-icons/icons" ]]; then
   cp "${SCRIPT_DIR}/lucide-icons/icons/"*.svg "${TARGET_DIR}/lucide-icons/icons/"
   cp "${SCRIPT_DIR}/lucide-icons/LICENSE" "${TARGET_DIR}/lucide-icons/LICENSE"
   LUCIDE_ICONS_ABS="${TARGET_DIR}/lucide-icons/icons"
-  sed "s|path: icons/|path: \"${LUCIDE_ICONS_ABS}\"|" \
-    "${SCRIPT_DIR}/lucide-icons/lucide-icons.yaml" > "${TARGET_DIR}/lucide-icons.yaml"
+  rewrite_yaml_manifest \
+    "${SCRIPT_DIR}/lucide-icons/lucide-icons.yaml" \
+    "${TARGET_DIR}/lucide-icons.yaml" \
+    "path: icons/" "${LUCIDE_ICONS_ABS}"
 fi
 
 # 5d. Install Font Awesome Free OSS Icon Pack Plugin
@@ -126,8 +169,10 @@ if [[ -d "${SCRIPT_DIR}/fontawesome-icons/icons" ]]; then
   cp "${SCRIPT_DIR}/fontawesome-icons/icons/"*.svg "${TARGET_DIR}/fontawesome-icons/icons/"
   cp "${SCRIPT_DIR}/fontawesome-icons/LICENSE.txt" "${TARGET_DIR}/fontawesome-icons/LICENSE.txt"
   FA_ICONS_ABS="${TARGET_DIR}/fontawesome-icons/icons"
-  sed "s|path: icons/|path: \"${FA_ICONS_ABS}\"|" \
-    "${SCRIPT_DIR}/fontawesome-icons/fontawesome-icons.yaml" > "${TARGET_DIR}/fontawesome-icons.yaml"
+  rewrite_yaml_manifest \
+    "${SCRIPT_DIR}/fontawesome-icons/fontawesome-icons.yaml" \
+    "${TARGET_DIR}/fontawesome-icons.yaml" \
+    "path: icons/" "${FA_ICONS_ABS}"
 fi
 
 # 5e. Install Local Ports & Containers Drawer + Dynamic Tabs Plugin
@@ -137,8 +182,10 @@ if [[ -f "${SCRIPT_DIR}/local-ports/local_ports.py" ]]; then
   cp "${SCRIPT_DIR}/local-ports/local_ports.py" "${TARGET_DIR}/local-ports/local_ports.py"
   chmod +x "${TARGET_DIR}/local-ports/local_ports.py"
   LOCAL_PORTS_ABS="${TARGET_DIR}/local-ports/local_ports.py"
-  sed "s|local_ports.py|${LOCAL_PORTS_ABS}|g" \
-    "${SCRIPT_DIR}/local-ports/local-ports.yaml" > "${TARGET_DIR}/local-ports.yaml"
+  rewrite_yaml_manifest \
+    "${SCRIPT_DIR}/local-ports/local-ports.yaml" \
+    "${TARGET_DIR}/local-ports.yaml" \
+    "local_ports.py" "${LOCAL_PORTS_ABS}"
 fi
 
 # 5f. Install Solar Bold Duotone, Fluent Emoji Flat, and Material Design Icon Packs
@@ -151,8 +198,10 @@ for PACK in solar-icons fluent-emoji-icons material-icons; do
       cp "${SCRIPT_DIR}/${PACK}/LICENSE" "${TARGET_DIR}/${PACK}/LICENSE"
     fi
     PACK_ICONS_ABS="${TARGET_DIR}/${PACK}/icons"
-    sed "s|path: icons/|path: \"${PACK_ICONS_ABS}\"|" \
-      "${SCRIPT_DIR}/${PACK}/${PACK}.yaml" > "${TARGET_DIR}/${PACK}.yaml"
+    rewrite_yaml_manifest \
+      "${SCRIPT_DIR}/${PACK}/${PACK}.yaml" \
+      "${TARGET_DIR}/${PACK}.yaml" \
+      "path: icons/" "${PACK_ICONS_ABS}"
   fi
 done
 
@@ -163,8 +212,10 @@ if [[ -f "${SCRIPT_DIR}/doc-viewer/doc_viewer.py" ]]; then
   cp "${SCRIPT_DIR}/doc-viewer/doc_viewer.py" "${TARGET_DIR}/doc-viewer/doc_viewer.py"
   chmod +x "${TARGET_DIR}/doc-viewer/doc_viewer.py"
   DOC_VIEWER_ABS="${TARGET_DIR}/doc-viewer/doc_viewer.py"
-  sed "s|- doc_viewer.py|- \"${DOC_VIEWER_ABS}\"|" \
-    "${SCRIPT_DIR}/doc-viewer/doc-viewer.yaml" > "${TARGET_DIR}/doc-viewer.yaml"
+  rewrite_yaml_manifest \
+    "${SCRIPT_DIR}/doc-viewer/doc-viewer.yaml" \
+    "${TARGET_DIR}/doc-viewer.yaml" \
+    "doc_viewer.py" "${DOC_VIEWER_ABS}"
 fi
 
 # 6. Mirror manifests into ~/.rippflow/agents/ for built-in discovery

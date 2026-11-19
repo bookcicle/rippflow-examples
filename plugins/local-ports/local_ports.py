@@ -371,6 +371,9 @@ def main():
 
     raw = sys.stdin.read().strip()
     req = json.loads(raw) if raw else {}
+    if req.get("action") == "drawer":
+        render_drawer()
+        return
     tab_id = req.get("tab") or "overview"
     if tab_id.startswith("port:"):
         render_port_view(tab_id)

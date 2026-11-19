@@ -2,7 +2,7 @@ id: local-ports
 name: Local Ports & Containers
 type: ui
 binary: python3
-transport: cli
+transport: stdio
 invoke:
   args:
     - local_ports.py
@@ -22,5 +22,3 @@ contributes:
       icon: network
       type: list
       view: plugin://local-ports/overview
-      dataSource:
-        command: "python3 local_ports.py --drawer"

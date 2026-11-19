@@ -899,6 +899,88 @@ class TestDocViewerFileHandler(unittest.TestCase):
             self.assertEqual(len(md_nodes), 1)
             self.assertIn("Hello from Rippflow PDF Handler", md_nodes[0]["content"])
 
+    def test_rejects_xml_entity_bomb_and_uses_stdio_drawer_for_local_ports(self):
+        import zipfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            evil_docx = Path(tmp) / "billion_laughs.docx"
+            bomb_xml = (
+                '<?xml version="1.0"?>'
+                '<!DOCTYPE lolz [<!ENTITY lol "lol"><!ENTITY lol2 "&lol;&lol;">]>'
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+                "<w:body><w:p><w:r><w:t>&lol2;</w:t></w:r></w:p></w:body></w:document>"
+            )
+            with zipfile.ZipFile(evil_docx, "w") as zf:
+                zf.writestr("word/document.xml", bomb_xml)
+
+            proc = subprocess.run(
+                [sys.executable, str(self.script_path)],
+                input=json.dumps(
+                    {
+                        "protocol": "rippflow-agent/v1",
+                        "action": "open_file",
+                        "path": str(evil_docx),
+                    }
+                )
+                + "\n",
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertIn("Document rejected", proc.stderr)
+
+            oversized_docx = Path(tmp) / "oversized_header.docx"
+            with zipfile.ZipFile(oversized_docx, "w") as zf:
+                zf.writestr("word/document.xml", "<w:document/>")
+            # Forge uncompressed size in local + central directory headers (> 64 MiB)
+            raw_zip = bytearray(oversized_docx.read_bytes())
+            # Central directory uncompressed size is at offset +24 from PK\x01\x02
+            cd_idx = raw_zip.rfind(b"PK\x01\x02")
+            self.assertGreaterEqual(cd_idx, 0)
+            raw_zip[cd_idx + 24 : cd_idx + 28] = (80 * 1024 * 1024).to_bytes(4, "little")
+            oversized_docx.write_bytes(bytes(raw_zip))
+
+            proc_zip = subprocess.run(
+                [sys.executable, str(self.script_path)],
+                input=json.dumps(
+                    {
+                        "protocol": "rippflow-agent/v1",
+                        "action": "open_file",
+                        "path": str(oversized_docx),
+                    }
+                )
+                + "\n",
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(proc_zip.returncode, 0)
+            self.assertIn("Document rejected", proc_zip.stderr)
+
+        local_ports_dir = Path(__file__).resolve().parent / "local-ports"
+        lp_manifest = (local_ports_dir / "local-ports.yaml").read_text(encoding="utf-8")
+        self.assertIn("transport: stdio", lp_manifest)
+        self.assertNotIn("command:", lp_manifest)
+
+        lp_proc = subprocess.run(
+            [sys.executable, str(local_ports_dir / "local_ports.py")],
+            input=json.dumps(
+                {
+                    "protocol": "rippflow-agent/v1",
+                    "action": "drawer",
+                    "drawer": "local-ports.drawer",
+                }
+            )
+            + "\n",
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(lp_proc.returncode, 0, lp_proc.stderr)
+        drawer_data = json.loads(lp_proc.stdout)
+        self.assertIsInstance(drawer_data.get("sections"), list)
+
 
 if __name__ == "__main__":
     unittest.main()
