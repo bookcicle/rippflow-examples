@@ -736,5 +736,169 @@ class TestInstallScript(unittest.TestCase):
         self.assertEqual(spec.get("wasm", {}).get("module"), "wasm-trace-lens.wasm")
 
 
+class TestDocViewerFileHandler(unittest.TestCase):
+    """End-to-end tests for the PDF / DOCX / PPTX filetype handler plugin."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.plugin_dir = Path(__file__).resolve().parent / "doc-viewer"
+        cls.manifest_path = cls.plugin_dir / "doc-viewer.yaml"
+        cls.script_path = cls.plugin_dir / "doc_viewer.py"
+
+    def _invoke(self, req: dict) -> dict:
+        proc = subprocess.run(
+            [sys.executable, str(self.script_path)],
+            input=json.dumps(req) + "\n",
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 0, f"doc_viewer.py failed: {proc.stderr}")
+        return json.loads(proc.stdout)
+
+    def test_doc_viewer_manifest(self):
+        self.assertTrue(self.manifest_path.is_file())
+        self.assertTrue(self.script_path.is_file())
+        raw = self.manifest_path.read_text(encoding="utf-8")
+        self.assertIn("fileHandlers:", raw)
+        for ext in ("- pdf", "- docx", "- pptx"):
+            self.assertIn(ext, raw)
+
+    def test_docx_open_and_switch_modes(self):
+        import zipfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            docx_path = Path(tmp) / "sample.docx"
+            doc_xml = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+                "<w:body>"
+                '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>Quarterly Report</w:t></w:r></w:p>'
+                "<w:p><w:r><w:t>Revenue grew 24% year over year.</w:t></w:r></w:p>"
+                "<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Quarter</w:t></w:r></w:p></w:tc>"
+                "<w:tc><w:p><w:r><w:t>Revenue</w:t></w:r></w:p></w:tc></w:tr>"
+                "<w:tr><w:tc><w:p><w:r><w:t>Q4</w:t></w:r></w:p></w:tc>"
+                "<w:tc><w:p><w:r><w:t>$4.2M</w:t></w:r></w:p></w:tc></w:tr></w:tbl>"
+                "</w:body></w:document>"
+            )
+            core_xml = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" '
+                'xmlns:dc="http://purl.org/dc/elements/1.1/">'
+                "<dc:title>Q4 Executive Summary</dc:title><dc:creator>Rippflow</dc:creator>"
+                "</cp:coreProperties>"
+            )
+            with zipfile.ZipFile(docx_path, "w") as zf:
+                zf.writestr("word/document.xml", doc_xml)
+                zf.writestr("docProps/core.xml", core_xml)
+
+            spec = self._invoke({"protocol": "rippflow-agent/v1", "action": "open_file", "path": str(docx_path)})
+            self.assertEqual(spec["id"], "doc-viewer.docx")
+            children = spec["layout"]["children"]
+            # Visual Page View renders a Canvas (or falls back to Markdown on headless systems)
+            visual_or_md = [c for c in children if c.get("type") in ("Canvas", "Markdown")]
+            self.assertTrue(visual_or_md)
+
+            # Switch to Text (Markdown) view via file_event
+            spec_text = self._invoke({
+                "protocol": "rippflow-agent/v1",
+                "action": "file_event",
+                "path": str(docx_path),
+                "event": "set_mode",
+                "payload": {"mode": "document"},
+                "state": spec.get("state"),
+            })
+            md_nodes = [c for c in spec_text["layout"]["children"] if c.get("type") == "Markdown"]
+            self.assertTrue(md_nodes)
+            self.assertIn("# Quarterly Report", md_nodes[0]["content"])
+            self.assertIn("Revenue grew 24%", md_nodes[0]["content"])
+
+            # Switch to Tables view via file_event
+            spec_tbl = self._invoke({
+                "protocol": "rippflow-agent/v1",
+                "action": "file_event",
+                "path": str(docx_path),
+                "event": "set_mode",
+                "payload": {"mode": "tables"},
+                "state": spec.get("state"),
+            })
+            tbl_nodes = [c for c in spec_tbl["layout"]["children"] if c.get("type") == "Table"]
+            self.assertEqual(len(tbl_nodes), 1)
+            self.assertEqual(tbl_nodes[0]["columns"], ["Quarter", "Revenue"])
+            self.assertEqual(tbl_nodes[0]["rows"], [["Q4", "$4.2M"]])
+
+    def test_pptx_open_and_paginate(self):
+        import zipfile
+
+        a_ns = "http://schemas.openxmlformats.org/drawingml/2006/main"
+        with tempfile.TemporaryDirectory() as tmp:
+            pptx_path = Path(tmp) / "deck.pptx"
+            slide1 = f'<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="{a_ns}"><a:p><a:r><a:t>Architecture Overview</a:t></a:r></a:p><a:p><a:r><a:t>Native GPUI Studio</a:t></a:r></a:p></p:sld>'
+            slide2 = f'<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="{a_ns}"><a:p><a:r><a:t>Plugin File Handlers</a:t></a:r></a:p><a:p><a:r><a:t>PDF, DOCX, PPTX in-app</a:t></a:r></a:p></p:sld>'
+            notes2 = f'<p:notes xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="{a_ns}"><a:p><a:r><a:t>Demo live pagination here.</a:t></a:r></a:p></p:notes>'
+            with zipfile.ZipFile(pptx_path, "w") as zf:
+                zf.writestr("ppt/slides/slide1.xml", slide1)
+                zf.writestr("ppt/slides/slide2.xml", slide2)
+                zf.writestr("ppt/notesSlides/notesSlide2.xml", notes2)
+
+            spec1 = self._invoke({"protocol": "rippflow-agent/v1", "action": "open_file", "path": str(pptx_path)})
+            self.assertEqual(spec1["state"]["page"], 1)
+            visual1 = [c for c in spec1["layout"]["children"] if c.get("type") in ("Canvas", "Markdown")]
+            self.assertTrue(visual1)
+
+            spec2 = self._invoke({
+                "protocol": "rippflow-agent/v1",
+                "action": "file_event",
+                "path": str(pptx_path),
+                "event": "page_change",
+                "payload": {"page": 2},
+                "state": spec1["state"],
+            })
+            self.assertEqual(spec2["state"]["page"], 2)
+            md_nodes2 = [c for c in spec2["layout"]["children"] if c.get("type") == "Markdown"]
+            self.assertTrue(any("Demo live pagination" in m["content"] for m in md_nodes2))
+
+    def test_pdf_open_zoom_and_text_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = Path(tmp) / "brief.pdf"
+            minimal_pdf = (
+                b"%PDF-1.7\n"
+                b"1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n"
+                b"2 0 obj << /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >> endobj\n"
+                b"3 0 obj << /Type /Page /Parent 2 0 R /Contents (Hello from Rippflow PDF Handler) >> endobj\n"
+                b"4 0 obj << /Type /Page /Parent 2 0 R /Contents (Second Page Content) >> endobj\n"
+                b"%%EOF\n"
+            )
+            pdf_path.write_bytes(minimal_pdf)
+
+            spec = self._invoke({"protocol": "rippflow-agent/v1", "action": "open_file", "path": str(pdf_path)})
+            self.assertEqual(spec["id"], "doc-viewer.pdf")
+            canvases = [c for c in spec["layout"]["children"] if c.get("type") == "Canvas"]
+            self.assertEqual(len(canvases), 1)
+            self.assertTrue(canvases[0].get("png_base64") or canvases[0].get("rgba_base64"))
+
+            spec_zoom = self._invoke({
+                "protocol": "rippflow-agent/v1",
+                "action": "file_event",
+                "path": str(pdf_path),
+                "event": "zoom_delta",
+                "payload": {"delta": 0.25},
+                "state": spec["state"],
+            })
+            self.assertAlmostEqual(spec_zoom["state"]["zoom"], 1.25)
+
+            spec_text = self._invoke({
+                "protocol": "rippflow-agent/v1",
+                "action": "file_event",
+                "path": str(pdf_path),
+                "event": "set_mode",
+                "payload": {"mode": "text"},
+                "state": spec_zoom["state"],
+            })
+            md_nodes = [c for c in spec_text["layout"]["children"] if c.get("type") == "Markdown"]
+            self.assertEqual(len(md_nodes), 1)
+            self.assertIn("Hello from Rippflow PDF Handler", md_nodes[0]["content"])
+
+
 if __name__ == "__main__":
     unittest.main()

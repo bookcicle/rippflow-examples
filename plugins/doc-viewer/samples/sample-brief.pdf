@@ -1,0 +1,43 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Length 222 >>
+stream
+BT /F1 24 Tf 72 720 Td (Rippflow PDF File Handler) Tj /F1 13 Tf 0 -36 Td (Page 1: Rendered via the doc-viewer filetype handler plugin.) Tj 0 -24 Td (Try Zoom +/-, Page Canvas vs Extracted Text, or clicking the page!) Tj ET
+endstream
+endobj
+3 0 obj
+<< /Length 154 >>
+stream
+BT /F1 24 Tf 72 720 Td (Page 2: Multi-Page Navigation) Tj /F1 13 Tf 0 -36 Td (State such as current page and zoom persists across file_event calls.) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 6 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 6 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 3 0 R >>
+endobj
+6 0 obj
+<< /Type /Pages /Kids [4 0 R 5 0 R] /Count 2 >>
+endobj
+7 0 obj
+<< /Type /Catalog /Pages 6 0 R >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000000352 00000 n 
+0000000557 00000 n 
+0000000683 00000 n 
+0000000809 00000 n 
+0000000872 00000 n 
+trailer
+<< /Size 8 /Root 7 0 R >>
+startxref
+921
+%%EOF
