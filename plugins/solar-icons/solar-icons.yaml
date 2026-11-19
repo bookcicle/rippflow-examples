@@ -1,0 +1,13 @@
+id: solar-icons
+name: Solar Bold Duotone Icons
+type: ui
+transport: cli
+doctor:
+  display_name: Solar Bold Duotone Icon Pack
+  official_url: https://github.com/480-Design/Solar-Icon-Set
+  guidance: "Overrides Studio toolbar, file tree, navigation, and window icons with soft, rounded Solar Bold Duotone SVG icons (CC BY 4.0)."
+contributes:
+  iconPacks:
+    - id: solar-icons
+      name: Solar Bold Duotone (Bubbly)
+      path: icons/

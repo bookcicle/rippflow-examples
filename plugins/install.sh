@@ -141,6 +141,21 @@ if [[ -f "${SCRIPT_DIR}/local-ports/local_ports.py" ]]; then
     "${SCRIPT_DIR}/local-ports/local-ports.yaml" > "${TARGET_DIR}/local-ports.yaml"
 fi
 
+# 5f. Install Solar Bold Duotone and Fluent Emoji Flat Icon Packs
+for PACK in solar-icons fluent-emoji-icons; do
+  if [[ -d "${SCRIPT_DIR}/${PACK}/icons" ]]; then
+    echo "-> Installing '${PACK}' icon pack plugin..."
+    mkdir -p "${TARGET_DIR}/${PACK}/icons"
+    cp "${SCRIPT_DIR}/${PACK}/icons/"*.svg "${TARGET_DIR}/${PACK}/icons/"
+    if [[ -f "${SCRIPT_DIR}/${PACK}/LICENSE" ]]; then
+      cp "${SCRIPT_DIR}/${PACK}/LICENSE" "${TARGET_DIR}/${PACK}/LICENSE"
+    fi
+    PACK_ICONS_ABS="${TARGET_DIR}/${PACK}/icons"
+    sed "s|path: icons/|path: \"${PACK_ICONS_ABS}\"|" \
+      "${SCRIPT_DIR}/${PACK}/${PACK}.yaml" > "${TARGET_DIR}/${PACK}.yaml"
+  fi
+done
+
 # 6. Mirror manifests into ~/.rippflow/agents/ for built-in discovery
 if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${HOME}" ]]; then
   echo "-> Mirroring manifests into ${AGENTS_DIR}..."
@@ -166,6 +181,11 @@ if [[ "${TARGET_DIR}" != "${AGENTS_DIR}" ]] && [[ -n "${HOME:-}" ]] && [[ -d "${
   if [[ -f "${TARGET_DIR}/local-ports.yaml" ]]; then
     cp "${TARGET_DIR}/local-ports.yaml" "${AGENTS_DIR}/local-ports.yaml"
   fi
+  for PACK in solar-icons fluent-emoji-icons; do
+    if [[ -f "${TARGET_DIR}/${PACK}.yaml" ]]; then
+      cp "${TARGET_DIR}/${PACK}.yaml" "${AGENTS_DIR}/${PACK}.yaml"
+    fi
+  done
 fi
 
 echo ""
@@ -187,6 +207,12 @@ if [[ -f "${TARGET_DIR}/lucide-icons.yaml" ]]; then
 fi
 if [[ -f "${TARGET_DIR}/fontawesome-icons.yaml" ]]; then
   echo "  8. fontawesome-icons   -> ${TARGET_DIR}/fontawesome-icons.yaml"
+fi
+if [[ -f "${TARGET_DIR}/solar-icons.yaml" ]]; then
+  echo "  9. solar-icons         -> ${TARGET_DIR}/solar-icons.yaml"
+fi
+if [[ -f "${TARGET_DIR}/fluent-emoji-icons.yaml" ]]; then
+  echo " 10. fluent-emoji-icons  -> ${TARGET_DIR}/fluent-emoji-icons.yaml"
 fi
 echo ""
 echo "To use in Rippflow Studio:"
